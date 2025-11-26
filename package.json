@@ -1,0 +1,32 @@
+{
+  "name": "mywebapp-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "utils/server.js",
+  "scripts": {
+    "start": "node utils/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "findstr": "^1.0.4",
+    "multer": "^2.0.2",
+    "node-appwrite": "^13.0.0"
+  },
+  "description": "",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boaziza/myWebApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boaziza/myWebApp/issues"
+  },
+  "homepage": "https://github.com/boaziza/myWebApp#readme"
+}
