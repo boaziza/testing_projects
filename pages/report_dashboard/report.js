@@ -14,7 +14,7 @@ async function fetchJSON(url) {
 
 async function tables() {
   try {
-    const data = await fetchJSON(`https://mywebapp-backend.onrender.com/api/tables`);
+    const data = await fetchJSON(`https://testing-projects-4ttw.onrender.com/api/tables`);
     
     const tables = Object.keys(data.availableTables);
     const reportsList = document.getElementById("reportsList");
@@ -101,8 +101,8 @@ async function display(check) {
     document.getElementById("tableTitle").textContent = `${(check).toUpperCase()} Table`;
 
     const [attrData, docData] = await Promise.all([
-      fetchJSON(`https://mywebapp-backend.onrender.com/api/attributes/${check}`),
-      fetchJSON(`https://mywebapp-backend.onrender.com/api/documents/${check}`)
+      fetchJSON(`https://testing-projects-4ttw.onrender.com/api/attributes/${check}`),
+      fetchJSON(`https://testing-projects-4ttw.onrender.com/api/documents/${check}`)
     ]);
 
     const attributes = rearrangeAndRename(attrData.attributes);
@@ -222,8 +222,8 @@ async function search(check) {
   try {
     // Fetch data
     const [attrData, docData] = await Promise.all([
-      fetchJSON(`https://mywebapp-backend.onrender.com/api/attributes/${check}`),
-      fetchJSON(`https://mywebapp-backend.onrender.com/api/documents/${check}`)
+      fetchJSON(`https://testing-projects-4ttw.onrender.com/api/attributes/${check}`),
+      fetchJSON(`https://testing-projects-4ttw.onrender.com/api/documents/${check}`)
     ]);
 
     const attributes = rearrangeAndRename(attrData.attributes);
@@ -263,8 +263,8 @@ async function blocks() {
 
       // Fetch data
       const [attrData, docData] = await Promise.all([
-        fetchJSON(`https://mywebapp-backend.onrender.com/api/attributes/${check}`),
-        fetchJSON(`https://mywebapp-backend.onrender.com/api/documents/${check}`)
+        fetchJSON(`https://testing-projects-4ttw.onrender.com/api/attributes/${check}`),
+        fetchJSON(`https://testing-projects-4ttw.onrender.com/api/documents/${check}`)
       ]);
 
       const attributes = rearrangeAndRename(attrData.attributes);

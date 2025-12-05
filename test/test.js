@@ -22,13 +22,13 @@
         
 //         const hidden = ["cash5000","cash2000","cash1000","cash500","id","shift","email","fiche","listSFC","listBC","bon"]
 
-//         const res = await fetch(`https://mywebapp-backend.onrender.com/api/attributes/${check}`);
+//         const res = await fetch(`https://testing-projects-4ttw.onrender.com/api/attributes/${check}`);
 //         const data = await res.json();
 //         const rawAtributes = data.attributes;
 
 //         const attributes = rawAtributes.filter(attr => !hidden.includes(attr.key))
 
-//         const resDocs = await fetch(`https://mywebapp-backend.onrender.com/api/documents/${check}`);
+//         const resDocs = await fetch(`https://testing-projects-4ttw.onrender.com/api/documents/${check}`);
 //         const docData = await resDocs.json();
 //         const rows = docData.documents;
 
@@ -161,11 +161,11 @@
 //         el = document.getElementById("check"); 
 //         const check = getElementValue(el);        
 
-//         const res = await fetch(`https://mywebapp-backend.onrender.com/api/attributes/${check}`);
+//         const res = await fetch(`https://testing-projects-4ttw.onrender.com/api/attributes/${check}`);
 //         const data = await res.json();
 //         const attributes = data.attributes;
 
-//         const resDocs = await fetch(`https://mywebapp-backend.onrender.com/api/documents/${check}`);
+//         const resDocs = await fetch(`https://testing-projects-4ttw.onrender.com/api/documents/${check}`);
 //         const docData = await resDocs.json();
 //         const rows = docData.documents;
 
@@ -277,7 +277,7 @@
 //         el = document.getElementById("check"); 
 //         const check = getElementValue(el);        
 
-//         const res = await fetch(`https://mywebapp-backend.onrender.com/api/attributes/${check}`);
+//         const res = await fetch(`https://testing-projects-4ttw.onrender.com/api/attributes/${check}`);
 //         const data = await res.json();
 //         const attributes = data.attributes;
         

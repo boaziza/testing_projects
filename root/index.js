@@ -530,7 +530,7 @@ async function addLoan(event) {
         const container = document.getElementById("loanContainer");
         container.innerHTML = "";
 
-        const res = await fetch("https://mywebapp-backend.onrender.com/api/attributes/loans");
+        const res = await fetch("https://testing-projects-4ttw.onrender.com/api/attributes/loans");
         const data = await res.json();
         const attributes = data.attributes;
 
@@ -722,7 +722,7 @@ async function addFiche(event) {
         const container = document.getElementById("ficheContainer");
         container.innerHTML = "";
 
-        const res = await fetch("https://mywebapp-backend.onrender.com/api/attributes/fiche");
+        const res = await fetch("https://testing-projects-4ttw.onrender.com/api/attributes/fiche");
         const data = await res.json();
         const attributes = data.attributes;
 

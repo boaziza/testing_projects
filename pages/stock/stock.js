@@ -325,7 +325,7 @@ function download(event) {
 }
 
 async function saveData(collection, data) {
-  return fetch(`https://mywebapp-backend.onrender.com/api/create/${collection}`, {
+  return fetch(`https://testing-projects-4ttw.onrender.com/api/create/${collection}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
