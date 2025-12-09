@@ -1,7 +1,7 @@
 // utils/server.js
 import express from "express";
 import cors from "cors";
-import { Query, Client, Databases, ID } from "node-appwrite";
+import { Query, ID } from "node-appwrite";
 import * as sdk from "node-appwrite";
 import dotenv from "dotenv";
 
@@ -51,6 +51,7 @@ const collections = {
   gain: process.env.APPWRITE_GAIN_ID,
   payments: process.env.APPWRITE_PAYMENTS_ID,
   stock: process.env.APPWRITE_STOCK_ID,
+  gainTesting: process.env.APPWRITE_GAINTESTING_ID,
   // sample: process.env.APPWRITE_SAMPLE_ID
 };
 
@@ -68,22 +69,6 @@ app.get("/api/attributes/:collection", async (req, res) => {
     res.json(response);
   } catch (err) {
     console.error(`Error fetching attributes for ${collection}:`, err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ✅ Route 2: (Optional) Get both attributes in one go
-app.get("/api/attributes", async (req, res) => {
-  try {
-    const [customers, loans] = await Promise.all([
-      databases.listAttributes(databaseId, collections.customers),
-      databases.listAttributes(databaseId, collections.fiche),
-      databases.listAttributes(databaseId, collections.loans)
-    ]);
-
-    res.json({ customers, loans, fiche });
-  } catch (err) {
-    console.error("Error fetching both customers and loans attributes:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -136,6 +121,55 @@ app.post("/api/create/:collection", async (req, res) => {
   } catch (error) {
     console.error("Create error:", error);
     res.status(500).json({ error: "Failed to create document" });
+  }
+});
+
+app.patch("/api/update-by-field/:collection", async (req, res) => {
+  try {
+    const { collection } = req.params;
+    const { searchField, searchValue } = req.body;
+    let { updateData } = req.body;
+    
+    const collectionId = collections[collection];
+    if (!collectionId) {
+      return res.status(400).json({ error: `Collection '${collection}' not found` });
+    }
+
+    const findResult = await databases.listDocuments(
+      databaseId,
+      collectionId,
+      [Query.equal(searchField, searchValue)]
+    );
+
+    if (findResult.documents.length === 0) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    // const key = Object.keys(updateData)[0];
+    // const value = parseInt(updateData[key]);
+
+    // const doc = findResult.documents[0];
+    // const initialValue = doc[key];
+  
+    // if (initialValue !== null) {
+    //   const newValue = value + initialValue;
+    //   updateData = { [key]: newValue }
+
+    // }
+
+    const documentId = findResult.documents[0].$id;
+
+    const updateResult = await databases.updateDocument(
+      databaseId,
+      collectionId,
+      documentId,
+      updateData
+    );
+
+    res.json({ success: true, result: updateResult });
+  } catch (error) {
+    console.error("Update by field error:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 

@@ -591,3 +591,157 @@
 
 // // Run the fix
 // fixLoanDates();
+
+// const DATABASE_ID = "";
+// const COLLECTION_ID = "";
+
+
+
+// async function fixGainTable() {
+//   try {
+//     const resDocs = await fetch(`https://testing-projects-4ttw.onrender.com/api/documents/payments`);
+//     const docData = await resDocs.json();
+//     const rows = docData.documents;
+
+
+//     if (rows.length === 0) {
+//       alert('No documents found in the date range.');
+//       return;
+//     }
+
+//     // Update each document by subtracting one day
+//     let successCount = 0;
+//     let errorCount = 0;
+
+//     console.log("here are the rows", rows);
+    
+
+//     for (let i = 0; i < rows.length; i++) {
+//       try {
+
+//         const logDate = rows[i].logDate;
+//         const name = rows[i].employee;        
+
+//         console.log("Dates", logDate);
+//         console.log("Names", name);
+//         console.log("Gain", rows[i].gainPayments);        
+
+//         const response = await fetch('http://localhost:4000/api/update-by-field/gainTesting', {
+//             method: 'PATCH',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({
+//                 searchField: 'logDate',
+//                 searchValue: logDate, 
+//                 updateData: {
+//                     [name]: rows[i].gainPayments
+//                 }
+//             })
+//         });
+
+//         if (!response.ok) {
+//             const error = await response.json();
+//             console.error(`Failed for ${logDate}:`, error);
+//             throw new Error(error.error || 'Update failed');
+//         }
+
+//         successCount++;
+//       } catch (error) {
+//         console.error(`Error updating document ${rows.$id}:`, error);
+//         errorCount++;
+//       }
+//     }
+
+//     // Show summary
+//     alert(`✅ Success!\nUpdated: ${successCount} documents\nFailed: ${errorCount} documents`);
+
+//   } catch (error) {
+//     console.error('Error:', error);
+//     alert('❌ Error: ' + error.message);
+//   }
+// }
+
+// Run the fix
+// fixGainTable();
+
+
+// // 1. Initialize Appwrite Client (Replace with your actual details)
+// const client = new Appwrite.Client()
+//     .setEndpoint('https://cloud.appwrite.io/v1') // e.g., 'https://cloud.appwrite.io/v1'
+//     .setProject('68c3ec870024955539b0');      // Your Appwrite project ID
+
+// const databases = new Appwrite.Databases(client);
+
+// // Replace with your actual database and collection IDs
+// const DATABASE_ID = '68c3f10d002b0dfc0b2d';
+// const COLLECTION_ID = '69380b0c00300e97444d'; 
+
+// /**
+//  * Generates dates from a start date to an end date and inserts a document for each date
+//  * into a specified Appwrite collection with the date in the 'logDate' column.
+//  * * @param {string} startDateString - The starting date string (MM/DD/YYYY).
+//  * @param {string} endDateString - The ending date string (MM/DD/YYYY).
+//  */
+// async function generateAndInsertDates(startDateString, endDateString) {
+//     const startDate = new Date(startDateString);
+//     const endDate = new Date(endDateString);
+//     let currentDate = startDate;
+
+//     console.log(`Starting document insertion from ${startDateString} to ${endDateString}...`);
+
+//     while (currentDate <= endDate) {
+
+//         const formatDateForAppwrite = (date) => {
+//             const year = date.getFullYear();
+//             const month = String(date.getMonth() + 1).padStart(2, '0');
+//             const day = String(date.getDate()).padStart(2, '0');
+//             return `${month}/${day}/${year}`; 
+//         };
+
+//         // Format date to ISO string (YYYY-MM-DDTHH:mm:ss.sssZ) for better database compatibility
+//         // We only want the YYYY-MM-DD part, and Appwrite usually handles datetime types well.
+//         const logDateValue = formatDateForAppwrite(currentDate); 
+
+//         const data = {
+//             // Your column name is 'logDate', set to the ISO date string
+//             logDate: logDateValue, 
+//             // Add any other required fields for your document (e.g., status, user, etc.)
+//             // otherField: 'default value',
+//         };
+
+//         try {
+//             // 2. Create the document for the current date
+//             const response = await databases.createDocument(
+//                 DATABASE_ID,
+//                 COLLECTION_ID,
+//                 "unique()",
+//                 data
+//             );
+//             console.log(`✅ Document created successfully for date: ${logDateValue}`);
+
+//         } catch (error) {
+//             console.error(`❌ Failed to create document for date ${logDateValue}:`, error);
+//             // Optionally, break or handle the error gracefully
+//         }
+
+//         // Move to the next day
+//         currentDate.setDate(currentDate.getDate() + 1);
+//     }
+
+//     console.log("Date generation and insertion process complete.");
+// }
+
+// // --- Execution Block ---
+// // Run the function to generate dates from 01/11/2025 to 30/11/2025 (MM/DD/YYYY format for Date constructor)
+// // NOTE: JavaScript Date() constructor can be tricky with different formats. 
+// // Using YYYY-MM-DD or MM/DD/YYYY is generally safer than DD/MM/YYYY.
+// // 01/11/2025 is January 11, 2025.
+// // If you meant November 1st (01/11/2025 is US format for Jan 11), use '2025-11-01' or '11/01/2025'.
+
+// // Assuming you meant November 1st (11/01/2025) to November 30th (11/30/2025):
+// const startDate = `11/01/2025`; 
+// const endDate = `11/30/2025`;
+
+// To run this function, call it:
+// generateAndInsertDates(startDate, endDate);
