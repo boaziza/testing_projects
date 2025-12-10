@@ -17,7 +17,7 @@ async function userAccess() {
     const admin = await databases.listDocuments(databaseId, adminId, [Appwrite.Query.equal("email", email)])    
 
     if ( admin.documents.length === 0 ) {
-        window.location.replace("../index.html");    
+        window.location.replace("/testing_projects/index.html");    
     } else {        
         console.log("access granted");    
     }
