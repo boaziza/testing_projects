@@ -529,7 +529,14 @@ async function addLoan() {
         submit.type = "button"; 
         submit.className = "action-btn";
         submit.textContent = "Save Loan";
-        submit.onclick = (e) => storeLoan(e);
+        submit.onclick = async (e) => {
+            submit.disabled = true;
+            try {
+                await storeFiche(e);
+            } finally {
+                submit.disabled = false;
+            }
+        };
         submit.style.marginRight = "10px";
         container.appendChild(submit);
 
@@ -705,7 +712,14 @@ async function addFiche() {
         submit.type = "button"; 
         submit.className = "action-btn";
         submit.textContent = "Save Fiche";
-        submit.onclick = (e) => storeFiche(e);
+        submit.onclick = async (e) => {
+            submit.disabled = true;
+            try {
+                await storeFiche(e);
+            } finally {
+                submit.disabled = false;
+            }
+        };
         submit.style.marginRight = "10px";
         container.appendChild(submit);
 
