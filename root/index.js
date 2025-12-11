@@ -532,7 +532,7 @@ async function addLoan() {
         submit.onclick = async (e) => {
             submit.disabled = true;
             try {
-                await storeFiche(e);
+                await storeLoan(e);
             } finally {
                 submit.disabled = false;
             }

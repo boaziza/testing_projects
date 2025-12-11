@@ -120,8 +120,8 @@ async function display(check) {
     const totalsRow = document.createElement("tr");
 
     // Clear old
-    [headers, body, searchWith, searchInput, searchButton].forEach(el => (el.innerHTML = ""));
-
+    [headers, body, searchWith, searchButton].forEach(el => (el.innerHTML = ""));
+    [searchInput].forEach(el => (el.value = ""));
     // Build headers
     for (let i = 0; i < attributes.length; i++) {
       const theader = document.createElement("th");
