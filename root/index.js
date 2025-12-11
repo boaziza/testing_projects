@@ -530,7 +530,18 @@ async function addLoan() {
         submit.className = "action-btn";
         submit.textContent = "Save Loan";
         submit.onclick = (e) => storeLoan(e);
+        submit.style.marginRight = "10px";
         container.appendChild(submit);
+
+
+
+
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button"; 
+        cancelBtn.className = "cancel";
+        cancelBtn.textContent = "Cancel";
+        cancelBtn.onclick = (e) => cancel("loanContainer");
+        container.appendChild(cancelBtn);
 
 
     } catch (error) {
@@ -695,7 +706,15 @@ async function addFiche() {
         submit.className = "action-btn";
         submit.textContent = "Save Fiche";
         submit.onclick = (e) => storeFiche(e);
+        submit.style.marginRight = "10px";
         container.appendChild(submit);
+
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button"; 
+        cancelBtn.className = "cancel";
+        cancelBtn.textContent = "Cancel";
+        cancelBtn.onclick = (e) => cancel("ficheContainer");
+        container.appendChild(cancelBtn);
 
 
     } catch (error) {
@@ -804,4 +823,8 @@ async function MomoLoss() {
     const momo = document.getElementById("momo").value;
 
     document.getElementById("tempMomoLoss").textContent = parseInt((momo/100)*0.5) ;
+}
+
+function cancel(id) {
+    document.getElementById(id).innerHTML = "";
 }
