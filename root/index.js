@@ -477,6 +477,7 @@ async function situation() {
             outputs.forEach(el => {
                 el.textContent = "0";
             });
+            document.getElementById("momo").value = ""
         }
 
         clearOutputs();
