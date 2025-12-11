@@ -62,10 +62,10 @@
 </table>
 
 <footer>
-    <button class="action-btn" onclick="displayLoan(event)">Fetch Report</button>
-    <button class="action-btn" onclick="downloadGain(event);">Download Report</button>
+    <button class="action-btn" onclick="this.disabled=true; displayLoan().finally(() => this.disabled=false)">Fetch Report</button>
+    <button class="action-btn" onclick="this.disabled=true; downloadGain().finally(() => this.disabled=false)">Download Report</button>
     <br><br>
-    <button class="action-btn" onclick="logout(event) ">Logout</button>
+    <button class="action-btn" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Logout</button>
 </footer>
     <script src="test.js"></script>
     <!-- <script src="loan.js"></script>

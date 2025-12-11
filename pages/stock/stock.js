@@ -8,13 +8,7 @@ let logDate, venteLitresAgo, venteLitresPms;
 let totalVenteLitresAgo, totalVenteLitresPms;
 
 
-async function stock(event) {
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
-   
+async function stock() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
         .setProject("68c3ec870024955539b0");
@@ -47,12 +41,7 @@ async function stock(event) {
     }
   } catch (err) {
     console.error("Error fetching:", err);
-  } finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
-        
-    }
+  }
 
     initialPms = parseInt(document.getElementById("initialPms").value);
     initialAgo = parseInt(document.getElementById("initialAgo").value);
@@ -76,7 +65,7 @@ async function stock(event) {
     
 }
 
-async function storeStock(event) {
+async function storeStock() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
         .setProject("68c3ec870024955539b0");
@@ -96,13 +85,7 @@ async function storeStock(event) {
     const yyyy = selectedDate.getFullYear();
 
     const monthYear = `${yyyy}-${mm}`;
-
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
-   
+    
     try {
         
         const user = await account.get();
@@ -215,11 +198,6 @@ async function storeStock(event) {
     } catch (err) {
       console.error("Error:", err.message);
       alert("Error: " + err.message);
-    } finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
-        
     }
 
 
@@ -273,23 +251,11 @@ async function storeStock(event) {
 
     } catch (error) {
         alert("Error updating:", error);
-    } finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
-        
     }
-
-
 }
 
-function download(event) {
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
+function download() {
 
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
-   
     try {
         // Ensure data is up to date
         // If your displayDetails() fetches/fills data, call it here or make sure it's already run
@@ -315,11 +281,6 @@ function download(event) {
 
     } catch (error) {
         console.log("This is the error ", error);
-        
-    } finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
         
     }
 }

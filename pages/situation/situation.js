@@ -1,4 +1,4 @@
-async function fetchSituation(event) {
+async function fetchSituation() {
   const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
         .setProject("68c3ec870024955539b0");
@@ -9,12 +9,7 @@ async function fetchSituation(event) {
     const databaseId = "68c3f10d002b0dfc0b2d";
     const situationId = "68cd6b7f00330a840d96";
     const stockId = "6908ab260012e0412ca8"
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
 
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
-  
     try {
 
         const logDate = document.getElementById("logDate").value;
@@ -89,21 +84,11 @@ async function fetchSituation(event) {
 
     } catch (err) {
         console.error("Error fetching:", err);
-    }  finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
-
     }
 }
 
-function download(event) {
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
+function download() {
 
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
-   
     try {
         // Ensure data is up to date
         // If your displayDetails() fetches/fills data, call it here or make sure it's already run
@@ -129,11 +114,6 @@ function download(event) {
 
     } catch (error) {
         console.log("This is the error ", error);
-        
-    } finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
         
     }
 }

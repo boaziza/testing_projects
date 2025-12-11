@@ -4,7 +4,7 @@ let logDate, email;
 let allDocuments = []; // Store all fetched documents
 let currentPage = 0;
 
-export async function displayDetails(event) {
+export async function displayDetails() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
         .setProject("68c3ec870024955539b0");
@@ -23,12 +23,6 @@ export async function displayDetails(event) {
         return alert("Choose a date and an employee")
     }
     
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
-
     try {
         clearSheetOutputs();
 
@@ -70,9 +64,6 @@ export async function displayDetails(event) {
 
     } catch (error) {
         console.log("Error is this", error);        
-    } finally {
-        btn.disabled = false;
-        btn.textContent = originalText;
     }
 }
 
@@ -169,13 +160,7 @@ window.displayDetails = displayDetails;
 window.goToPreviousPage = goToPreviousPage;
 window.goToNextPage = goToNextPage;
 
-export function download(event) {
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
-   
+export function download() {
     try {
         const logDate = document.getElementById("logDate").value;
         const email = document.getElementById("email").value;
@@ -195,9 +180,6 @@ export function download(event) {
 
     } catch (error) {
         console.log("This is the error ", error);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = originalText;
     }
 }
 

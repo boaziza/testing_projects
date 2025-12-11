@@ -2,7 +2,7 @@ let totalVente,pms1,pms2,pms3,pms4,ago1,ago2,ago3,ago4;
 let venteLitresPms, totalPms, venteLitresAgo, totalAgo;
 let pmsPrice, agoPrice, logDate, shift;
 
-async function calculateIndex(event) {
+async function calculateIndex() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
         .setProject("68c3ec870024955539b0");
@@ -12,13 +12,6 @@ async function calculateIndex(event) {
 
     const databaseId = "68c3f10d002b0dfc0b2d";
     const indexId = "68cd1987002bae34ea4b";
-
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Loading...";
-
 
     pmsPrice = 1989;
     agoPrice = 1900;
@@ -141,26 +134,14 @@ async function calculateIndex(event) {
     } catch (error) {
         console.log("The error is ", error);
         
-    } finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
-        
     }
-
 }
 
 let momo, momoLoss, totalFiche, bon, spFuelCard, bankCard;
 let cash5000, cash2000, cash1000, cash500;
 let totalCash, totalPayments, gainPayments, listBC, listSFC, totalLoans;
 
-async function payments(event) {
-    
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
+async function payments() {
 
     try {
         
@@ -198,15 +179,11 @@ async function payments(event) {
         document.getElementById("totalCash").textContent = totalCash;
     } catch (error) {
         console.log(error)  
-    } finally {
-        btn.disabled = false;
-        btn.textContent = originalText;
     }
-
 }
 
 let dataSituation; 
-async function situation(event) {
+async function situation() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
         .setProject("68c3ec870024955539b0");
@@ -218,11 +195,6 @@ async function situation(event) {
     const indexId = "68cd1987002bae34ea4b";
     const paymentsId = "68cd19990006cbb33843";
     const situationId = "68cd6b7f00330a840d96";
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
 
     try {
         
@@ -522,21 +494,10 @@ async function situation(event) {
         } else {
             alert("Error: " + err.message);
         }
-    } finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
-        
-    }
-    
+    } 
 }
 
-async function addLoan(event) {
-  const btn = event.currentTarget;   
-  const originalText = btn.textContent;
-
-  btn.disabled = true;
-  btn.textContent = "Loading..."; 
+async function addLoan() {
 
     try {
     
@@ -574,10 +535,6 @@ async function addLoan(event) {
 
     } catch (error) {
         console.log(error);    
-    } finally {      
-
-        btn.disabled = false;
-        btn.textContent = originalText;
     }
 }
 
@@ -602,7 +559,7 @@ function mapTypeToInput(appwriteType) {
 }
 
 let loans = [];
-async function storeLoan(event) {
+async function storeLoan() {
     const client = new Appwrite.Client()
     .setEndpoint("https://cloud.appwrite.io/v1") 
     .setProject("68c3ec870024955539b0");
@@ -613,13 +570,7 @@ async function storeLoan(event) {
     const databaseId = "68c3f10d002b0dfc0b2d";
     const loansId = "68fbe6f80019b53fb32f";
     const paymentsId = "68cd19990006cbb33843";
-
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
-
+    
     const user = await account.get();        
     const employee = user.name;  
     
@@ -660,11 +611,6 @@ async function storeLoan(event) {
     } catch (err) {
       console.error("Error:", err.message);
       alert("Error: " + err.message);
-    } finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
-        
     }
     const container = document.getElementById("loanContainer");
     container.innerHTML = "";
@@ -714,21 +660,9 @@ async function storeLoan(event) {
 
     // } catch (error) {
     //     alert("Error updating:", error);
-    // } finally {
-
-    //     btn.disabled = false;
-    //     btn.textContent = originalText;
-        
     // }
-
-
 }
-async function addFiche(event) {
-  const btn = event.currentTarget;   
-  const originalText = btn.textContent;
-
-  btn.disabled = true;
-  btn.textContent = "Loading..."; 
+async function addFiche() {
 
     try {
     
@@ -766,15 +700,11 @@ async function addFiche(event) {
 
     } catch (error) {
         console.log(error);    
-    } finally {      
-
-        btn.disabled = false;
-        btn.textContent = originalText;
     }
 }
 
 let fiche = [];
-async function storeFiche(event) {
+async function storeFiche() {
     const client = new Appwrite.Client()
     .setEndpoint("https://cloud.appwrite.io/v1") 
     .setProject("68c3ec870024955539b0");
@@ -784,12 +714,6 @@ async function storeFiche(event) {
 
     const databaseId = "68c3f10d002b0dfc0b2d";
     const ficheId = "69007206001aed40d6f4";
-
-    const btn = event.currentTarget;   
-    const originalText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Loading..."; 
 
     const user = await account.get();        
     const employee = user.name;  
@@ -823,14 +747,8 @@ async function storeFiche(event) {
     } catch (err) {
       console.error("Error:", err.message);
       alert("Error: " + err.message);
-    } finally {
-
-        btn.disabled = false;
-        btn.textContent = originalText;
-        const container = document.getElementById("ficheContainer");
-        container.innerHTML = "";
-        
     }
+
     const container = document.getElementById("ficheContainer");
     container.innerHTML = "";
 
@@ -879,14 +797,7 @@ async function storeFiche(event) {
 
     // } catch (error) {
     //     alert("Error updating:", error);
-    // } finally {
-
-    //     btn.disabled = false;
-    //     btn.textContent = originalText;
-        
     // }
-
-
 }
 
 async function MomoLoss() {
