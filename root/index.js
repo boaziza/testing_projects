@@ -219,7 +219,7 @@ async function situation() {
 
 
         const gainPompisteId = "68dbbb760034fb10a518"
-        const gainDocs = await databases.listDocuments(databaseId, gainPompisteId, [Appwrite.Query.equal("email", email)], [Appwrite.Query.equal("monthYear", monthYear)]);
+        const gainDocs = await databases.listDocuments(databaseId, gainPompisteId, [Appwrite.Query.equal("email", email), Appwrite.Query.equal("monthYear", monthYear)]);
         const doc = gainDocs.documents;     
 
 
