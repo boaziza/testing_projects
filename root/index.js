@@ -837,7 +837,7 @@ async function storeFiche() {
 async function MomoLoss() {
     const momo = document.getElementById("momo").value;
 
-    document.getElementById("tempMomoLoss").textContent = parseInt((momo/100)*0.5) ;
+    document.getElementById("tempMomoLoss").textContent = (parseInt((momo/100)*0.5).toLocaleString()) ;
 }
 
 function cancel(id) {
