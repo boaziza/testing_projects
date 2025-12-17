@@ -491,7 +491,7 @@ async function situation() {
         // If user is not logged in, redirect them to login
         if (err.message.includes("Unauthorized")) {
             alert("You must log in first!");
-            // window.location.href = "/sign-in/sign-in.html";
+            // window.location.href = "/sign-in/sign-in";
         } else {
             alert("Error: " + err.message);
         }

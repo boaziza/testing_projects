@@ -10,7 +10,7 @@ async function logout() {
     
     await account.deleteSession("current");
     alert("Logged out successfully");
-    window.location.href= "/testing_projects/auth/sign-in/sign-in.html";
+    window.location.href= "/testing_projects/auth/sign-in/sign-in";
     
   } catch (error) {
     console.log("error for page access",error);
