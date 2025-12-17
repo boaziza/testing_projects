@@ -35,9 +35,9 @@ async function calculateIndex() {
 
     totalVente = totalAgo + totalPms;
 
-    document.getElementById("resultpms").textContent = totalPms;
-    document.getElementById("resultago").textContent = totalAgo;
-    document.getElementById("result").textContent = totalVente;
+    document.getElementById("resultpms").textContent = `${totalPms.toLocaleString()} RWF`;
+    document.getElementById("resultago").textContent = `${totalAgo.toLocaleString()} RWF`;
+    document.getElementById("result").textContent = `${totalVente.toLocaleString()} RWF`;
 
     try {
         
@@ -172,11 +172,11 @@ async function payments() {
         gainPayments = totalPayments - totalVente;
 
         
-        document.getElementById("totalLoans").textContent = totalLoans;
-        document.getElementById("totalFiche").textContent = totalFiche;
-        document.getElementById("totalPayments").textContent = totalPayments;  
-        document.getElementById("gainPayments").textContent = gainPayments;
-        document.getElementById("totalCash").textContent = totalCash;
+        document.getElementById("totalLoans").textContent = `${totalLoans.toLocaleString()} RWF`;
+        document.getElementById("totalFiche").textContent = `${totalFiche.toLocaleString()} RWF`;
+        document.getElementById("totalPayments").textContent = `${totalPayments.toLocaleString()} RWF`;  
+        document.getElementById("gainPayments").textContent = `${gainPayments.toLocaleString()} RWF`;
+        document.getElementById("totalCash").textContent = `${totalCash.toLocaleString()} RWF`;
     } catch (error) {
         console.log(error)  
     }
