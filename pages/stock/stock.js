@@ -56,12 +56,12 @@ async function stock() {
     gainFuelPms = physicalStockPms - theoryStockPms ;
     gainFuelAgo = physicalStockAgo - theoryStockAgo ;
 
-    document.getElementById("theoryStockPms").textContent = theoryStockPms;
-    document.getElementById("theoryStockAgo").textContent = theoryStockAgo;
-    document.getElementById("gainFuelPms").textContent = gainFuelPms;
-    document.getElementById("gainFuelAgo").textContent = gainFuelAgo;
-    document.getElementById("venteLitresPms").textContent = venteLitresPms;
-    document.getElementById("venteLitresAgo").textContent = venteLitresAgo;
+    document.getElementById("theoryStockPms").textContent = theoryStockPms.toLocaleString();
+    document.getElementById("theoryStockAgo").textContent = theoryStockAgo.toLocaleString();
+    document.getElementById("gainFuelPms").textContent = gainFuelPms.toLocaleString();
+    document.getElementById("gainFuelAgo").textContent = gainFuelAgo.toLocaleString();
+    document.getElementById("venteLitresPms").textContent = venteLitresPms.toLocaleString();
+    document.getElementById("venteLitresAgo").textContent = venteLitresAgo.toLocaleString();
     
 }
 

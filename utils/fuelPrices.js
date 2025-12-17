@@ -21,8 +21,8 @@ async function loadFuelPrices() {
             const pmsPrice = rows[0].querySelectorAll("td")[1].textContent.trim() + " RWF";
             const agoPrice = rows[1].querySelectorAll("td")[1].textContent.trim() + " RWF";
 
-            document.getElementById("pmsPrice").textContent = pmsPrice;
-            document.getElementById("agoPrice").textContent = agoPrice;
+            document.getElementById("pmsPrice").textContent = pmsPrice.toLocaleString();
+            document.getElementById("agoPrice").textContent = agoPrice.toLocaleString();
         } else {
             console.error("❌ Table rows not found");
         }

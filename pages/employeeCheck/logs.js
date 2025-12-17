@@ -76,29 +76,29 @@ function displayPage(pageNumber) {
 
     const doc = allDocuments[pageNumber - 1];
 
-    document.getElementById("pms1").textContent = doc.pms1 || "0";
-    document.getElementById("pms2").textContent = doc.pms2 || "0";
-    document.getElementById("pms3").textContent = doc.pms3 || "0";
-    document.getElementById("pms4").textContent = doc.pms4 || "0";
-    document.getElementById("ago1").textContent = doc.ago1 || "0";
-    document.getElementById("ago2").textContent = doc.ago2 || "0";
-    document.getElementById("ago3").textContent = doc.ago3 || "0";
-    document.getElementById("ago4").textContent = doc.ago4 || "0"; 
-    document.getElementById("pmsPrice").textContent = doc.pmsPrice || "0";
-    document.getElementById("agoPrice").textContent = doc.agoPrice || "0";
-    document.getElementById("totalAgo").textContent = doc.totalAgo || "0";
-    document.getElementById("totalPms").textContent = doc.totalPms || "0";
-    document.getElementById("totalVente").textContent = doc.totalVente || "0";
-    document.getElementById("venteLitresAgo").textContent = (doc.venteLitresAgo || 0).toFixed(2);
-    document.getElementById("venteLitresPms").textContent = (doc.venteLitresPms || 0).toFixed(2);
+    document.getElementById("pms1").textContent = (doc.pms1).toLocaleString() || "0";
+    document.getElementById("pms2").textContent = (doc.pms2).toLocaleString() || "0";
+    document.getElementById("pms3").textContent = (doc.pms3).toLocaleString() || "0";
+    document.getElementById("pms4").textContent = (doc.pms4).toLocaleString() || "0";
+    document.getElementById("ago1").textContent = (doc.ago1).toLocaleString() || "0";
+    document.getElementById("ago2").textContent = (doc.ago2).toLocaleString() || "0";
+    document.getElementById("ago3").textContent = (doc.ago3).toLocaleString() || "0";
+    document.getElementById("ago4").textContent = (doc.ago4).toLocaleString() || "0"; 
+    document.getElementById("pmsPrice").textContent = `${(doc.pmsPrice).toLocaleString()} RWF` || "0";
+    document.getElementById("agoPrice").textContent = `${(doc.agoPrice).toLocaleString()} RWF` || "0";
+    document.getElementById("totalAgo").textContent = `${(doc.totalAgo).toLocaleString()} RWF` || "0";
+    document.getElementById("totalPms").textContent = `${(doc.totalPms).toLocaleString()} RWF` || "0";
+    document.getElementById("totalVente").textContent = `${(doc.totalVente).toLocaleString()} RWF` || "0";
+    document.getElementById("venteLitresAgo").textContent = ((doc.venteLitresAgo || 0).toFixed(2)).toLocaleString();
+    document.getElementById("venteLitresPms").textContent = ((doc.venteLitresPms || 0).toFixed(2)).toLocaleString();
 
-    document.getElementById("p1_essence").textContent = (doc.pms2 - doc.pms1).toFixed(2) || "0";
-    document.getElementById("p2_essence").textContent = (doc.pms4 - doc.pms3).toFixed(2) || "0";
-    document.getElementById("p3_gasoil").textContent = (doc.ago2 - doc.ago1).toFixed(2) || "0";
-    document.getElementById("p4_gasoil").textContent = (doc.ago4 - doc.ago3).toFixed(2) || "0";
+    document.getElementById("p1_essence").textContent = ((doc.pms2 - doc.pms1).toFixed(2)).toLocaleString() || "0";
+    document.getElementById("p2_essence").textContent = ((doc.pms4 - doc.pms3).toFixed(2)).toLocaleString() || "0";
+    document.getElementById("p3_gasoil").textContent = ((doc.ago2 - doc.ago1).toFixed(2)).toLocaleString() || "0";
+    document.getElementById("p4_gasoil").textContent = ((doc.ago4 - doc.ago3).toFixed(2)).toLocaleString() || "0";
 
-    document.getElementById("pmsPrices").textContent = doc.pmsPrice || "0";
-    document.getElementById("agoPrices").textContent = doc.agoPrice || "0";
+    document.getElementById("pmsPrices").textContent = (doc.pmsPrice).toLocaleString() || "0";
+    document.getElementById("agoPrices").textContent = (doc.agoPrice).toLocaleString() || "0";
 
     if (doc.paymentData) {
         const paymentDoc = doc.paymentData;
@@ -115,8 +115,8 @@ function displayPage(pageNumber) {
 
             fields.forEach(f => setField(f, paymentDoc[f]));      
 
-            document.getElementById("loans").textContent = loans.map(loan => `${loan.company}: ${loan.amount}`).join(", ");
-            document.getElementById("fiche").textContent = fiche.map(item => `${item.company}: ${item.amount}`).join(", ");
+            document.getElementById("loans").textContent = loans.map(loan => `${loan.company}: ${(loan.amount).toLocaleString()}`).join(", ");
+            document.getElementById("fiche").textContent = fiche.map(item => `${item.company}: ${(item.amount).toLocaleString()}`).join(", ");
         } catch (error) {
             console.error("Error parsing payment data:", error);
         }

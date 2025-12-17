@@ -100,7 +100,7 @@ async function calculateIndex() {
             for (const doc of beforeResponse.documents) {
                 // Check PMS match if values are provided
                 if (pms1 && pms3) {
-                    if (pms1 === doc.pms2 && pms3 === doc.pms4 && doc.shift === "Evening") {
+                    if (pms1 === doc.pms2 && pms3 === doc.pms4 && doc.shift === "Night") {
                         pmsMatch = true;
                     }
                 } else {
@@ -109,7 +109,7 @@ async function calculateIndex() {
                 
                 // Check AGO match if values are provided
                 if (ago1 && ago3) {
-                    if (ago1 === doc.ago2 && ago3 === doc.ago4 && doc.shift === "Evening") {
+                    if (ago1 === doc.ago2 && ago3 === doc.ago4 && doc.shift === "Night") {
                         agoMatch = true;
                     }
                 } else {
@@ -396,7 +396,7 @@ async function situation() {
             docId,
             dataSituation)
             
-        } else if(shift === "Evening" && response.documents.length !== 0 ){
+        } else if(shift === "Night" && response.documents.length !== 0 ){
             const doc = response.documents[0];
 
             const docId = doc.$id;
@@ -466,8 +466,7 @@ async function situation() {
             dataPayments
         );
 
-        console.log("monthYear",monthYear);
-        
+        console.log("monthYear",monthYear);        
 
         alert("Data saved successfully"); 
 

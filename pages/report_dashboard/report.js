@@ -278,12 +278,12 @@ async function blocks() {
           if (key === "gainPayments") {
             totalGain += allRows[i][key];
           } else if (key === "totalGainFuelAgo") {
-            document.getElementById("gainAgo").textContent = `${allRows[i][key]} L`;
+            document.getElementById("gainAgo").textContent = `${(allRows[i][key]).toLocaleString()} L`;
           } else if (key === "totalGainFuelPms") {
-            document.getElementById("gainPms").textContent = `${allRows[i][key]} L`;
+            document.getElementById("gainPms").textContent = `${(allRows[i][key]).toLocaleString()} L`;
           }
         }
-        document.getElementById("gain").textContent = `${totalGain} RWF`;
+        document.getElementById("gain").textContent = `${(totalGain).toLocaleString()} RWF`;
       }
     }
   } catch(error) {
