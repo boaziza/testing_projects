@@ -520,7 +520,7 @@
 // This script subtracts one day from all loan dates between Nov 2-16, 2025
 // Make sure you have: <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
 
-// const DATABASE_ID = '68c3f10d002b0dfc0b2d';
+// const DATABASE_ID = '695f766c003a8dc2b3be';
 // const COLLECTION_ID = '68fbe6f80019b53fb32f';
 // const DATE_FIELD = 'logDate';
 
@@ -529,7 +529,7 @@
 //     // Initialize Appwrite client
 //     const client = new Appwrite.Client()
 //       .setEndpoint('https://cloud.appwrite.io/v1')
-//       .setProject('68c3ec870024955539b0');
+//       .setProject('68a9b3e90029e6a10ff5');
 
 //     const databases = new Appwrite.Databases(client);
 
@@ -669,12 +669,12 @@
 // // 1. Initialize Appwrite Client (Replace with your actual details)
 // const client = new Appwrite.Client()
 //     .setEndpoint('https://cloud.appwrite.io/v1') // e.g., 'https://cloud.appwrite.io/v1'
-//     .setProject('68c3ec870024955539b0');      // Your Appwrite project ID
+//     .setProject('68a9b3e90029e6a10ff5');      // Your Appwrite project ID
 
 // const databases = new Appwrite.Databases(client);
 
 // // Replace with your actual database and collection IDs
-// const DATABASE_ID = '68c3f10d002b0dfc0b2d';
+// const DATABASE_ID = '695f766c003a8dc2b3be';
 // const COLLECTION_ID = '69380b0c00300e97444d'; 
 
 // /**

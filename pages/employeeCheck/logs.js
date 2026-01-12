@@ -1,18 +1,16 @@
-import { setField } from "../../utils/utils.js";
-
 let logDate, email;
 let allDocuments = []; // Store all fetched documents
 let currentPage = 0;
 
-export async function displayDetails() {
+async function displayDetails() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68c3ec870024955539b0");
+        .setProject("68a9b3e90029e6a10ff5");
 
     const account = new Appwrite.Account(client);
     const databases = new Appwrite.Databases(client);
 
-    const databaseId = "68c3f10d002b0dfc0b2d";
+    const databaseId = "695f766c003a8dc2b3be";
     const indexId = "68cd1987002bae34ea4b";
     const paymentsId = "68cd19990006cbb33843";    
 
@@ -142,14 +140,14 @@ function clearSheetOutputs() {
 }
 
 // Navigation handlers
-export function goToPreviousPage() {
+function goToPreviousPage() {
     if (currentPage > 1) {
         currentPage--;
         displayPage(currentPage);
     }
 }
 
-export function goToNextPage() {
+function goToNextPage() {
     if (currentPage < allDocuments.length) {
         currentPage++;
         displayPage(currentPage);
@@ -160,7 +158,7 @@ window.displayDetails = displayDetails;
 window.goToPreviousPage = goToPreviousPage;
 window.goToNextPage = goToNextPage;
 
-export function download() {
+function download() {
     try {
         const logDate = document.getElementById("logDate").value;
         const email = document.getElementById("email").value;
@@ -184,3 +182,14 @@ export function download() {
 }
 
 window.download = download;
+
+function setField(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if ("value" in el) {
+        el.value = value ?? "0";
+    }
+    else {
+        el.textContent = value ?? "0";
+    }
+}

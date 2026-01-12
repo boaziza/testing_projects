@@ -1,12 +1,12 @@
 async function fetchSituation() {
   const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68c3ec870024955539b0");
+        .setProject("68a9b3e90029e6a10ff5");
 
     const account = new Appwrite.Account(client);
     const databases = new Appwrite.Databases(client);
 
-    const databaseId = "68c3f10d002b0dfc0b2d";
+    const databaseId = "695f766c003a8dc2b3be";
     const situationId = "68cd6b7f00330a840d96";
     const stockId = "6908ab260012e0412ca8"
 
@@ -28,54 +28,54 @@ async function fetchSituation() {
             const doc = response.documents[0]; 
             const stockDoc = responseStock.documents[0];
 
-            document.getElementById("receivedAgo").textContent = (doc.receivedAgo).toLocaleString() || "0";
-            document.getElementById("receivedPms").textContent = (doc.receivedPms).toLocaleString() || "0";
-            document.getElementById("initialPms").textContent = (doc.initialPms).toLocaleString() || "0";
-            document.getElementById("initialAgo").textContent = (doc.initialAgo).toLocaleString() || "0";
-            document.getElementById("physicalStockAgo").textContent = (doc.physicalStockAgo).toLocaleString() || "0";
-            document.getElementById("physicalStockPms").textContent = (doc.physicalStockPms).toLocaleString() || "0";
-            document.getElementById("theoryStockAgo").textContent = (doc.theoryStockAgo).toLocaleString() || "0";
-            document.getElementById("theoryStockPms").textContent = (doc.theoryStockPms).toLocaleString() || "0";
-            document.getElementById("gainFuelAgo").textContent = (doc.gainFuelAgo).toLocaleString() || "0";
-            document.getElementById("gainFuelPms").textContent = (doc.gainFuelPms).toLocaleString() || "0";
-            document.getElementById("momo").textContent = (doc.momo).toLocaleString() || "0";
-            document.getElementById("momoLoss").textContent = (doc.momoLoss).toLocaleString() || "0";
-            document.getElementById("totalFiche").textContent = (doc.totalFiche).toLocaleString() || "0";
-            document.getElementById("bon").textContent = (doc.bon).toLocaleString() || "0";
-            document.getElementById("spFuelCard").textContent = (doc.spFuelCard).toLocaleString() || "0";
-            document.getElementById("bankCard").textContent = (doc.bankCard).toLocaleString() || "0";
-            document.getElementById("totalCash").textContent = (doc.totalCash + doc.totalLoans + Math.abs(doc.gainPayments)).toLocaleString() || "0";
+            document.getElementById("receivedAgo").textContent = (doc.receivedAgo || 0).toLocaleString();
+            document.getElementById("receivedPms").textContent = (doc.receivedPms || 0).toLocaleString();
+            document.getElementById("initialPms").textContent = (doc.initialPms || 0).toLocaleString();
+            document.getElementById("initialAgo").textContent = (doc.initialAgo || 0).toLocaleString();
+            document.getElementById("physicalStockAgo").textContent = (doc.physicalStockAgo || 0).toLocaleString();
+            document.getElementById("physicalStockPms").textContent = (doc.physicalStockPms || 0).toLocaleString();
+            document.getElementById("theoryStockAgo").textContent = (doc.theoryStockAgo || 0).toLocaleString();
+            document.getElementById("theoryStockPms").textContent = (doc.theoryStockPms || 0).toLocaleString();
+            document.getElementById("gainFuelAgo").textContent = (doc.gainFuelAgo || 0).toLocaleString();
+            document.getElementById("gainFuelPms").textContent = (doc.gainFuelPms || 0).toLocaleString();
+            document.getElementById("momo").textContent = (doc.momo || 0).toLocaleString();
+            document.getElementById("momoLoss").textContent = (doc.momoLoss || 0).toLocaleString();
+            document.getElementById("totalFiche").textContent = (doc.totalFiche || 0).toLocaleString();
+            document.getElementById("bon").textContent = (doc.bon || 0).toLocaleString();
+            document.getElementById("spFuelCard").textContent = (doc.spFuelCard || 0).toLocaleString();
+            document.getElementById("bankCard").textContent = (doc.bankCard || 0).toLocaleString();
+            document.getElementById("totalCash").textContent = ((doc.totalCash || 0) + (doc.totalLoans || 0) + Math.abs(doc.gainPayments || 0)).toLocaleString();
             document.getElementById("totalPayments").textContent = (doc.totalPayments) || "0";
-            document.getElementById("pms1").textContent = (doc.pms1).toLocaleString() || "0";
-            document.getElementById("pms2").textContent = (doc.pms2).toLocaleString() || "0";
-            document.getElementById("pms3").textContent = (doc.pms3).toLocaleString() || "0";
-            document.getElementById("pms4").textContent = (doc.pms4).toLocaleString() || "0";
-            document.getElementById("ago1").textContent = (doc.ago1).toLocaleString() || "0";
-            document.getElementById("ago2").textContent = (doc.ago2).toLocaleString() || "0";
-            document.getElementById("ago3").textContent = (doc.ago3).toLocaleString() || "0";
-            document.getElementById("ago4").textContent = (doc.ago4).toLocaleString() || "0";
-            document.getElementById("pmsPrice").textContent = (doc.pmsPrice).toLocaleString() || "0";
-            document.getElementById("agoPrice").textContent = (doc.agoPrice).toLocaleString() || "0";
-            document.getElementById("totalAgo").textContent = (doc.totalAgo).toLocaleString() || "0";
-            document.getElementById("totalPms").textContent = (doc.totalPms).toLocaleString() || "0";
-            document.getElementById("totalVente").textContent = (Number(doc.totalVente)).toLocaleString() || "0";
-            document.getElementById("venteLitresAgo").textContent = ((doc.venteLitresAgo).toFixed(2)).toLocaleString() || "0";
-            document.getElementById("venteLitresPms").textContent = ((doc.venteLitresPms).toFixed(2)).toLocaleString() || "0";
+            document.getElementById("pms1").textContent = (doc.pms1 || 0).toLocaleString();
+            document.getElementById("pms2").textContent = (doc.pms2 || 0).toLocaleString();
+            document.getElementById("pms3").textContent = (doc.pms3 || 0).toLocaleString();
+            document.getElementById("pms4").textContent = (doc.pms4 || 0).toLocaleString();
+            document.getElementById("ago1").textContent = (doc.ago1 || 0).toLocaleString();
+            document.getElementById("ago2").textContent = (doc.ago2 || 0).toLocaleString();
+            document.getElementById("ago3").textContent = (doc.ago3 || 0).toLocaleString();
+            document.getElementById("ago4").textContent = (doc.ago4 || 0).toLocaleString();
+            document.getElementById("pmsPrice").textContent = (doc.pmsPrice || 0).toLocaleString();
+            document.getElementById("agoPrice").textContent = (doc.agoPrice || 0).toLocaleString();
+            document.getElementById("totalAgo").textContent = (doc.totalAgo || 0).toLocaleString();
+            document.getElementById("totalPms").textContent = (doc.totalPms || 0).toLocaleString();
+            document.getElementById("totalVente").textContent = (Number(doc.totalVente) || 0).toLocaleString();
+            document.getElementById("venteLitresAgo").textContent = ((doc.venteLitresAgo || 0).toFixed(2)).toLocaleString();
+            document.getElementById("venteLitresPms").textContent = ((doc.venteLitresPms || 0).toFixed(2)).toLocaleString();
             document.getElementById("done").textContent = doc.done || false;
 
             if (doc.done === true) {            
-                document.getElementById("p1_essence").textContent = ((doc.pms2 - doc.pms1).toFixed(2)).toLocaleString() || "0";
-                document.getElementById("p2_essence").textContent = ((doc.pms4 - doc.pms3).toFixed(2)).toLocaleString() || "0";
-                document.getElementById("p3_gasoil").textContent = ((doc.ago2 - doc.ago1).toFixed(2)).toLocaleString() || "0";
-                document.getElementById("p4_gasoil").textContent = ((doc.ago4 - doc.ago3).toFixed(2)).toLocaleString() || "0";
+                document.getElementById("p1_essence").textContent = (((doc.pms2 || 0) - (doc.pms1 || 0)).toFixed(2)).toLocaleString();
+                document.getElementById("p2_essence").textContent = (((doc.pms4 || 0) - (doc.pms3 || 0)).toFixed(2)).toLocaleString();
+                document.getElementById("p3_gasoil").textContent = (((doc.ago2 || 0) - (doc.ago1 || 0)).toFixed(2)).toLocaleString();
+                document.getElementById("p4_gasoil").textContent = (((doc.ago4 || 0) - (doc.ago3 || 0)).toFixed(2)).toLocaleString();
             }
 
-            document.getElementById("venteLitresPmsStock").textContent = (parseInt(doc.venteLitresPms)).toLocaleString() || "0";
-            document.getElementById("venteLitresAgoStock").textContent = (parseInt(doc.venteLitresAgo)).toLocaleString() || "0";
-            document.getElementById("totalGainFuelPms").textContent = (stockDoc.totalGainFuelPms).toLocaleString();
-            document.getElementById("totalGainFuelAgo").textContent = (stockDoc.totalGainFuelAgo).toLocaleString();           
-            document.getElementById("pmsPrices").textContent = (doc.pmsPrice).toLocaleString() || "0";
-            document.getElementById("agoPrices").textContent = (doc.agoPrice).toLocaleString() || "0";
+            document.getElementById("venteLitresPmsStock").textContent = (parseInt(doc.venteLitresPms) || 0).toLocaleString();
+            document.getElementById("venteLitresAgoStock").textContent = (parseInt(doc.venteLitresAgo) || 0).toLocaleString();
+            document.getElementById("totalGainFuelPms").textContent = (stockDoc.totalGainFuelPms || 0).toLocaleString();
+            document.getElementById("totalGainFuelAgo").textContent = (stockDoc.totalGainFuelAgo || 0).toLocaleString();           
+            document.getElementById("pmsPrices").textContent = (doc.pmsPrice || 0).toLocaleString();
+            document.getElementById("agoPrices").textContent = (doc.agoPrice || 0).toLocaleString();
         } else {
         console.log("No documents found for date:", logDate);
         }

@@ -11,12 +11,12 @@ let totalVenteLitresAgo, totalVenteLitresPms;
 async function stock() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68c3ec870024955539b0");
+        .setProject("68a9b3e90029e6a10ff5");
 
     const account = new Appwrite.Account(client);
     const databases = new Appwrite.Databases(client);
 
-    const databaseId = "68c3f10d002b0dfc0b2d";
+    const databaseId = "695f766c003a8dc2b3be";
     const indexId = "68cd1987002bae34ea4b";
     const situationId = "68cd6b7f00330a840d96";
 
@@ -68,12 +68,12 @@ async function stock() {
 async function storeStock() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68c3ec870024955539b0");
+        .setProject("68a9b3e90029e6a10ff5");
 
     const account = new Appwrite.Account(client);
     const databases = new Appwrite.Databases(client);
 
-    const databaseId = "68c3f10d002b0dfc0b2d";
+    const databaseId = "695f766c003a8dc2b3be";
     const stockAgoId = "68cbf2bb0017a7b210b1";
     const stockPmsId = "68cd197e002096e31ed8";
     const situationId = "68cd6b7f00330a840d96";

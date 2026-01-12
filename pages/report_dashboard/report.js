@@ -80,7 +80,8 @@ function formatValue(key, value) {
   if (key === "logDate" && value) {
     return new Date(value).toISOString().split("T")[0];
   }
-  return value || "";
+
+  return (value || 0).toLocaleString();
 }
 
 function mapTypeToInput(type) {
@@ -193,7 +194,7 @@ function renderTable(attributes, allRows, tableBody, totalsRow) {
         value = loans
           .filter(l => l.company === "Versement")
           .reduce((total, l) => total + l.amount, 0);
-        td.textContent = value || 0;
+        td.textContent = (value || 0).toLocaleString();
       } else {
         td.textContent = formatValue(key, value);
       }

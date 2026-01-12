@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="test.css">
     <title>Reports</title>  
     <div class="fuel-prices">
@@ -60,21 +62,76 @@
   </thead>
   <tbody id="reportBody"></tbody>
 </table>
+</div>
 
 <footer>
     <button class="action-btn" onclick="this.disabled=true; displayLoan().finally(() => this.disabled=false)">Fetch Report</button>
     <button class="action-btn" onclick="this.disabled=true; downloadGain().finally(() => this.disabled=false)">Download Report</button>
     <br><br>
     <button class="action-btn" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Logout</button>
+    <button id="btn1" onclick="downloadPDF()">Download PDF</button>
 </footer>
     <script src="test.js"></script>
+    <script>
+        // Method 1: html2canvas + jsPDF (Best Quality)
+        async function downloadPDF() {
+            const btn = document.getElementById('btn1');
+            btn.disabled = true;
+            btn.textContent = 'Generating PDF...';
+
+            try {
+                // Check if libraries are loaded
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas library not loaded');
+                }
+                if (typeof window.jspdf === 'undefined') {
+                    throw new Error('jsPDF library not loaded');
+                }
+
+                const element = document.getElementById('content');
+                
+                // Convert HTML to canvas
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+                
+                // Convert canvas to image
+                const imgData = canvas.toDataURL('image/png');
+                
+                // Create PDF using the correct jsPDF reference
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                // Calculate dimensions
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                // Add image to PDF
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                
+                // Save PDF
+                pdf.save('webpage-content.pdf');
+                
+                showStatus('✓ PDF downloaded successfully!');
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('✗ Error: ' + error.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Method 1: High Quality (Recommended)';
+            }
+        }
+    </script>
+    <script type="module" src="../utils/utils.js"></script>
     <!-- <script src="loan.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
-    <script type="module" src="/utils/fuelPrices.js"></script>
-    <script src="/utils/logout.js"></script>
-    <script src="/utils/checkUser.js"></script>
-    <script src="/utils/welcomeMessage.js"></script>
-    <script src="/utils/pageAccess.js"> </script> -->
 </html>
 

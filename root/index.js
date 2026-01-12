@@ -5,12 +5,12 @@ let pmsPrice, agoPrice, logDate, shift;
 async function calculateIndex() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68c3ec870024955539b0");
+        .setProject("68a9b3e90029e6a10ff5");
 
     const account = new Appwrite.Account(client);
     const databases = new Appwrite.Databases(client);
 
-    const databaseId = "68c3f10d002b0dfc0b2d";
+    const databaseId = "695f766c003a8dc2b3be";
     const indexId = "68cd1987002bae34ea4b";
 
     pmsPrice = 1989;
@@ -186,12 +186,12 @@ let dataSituation;
 async function situation() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68c3ec870024955539b0");
+        .setProject("68a9b3e90029e6a10ff5");
 
     const account = new Appwrite.Account(client);
     const databases = new Appwrite.Databases(client);
 
-    const databaseId = "68c3f10d002b0dfc0b2d";
+    const databaseId = "695f766c003a8dc2b3be";
     const indexId = "68cd1987002bae34ea4b";
     const paymentsId = "68cd19990006cbb33843";
     const situationId = "68cd6b7f00330a840d96";
@@ -318,7 +318,7 @@ async function situation() {
 
         const response = await databases.listDocuments(databaseId, situationId, [Appwrite.Query.equal("logDate", logDate)]);
 
-        if (shift === "Morning" && response.documents.length === 0 ) {
+        if (shift === "Morning" && response.documents.length <= 1 ) {
             dataSituation = {
                 momo, 
                 momoLoss, 
@@ -351,7 +351,7 @@ async function situation() {
                 dataSituation
             )
 
-        } else if ( (shift === "Afternoon" || shift === "Morning") && response.documents.length !== 0) {
+        } else if ( (shift === "Afternoon" || shift === "Morning" || shift === "Evening") && response.documents.length !== 0) {
             const doc = response.documents[0];
 
             const docId = doc.$id;
@@ -580,12 +580,12 @@ let loans = [];
 async function storeLoan() {
     const client = new Appwrite.Client()
     .setEndpoint("https://cloud.appwrite.io/v1") 
-    .setProject("68c3ec870024955539b0");
+    .setProject("68a9b3e90029e6a10ff5");
     
     const account = new Appwrite.Account(client);
     const databases = new Appwrite.Databases(client);
 
-    const databaseId = "68c3f10d002b0dfc0b2d";
+    const databaseId = "695f766c003a8dc2b3be";
     const loansId = "68fbe6f80019b53fb32f";
     const paymentsId = "68cd19990006cbb33843";
     
@@ -740,12 +740,12 @@ let fiche = [];
 async function storeFiche() {
     const client = new Appwrite.Client()
     .setEndpoint("https://cloud.appwrite.io/v1") 
-    .setProject("68c3ec870024955539b0");
+    .setProject("68a9b3e90029e6a10ff5");
     
     const account = new Appwrite.Account(client);
     const databases = new Appwrite.Databases(client);
 
-    const databaseId = "68c3f10d002b0dfc0b2d";
+    const databaseId = "695f766c003a8dc2b3be";
     const ficheId = "69007206001aed40d6f4";
 
     const user = await account.get();        
