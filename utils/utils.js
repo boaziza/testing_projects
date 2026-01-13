@@ -35,7 +35,16 @@ function welcomeMessage() {
 }
 
 
-async function userAccess() {
+async function userAccess() {    
+
+    const currentPage = window.location.pathname.split("/").pop();
+
+    console.log(currentPage);    
+
+    if ( currentPage === "index.html") {     
+        return;
+    } 
+
     try {
         const client = new Appwrite.Client()
             .setEndpoint("https://cloud.appwrite.io/v1") 
@@ -54,11 +63,12 @@ async function userAccess() {
         console.log(admin,"Hello");
         
         
-        if ( admin.documents.length === 0 ) {
+        if ( admin.documents.length === 0) {
             window.location.replace("/testing_projects/index");    
         } else {        
             console.log("access granted");    
         }
+
     } catch (error) {
         console.log("error for page access",error);
     }
