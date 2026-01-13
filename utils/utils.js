@@ -41,7 +41,7 @@ async function userAccess() {
 
     console.log(currentPage);    
 
-    if ( currentPage === "index.html") {     
+    if ( currentPage === "index") {     
         return;
     } 
 
