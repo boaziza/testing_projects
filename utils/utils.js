@@ -39,8 +39,6 @@ async function userAccess() {
 
     const currentPage = window.location.pathname.split("/").pop();
 
-    console.log(currentPage);    
-
     if ( currentPage === "index") {     
         return;
     } 
@@ -59,9 +57,7 @@ async function userAccess() {
         const user = await account.get();
         const email = user.email;         
 
-        const admin = await databases.listDocuments(databaseId, adminId, [Appwrite.Query.equal("email", email)])    
-        console.log(admin,"Hello");
-        
+        const admin = await databases.listDocuments(databaseId, adminId, [Appwrite.Query.equal("email", email)])
         
         if ( admin.documents.length === 0) {
             window.location.replace("/testing_projects/index");    
@@ -126,7 +122,7 @@ window.logout = async function logout() {
     window.location.href= "/testing_projects/auth/sign-in/sign-in";
     
   } catch (error) {
-    console.log("error for page access",error);
+    console.log("Error",error);
   }
 }
 

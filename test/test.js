@@ -186,9 +186,6 @@
 // //             }
 // //         }
 
-// //         console.log("filteredrows",filteredRows);
-        
-
 // //         const headers = document.getElementById("headers");
 // //         const body = document.getElementById("body");
 
@@ -613,18 +610,12 @@
 //     let successCount = 0;
 //     let errorCount = 0;
 
-//     console.log("here are the rows", rows);
-    
 
 //     for (let i = 0; i < rows.length; i++) {
 //       try {
 
 //         const logDate = rows[i].logDate;
-//         const name = rows[i].employee;        
-
-//         console.log("Dates", logDate);
-//         console.log("Names", name);
-//         console.log("Gain", rows[i].gainPayments);        
+//         const name = rows[i].employee;
 
 //         const response = await fetch('http://localhost:4000/api/update-by-field/gainTesting', {
 //             method: 'PATCH',

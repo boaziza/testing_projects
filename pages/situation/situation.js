@@ -77,7 +77,7 @@ async function fetchSituation() {
             document.getElementById("pmsPrices").textContent = (doc.pmsPrice || 0).toLocaleString();
             document.getElementById("agoPrices").textContent = (doc.agoPrice || 0).toLocaleString();
         } else {
-        console.log("No documents found for date:", logDate);
+            console.log("No documents found for date:", logDate);
         }
 
         alert("Data fetched successfully");
@@ -113,7 +113,7 @@ function download() {
         html2pdf().set(opt).from(element).save();
 
     } catch (error) {
-        console.log("This is the error ", error);
+        console.log("This is the error:", error);
         
     }
 }

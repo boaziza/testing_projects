@@ -29,8 +29,7 @@ async function displayDetails() {
         currentPage = 0;
 
         const responseIndex = await databases.listDocuments(databaseId, indexId, [Appwrite.Query.equal("logDate", logDate)]);
-        console.log("Here are the dates", responseIndex);
-
+      
         // Collect all matching documents
         for (let i = 0; i < responseIndex.documents.length; i++) {
             const doc = responseIndex.documents[i];
@@ -61,7 +60,7 @@ async function displayDetails() {
         displayPage(currentPage);
 
     } catch (error) {
-        console.log("Error is this", error);        
+        console.log("Error", error);        
     }
 }
 
@@ -177,7 +176,7 @@ function download() {
         html2pdf().set(opt).from(element).save();
 
     } catch (error) {
-        console.log("This is the error ", error);
+        console.log("This is the error:", error);
     }
 }
 

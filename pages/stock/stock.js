@@ -89,7 +89,6 @@ async function storeStock() {
     try {
         
         const user = await account.get();
-        console.log("Logged in as:", user.email);
         const email = user.email;
 
         const dataAgo = {
@@ -174,9 +173,7 @@ async function storeStock() {
         }
 
         const res = await databases.listDocuments(databaseId,stockAgoId);
-        console.log(res);
         
-
         await databases.createDocument(
         databaseId,
         stockAgoId,
@@ -234,9 +231,7 @@ async function storeStock() {
                 gainFuelPms: gainFuelPms,
             }
         );
-
-        console.log("Updated document:", updated);
-
+        
         alert("Data saved successfully");
 
         function clearOutputs() {

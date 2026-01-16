@@ -199,9 +199,7 @@ async function situation() {
     try {
         
         const user = await account.get();
-        console.log("Logged in as:", user.email);
-        const email = await user.email;
-        console.log("Email", email);           
+        const email = await user.email;          
         const employee = user.name;
 
         function generateShiftId(employee, logDate) {
@@ -244,9 +242,6 @@ async function situation() {
 
             const docId = doc[0].$id;
             const newGain = gainPayments + doc[0].gainPayments;
-            
-            console.log("Code",docId);
-            
             
             const oldData = {
                employee,
@@ -466,8 +461,6 @@ async function situation() {
             dataPayments
         );
 
-        console.log("monthYear",monthYear);        
-
         alert("Data saved successfully"); 
 
         function clearOutputs() {
@@ -476,7 +469,9 @@ async function situation() {
             outputs.forEach(el => {
                 el.textContent = "0";
             });
-            document.getElementById("momo").value = ""
+            document.getElementById("momo").value = "";
+            loans = [];
+            fiche = [];
         }
 
         clearOutputs();
@@ -672,8 +667,6 @@ async function storeLoan() {
     //         }
     //     );
 
-    //     console.log("Updated document:", updated);
-
     //     alert("Data saved successfully");
 
     // } catch (error) {
@@ -823,8 +816,6 @@ async function storeFiche() {
     //             gainFuelPms: gainFuelPms,
     //         }
     //     );
-
-    //     console.log("Updated document:", updated);
 
     //     alert("Data saved successfully");
 
