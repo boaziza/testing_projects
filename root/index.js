@@ -313,40 +313,88 @@ async function situation() {
 
         const response = await databases.listDocuments(databaseId, situationId, [Appwrite.Query.equal("logDate", logDate)]);
 
-        if (shift === "Morning" && response.documents.length <= 1 ) {
-            dataSituation = {
-                momo, 
-                momoLoss, 
-                totalFiche, 
-                bon,
-                spFuelCard,
-                bankCard,
-                totalCash, 
-                totalLoans,
-                totalPayments, 
-                gainPayments,
-                venteLitresPms, 
-                totalPms, 
-                venteLitresAgo, 
-                totalAgo,
-                totalVente,
-                pms1,
-                pms3,
-                ago1,
-                ago3,
-                pmsPrice,
-                agoPrice,
-                logDate,
-            };
+        if (shift === "Morning") {
+            
+            if ( response.documents.length === 1 ) {
+                
+                dataSituation = {
+                    momo, 
+                    momoLoss, 
+                    totalFiche, 
+                    bon,
+                    spFuelCard,
+                    bankCard,
+                    totalCash, 
+                    totalLoans,
+                    totalPayments, 
+                    gainPayments,
+                    venteLitresPms, 
+                    totalPms, 
+                    venteLitresAgo, 
+                    totalAgo,
+                    totalVente,
+                    pms1,
+                    pms3,
+                    ago1,
+                    ago3,
+                    pmsPrice,
+                    agoPrice,
+                    logDate,
+                };
 
-            await databases.createDocument(
+                await databases.createDocument(
+                    databaseId,
+                    situationId,
+                    "unique()", // Appwrite generates an ID
+                    dataSituation
+                ) 
+            } else {
+                const doc = response.documents[0];
+
+                const docId = doc.$id;
+
+                momo += doc.momo;
+                momoLoss += doc.momoLoss;
+                totalFiche += doc.totalFiche;
+                bon += doc.bon;
+                spFuelCard += doc.spFuelCard;
+                bankCard += doc.bankCard;
+                totalCash += doc.totalCash;
+                totalLoans += doc.totalLoans;
+                totalPayments += doc.totalPayments;
+                gainPayments += doc.gainPayments;
+                venteLitresPms += doc.venteLitresPms;
+                totalPms += doc.totalPms;
+                venteLitresAgo += doc.venteLitresAgo;
+                totalAgo += doc.totalAgo;
+                totalVente += doc.totalVente;
+                
+                dataSituation = {
+                    momo, 
+                    momoLoss,
+                    totalFiche,
+                    bon,
+                    spFuelCard,
+                    bankCard,
+                    totalCash, 
+                    totalLoans,
+                    totalPayments, 
+                    gainPayments,
+                    venteLitresPms, 
+                    totalPms, 
+                    venteLitresAgo, 
+                    totalAgo,
+                    totalVente,
+                }
+
+                const updated = await databases.updateDocument(
                 databaseId,
                 situationId,
-                "unique()", // Appwrite generates an ID
-                dataSituation
-            )
+                docId,
+                dataSituation)
+            }
 
-        } else if ( (shift === "Afternoon" || shift === "Morning" || shift === "Evening") && response.documents.length !== 0) {
+        } else if ( (shift === "Afternoon" || shift === "Evening") && response.documents.length !== 0) {
             const doc = response.documents[0];
 
             const docId = doc.$id;

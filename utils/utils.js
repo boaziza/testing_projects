@@ -8,7 +8,7 @@ function welcomeMessage() {
     // ✅ Check if user is logged in
     account.get()
     .then(user => {
-        console.log("User is logged in:", user);
+        // console.log("User is logged in:", user);
     })
     .catch(err => {
         console.warn("Not logged in, redirecting...");
