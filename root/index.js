@@ -315,7 +315,7 @@ async function situation() {
 
         if (shift === "Morning") {
             
-            if ( response.documents.length === 1 ) {
+            if ( response.documents.length === 0 ) {
                 
                 dataSituation = {
                     momo, 
