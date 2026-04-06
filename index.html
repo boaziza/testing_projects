@@ -1,141 +1,217 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="root/homepage.css">
-    <title>Home Page</title>
-    <p id="welcomeMessage"></p>
-    <div class="fuel-prices">
-        <h2>Live Fuel Prices</h2>
-        <p>ESSENCE: <span id="pmsPrice"></span></p>
-        <p>MAZOUT: <span id="agoPrice"></span></p>
-    </div>
-    <h2 style="display: flex; justify-content: center;">REPORT POMPISTE</h2 >
-    <p><span id="status"></span></p>
-    <nav>
-      <ul>
-        <li><a href="index">Rapport</a>&nbsp;&nbsp;&nbsp;</li>
-        <li><a href="pages/stock/stock">Stock</a>&nbsp;&nbsp;&nbsp;</li>
-        <li><a href="pages/situation/situation">Situation</a>&nbsp;&nbsp;&nbsp;</li>
-
-        <li class="dropdown">
-            <a href="#"> Reports </a>
-            <ul class="dropdown-menu">                
-                <li><a href="pages/employeeCheck/logsDetail">Pompiste's Report</a></li>
-                <li><a href="pages/report_dashboard/report">Report Dashboard</a></li>
-            </ul>
-        </li>
-        <!-- <li><a href="pages/customers/customers">Customers&nbsp;&nbsp;&nbsp;</a></li> -->
-      </ul>
-    </nav><br>
+    <title>Rapport Pompiste</title>
 </head>
 <body>
+
+    <!-- ── HEADER ── -->
+    <header class="site-header">
+        <div class="header-brand">
+            <div class="brand-icon">RP</div>
+            <div>
+                <div class="brand-title">Rapport Pompiste</div>
+                <div class="brand-sub" id="welcomeMessage"></div>
+            </div>
+        </div>
+        <div class="fuel-prices">
+            <p>ESSENCE: <span id="pmsPrice">—</span></p>
+            <p>MAZOUT: <span id="agoPrice">—</span></p>
+        </div>
+    </header>
+
+    <!-- ── NAV ── -->
+    <nav>
+      <ul>
+        <li><a href="index">Rapport</a></li>
+      </ul>
+    </nav>
+
+    <!-- ── SHIFT BAR ── -->
+    <div class="shift-bar">
+        <div class="shift-field">
+            <label for="logDate">Date</label>
+            <input type="date" name="logDate" id="logDate">
+        </div>
+        <div class="shift-field">
+            <label for="shift">Shift</label>
+            <select id="shift">
+                <option value=""></option>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+                <option value="Night">Night</option>
+            </select>
+        </div>
+        <p><span id="status"></span></p>
+    </div>
+
+    <!-- ── MAIN FORMS ── -->
     <div class="forms-container">
-        <div class="form-side">            
+
+        <!-- LEFT: PUMP INDEX -->
+        <div class="form-side">
+            <div class="section-title">Pump Index</div>
             <form action="" id="rapportForm">
-                <label for="logDate">Date:</label>
-                <input type="date" name="logDate" id="logDate"></input><br><br>
-                <label for="shift">Shift:</label>
-                <select id="shift">
-                    <option value=""></option>
-                    <option value="Morning">Morning</option>
-                    <option value="Afternoon">Afternoon</option>
-                    <option value="Evening">Evening</option>
-                    <option value="Night">Night</option>
-                </select><br><br>
-                <h1 style="text-align: center;">Index <br></h1>
-                <label for="index">P1 (PMS) :&nbsp;&nbsp; Start</label>
-                <input type="number" name="pms" id="pms1">
-                <label for="index">&nbsp;&nbsp;&nbsp; End</label>
-                <input type="number" name="pms" id="pms2">
-                <br><br>
 
-                <label for="index">P2 (PMS) :&nbsp;&nbsp; Start</label>
-                <input type="number" name="pms" id="pms3">
-                <label for="index">&nbsp;&nbsp;&nbsp; End</label>
-                <input type="number" name="pms" id="pms4">
-                <br><br>
+                <!-- PMS / Essence -->
+                <div class="fuel-group pms-group">
+                    <div class="fuel-group-label">Essence (PMS) — Pumps P1 &amp; P2</div>
+                    <div class="pump-row">
+                        <span class="pump-id">P1</span>
+                        <label>Start</label>
+                        <input type="number" name="pms" id="pms1">
+                        <label>End</label>
+                        <input type="number" name="pms" id="pms2">
+                    </div>
+                    <div class="pump-row">
+                        <span class="pump-id">P2</span>
+                        <label>Start</label>
+                        <input type="number" name="pms" id="pms3">
+                        <label>End</label>
+                        <input type="number" name="pms" id="pms4">
+                    </div>
+                </div>
 
-                <label for="index">P3 (AGO) :&nbsp;&nbsp; Start</label>
-                <input type="number" name="ago" id="ago1">
-                <label for="index">&nbsp;&nbsp;&nbsp; End</label>
-                <input type="number" name="ago" id="ago2">
-                <br><br>
-
-                <label for="index">P4 (AGO) :&nbsp;&nbsp; Start</label>
-                <input type="number" name="ago" id="ago3">
-                <label for="index">&nbsp;&nbsp;&nbsp; End</label>
-                <input type="number" name="ago" id="ago4">
-                <br><br>
+                <!-- AGO / Mazout -->
+                <div class="fuel-group ago-group">
+                    <div class="fuel-group-label">Mazout (AGO) — Pumps P3 &amp; P4</div>
+                    <div class="pump-row">
+                        <span class="pump-id">P3</span>
+                        <label>Start</label>
+                        <input type="number" name="ago" id="ago1">
+                        <label>End</label>
+                        <input type="number" name="ago" id="ago2">
+                    </div>
+                    <div class="pump-row">
+                        <span class="pump-id">P4</span>
+                        <label>Start</label>
+                        <input type="number" name="ago" id="ago3">
+                        <label>End</label>
+                        <input type="number" name="ago" id="ago4">
+                    </div>
+                </div>
 
             </form>
-            <button class="action-btn"  onclick="this.disabled=true; calculateIndex().finally(() => this.disabled=false)"> Calculate </button>
 
-            <p>Total Pms Vente: <span class="output" id="resultpms"></span></p>
-            <p>Total Ago Vente: <span class="output" id="resultago"></span></p>
-            <p>Total Vente: <span class="output" id="result"></span></p>
+            <div style="padding: 0 16px 12px;">
+                <button class="action-btn" onclick="this.disabled=true; calculateIndex().finally(() => this.disabled=false)">Calculate Index</button>
+            </div>
 
-
+            <div class="result-cards">
+                <div class="result-card pms-card">
+                    <div class="result-label">PMS Sales</div>
+                    <div class="result-value output" id="resultpms">—</div>
+                </div>
+                <div class="result-card ago-card">
+                    <div class="result-label">AGO Sales</div>
+                    <div class="result-value output" id="resultago">—</div>
+                </div>
+                <div class="result-card total-card">
+                    <div class="result-label">Total Vente</div>
+                    <div class="result-value output" id="result">—</div>
+                </div>
+            </div>
         </div>
 
+        <!-- RIGHT: PAYMENTS -->
         <div class="form-side">
-            <h1 style="text-align: center; ">Payments</h1>
+            <div class="section-title">Payments</div>
             <form action="" id="paymentsForm">
-                <label for="momo"> MoMo: &nbsp;</label>
-                <input type="number" name="momo" id="momo" onchange="MomoLoss()"><br><br>
 
-                <label for="momoLoss"> MoMo Loss: &nbsp;</label>
-                <input type="number" name="momoLoss" id="momoLoss">
-                
-                <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="tempMomoLoss" data-original="&nbsp;&nbsp;RWF"></span>&nbsp;&nbsp;RWF</label>
-                
-                <br><br>
-                
-                <label for="spFuelCard"> SP Fuel Card: &nbsp;</label>
-                <input type="text" name="spFuelCard" id="spFuelCard" placeholder="Example: 10000,10000"><br><br>
-                
-                <label for="bon"> Bon: &nbsp;</label>
-                <input type="number" name="bon" id="bon"><br><br>
-                
-                <label for="bankCard"> Bank Card: &nbsp;</label>
-                <input type="text" name="bankCard" id="bankCard" placeholder="Example: 10000,10000"><br><br>
+                <div class="payment-rows">
+                    <div class="pay-input-row">
+                        <label for="momo">MoMo</label>
+                        <input type="number" name="momo" id="momo" onchange="MomoLoss()">
+                    </div>
+                    <div class="pay-input-row">
+                        <label for="momoLoss">MoMo Loss</label>
+                        <input type="number" name="momoLoss" id="momoLoss">
+                        <span id="tempMomoLoss" class="hint-span" data-original="&nbsp;&nbsp;RWF"></span>&nbsp;RWF
+                    </div>
+                    <div class="pay-input-row">
+                        <label for="spFuelCard">SP Fuel Card</label>
+                        <input type="text" name="spFuelCard" id="spFuelCard" placeholder="e.g. 10000,10000">
+                    </div>
+                    <div class="pay-input-row">
+                        <label for="bon">Bon</label>
+                        <input type="number" name="bon" id="bon">
+                    </div>
+                    <div class="pay-input-row">
+                        <label for="bankCard">Bank Card</label>
+                        <input type="text" name="bankCard" id="bankCard" placeholder="e.g. 10000,10000">
+                    </div>
+                </div>
 
-                <label for="bulletage">Bulletage: &nbsp;</label><br>
+                <!-- Bulletage / Cash -->
+                <div class="cash-section">
+                    <div class="cash-section-title">Cash (Bulletage)</div>
+                    <div class="cash-grid">
+                        <div class="cash-denom">
+                            <label>5,000 &times;</label>
+                            <input type="number" name="cash5000" id="5000">
+                        </div>
+                        <div class="cash-denom">
+                            <label>2,000 &times;</label>
+                            <input type="number" name="cash2000" id="2000">
+                        </div>
+                        <div class="cash-denom">
+                            <label>1,000 &times;</label>
+                            <input type="number" name="cash1000" id="1000">
+                        </div>
+                        <div class="cash-denom">
+                            <label>500 &times;</label>
+                            <input type="number" name="cash500" id="500">
+                        </div>
+                    </div>
+                    <div class="cash-total">
+                        <span>Total Cash</span>
+                        <span class="output" id="totalCash">—</span>
+                    </div>
+                </div>
 
-                <label for="5000" style="margin-left: 20px;">5000 x</label>
-                <input type="number" name="cash5000" id="5000"><br><br>
+                <!-- Fiche & Loans -->
+                <div class="fiche-loan-section">
+                    <button class="action-btn btn-secondary" type="button" onclick="this.disabled=true; addFiche().finally(() => this.disabled=false)">+ Add Fiche</button>
+                    <span class="fiche-total">Fiche: <span id="totalFiche" class="output">—</span></span>
+                    <div id="ficheContainer"></div>
 
-                <label for="2000" style="margin-left: 20px;">2000 x</label>
-                <input type="number" name="cash2000" id="2000"><br><br>
-
-                <label for="1000" style="margin-left: 20px;">1000 x</label>
-                <input type="number" name="cash1000" id="1000"><br><br>
-
-                <label for="500" style="margin-left: 20px;">500 x</label>
-                <input type="number" name="cash500" id="500"><br>
-
-                <p>Total Cash : &nbsp;<span class="output" id="totalCash"></span></p>
-
-                <button class="action-btn" onclick="this.disabled=true; addFiche().finally(() => this.disabled=false)">Add Fiche</button>
-                <p>Total Fiche : &nbsp;<span id="totalFiche" class="output"></span></p>
-
-                <div id="ficheContainer"></div>
-
-                <button class="action-btn" onclick="this.disabled=true; addLoan().finally(() => this.disabled=false)">Add Loan</button>
-                <p>Total Loans : &nbsp;<span id="totalLoans" class="output"></span></p>
-
-                <div id="loanContainer"></div>
+                    <button class="action-btn btn-secondary" type="button" style="margin-top:8px;" onclick="this.disabled=true; addLoan().finally(() => this.disabled=false)">+ Add Loan</button>
+                    <span class="loan-total">Loans: <span id="totalLoans" class="output">—</span></span>
+                    <div id="loanContainer"></div>
+                </div>
 
             </form>
-            <button class="action-btn"  onclick="this.disabled=true; payments().finally(() => this.disabled=false)">Calculate payments</button>
 
-            <p>Total Payments: &nbsp;<span class="output" id="totalPayments"></span></p>
-            <p>Gain/Loss: &nbsp;<span class="output" id="gainPayments"></span></p>
+            <div style="padding: 0 16px 12px;">
+                <button class="action-btn" onclick="this.disabled=true; payments().finally(() => this.disabled=false)">Calculate Payments</button>
+            </div>
+
+            <div class="result-cards">
+                <div class="result-card total-card">
+                    <div class="result-label">Total Payments</div>
+                    <div class="result-value output" id="totalPayments">—</div>
+                </div>
+                <div class="result-card gain-card">
+                    <div class="result-label">Gain / Loss</div>
+                    <div class="result-value output" id="gainPayments">—</div>
+                </div>
+            </div>
         </div>
 
     </div>
-    <button class="action-btn" onclick="this.disabled=true; situation().finally(() => this.disabled=false)">Store Report</button><br><br>
 
-    <footer><button class="action-btn" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Log Out</button></footer>
+    <!-- ── STORE REPORT ── -->
+    <div class="store-bar">
+        <button class="action-btn btn-store" onclick="this.disabled=true; situation().finally(() => this.disabled=false)">Store Report</button>
+    </div>
+
+    <footer>
+        <button class="action-btn btn-logout" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Log Out</button>
+    </footer>
 
     <script src="root/index.js"></script>
     <script type="module" src="utils/utils.js"></script>

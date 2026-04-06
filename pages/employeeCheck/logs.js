@@ -110,7 +110,11 @@ function displayPage(pageNumber) {
                 "gainPayments", "totalLoans"
             ];
 
-            fields.forEach(f => setField(f, paymentDoc[f]));      
+            fields.forEach(f => setField(f, paymentDoc[f]));
+            const gainEl = document.getElementById("gainPayments");
+            if (gainEl && paymentDoc.gainPayments !== undefined) {
+                gainEl.className = paymentDoc.gainPayments >= 0 ? 'gain' : 'loss';
+            }
 
             document.getElementById("loans").textContent = loans.map(loan => `${loan.company}: ${(loan.amount).toLocaleString()}`).join(", ");
             document.getElementById("fiche").textContent = fiche.map(item => `${item.company}: ${(item.amount).toLocaleString()}`).join(", ");

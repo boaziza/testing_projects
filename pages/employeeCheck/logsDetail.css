@@ -1,354 +1,358 @@
+/* =============================================
+   RAPPORT POMPISTE — Pompiste Report (Logs)
+   ============================================= */
 :root {
-  --paper: #ffffff;
-  --muted: #666;
-  --accent: #0d1b2a; /* navy */
-  --panel: #ffffff;
-  --border: #ddd;
-  --shadow: rgba(0, 0, 0, 0.1);
-  --pill-bg: #f2f6fb;
+  --navy:       #1b263b;
+  --navy-dark:  #0d1b2a;
+  --navy-light: #415a77;
+  --pms:        #16a34a;
+  --pms-bg:     #f0fdf4;
+  --ago:        #d97706;
+  --ago-bg:     #fffbeb;
+  --gain:       #16a34a;
+  --loss:       #dc2626;
+  --bg:         #f1f5f9;
+  --card:       #ffffff;
+  --border:     #e2e8f0;
+  --text:       #0f172a;
+  --muted:      #64748b;
+  --shadow:     0 2px 8px rgba(0,0,0,0.07);
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f9f9f9;
-  color: #333;
-  margin: 0;
-  padding: 40px;
-  font-size: 13px; /* smaller base font */
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Header */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.page-header .company {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--accent);
-}
-
-.page-header .location {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.center h1 {
-  margin: 0;
-  font-size: 16px;
-  letter-spacing: 0.4px;
-  text-align: center;
-  color: var(--accent);
-}
-
-.journal-no {
-  margin-top: 6px;
-  text-align: center;
-}
-
-.journal-no .pill {
-  display: inline-block;
-  background: var(--pill-bg);
-  border: 1px solid var(--border);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 12px;
-  color: var(--accent);
-}
-
-.meta-row {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-
-/* Navigation */
-.top-nav ul {
-  list-style: none;
-  background-color: #2c3e50;
-  justify-content: center;
-  display: flex;
-  border-radius: 6px;
-  padding: 8px;
-  margin: 0;
-}
-
-.top-nav ul li a {
-  color: white;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 4px 10px;
-}
-
-/* Sheet container */
-.sheet {
-  background: var(--paper);
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0px 3px 8px var(--shadow);
-  max-width: 1100px;
-  margin: 0 auto;
-  font-size: 13px;
-}
-
-/* Indices Table */
-.indices-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 14px;
-}
-
-.indices-table th,
-.indices-table td {
-  border: 1px solid var(--border);
-  padding: 6px 8px;
-  font-size: 12px;
-  text-align: left;
-}
-
-.indices-table thead th {
-  background: #f7f9fb;
-  font-weight: 600;
-}
-
-/* Totals and Payments */
-.totals-and-payments {
-  display: flex;
-  gap: 15px;
-  margin: 12px 0 18px;
-  flex-wrap: wrap;
-}
-
-.totals,
-.payments {
-  background: var(--panel);
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  flex: 1 1 300px;
-  font-size: 13px;
-}
-
-.tot-row,
-.pay-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 13px;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
-  margin-left: 300px;
-}
-
-.tot-row:last-child,
-.pay-row:last-child {
-  border-bottom: none;
-}
-
-/* Stocks Table */
-.stocks-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 12px;
-}
-
-.stocks-table th,
-.stocks-table td {
-  border: 1px solid var(--border);
-  padding: 6px 8px;
-  font-size: 12px;
-}
-
-/* Footer */
-.footer-notes {
-  margin-top: 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.footer-notes .sign {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-/* Buttons */
-button {
-  background-color: #1b263b; /* navy */
-  color: #ffffff;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  margin-top: 10px;
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-button:hover {
-  background-color: #415a77; /* lighter navy */
-  transform: translateY(-2px);
-}
-
-/* Inputs */
-input[type="date"],
-input[type="text"],
-input[type="number"],
-input[type="email"],
-select {
-  padding: 5px 8px;
-  margin: 4px 0 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: inherit;
-  background-color: #fdfdfd;
-  color: #333;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-input[type="date"]:focus,
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="email"]:focus,
-select:focus {
-  border-color: #1b263b;
-  box-shadow: 0 0 4px rgba(27, 38, 59, 0.3);
-  outline: none;
-  background-color: #fff;
-}
-
-select {
-  width: 115px;
-  cursor: pointer;
-}
-
-.action-btn:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-/* Responsive */
-@media (max-width: 860px) {
-  .totals-and-payments {
-    flex-direction: column;
-  }
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 600px) {
-  .indices-table th,
-  .indices-table td,
-  .stocks-table th,
-  .stocks-table td {
-    font-size: 11px;
-    padding: 5px;
-  }
-}
-
+/* ── FUEL PRICES (top badge) ─────────────────── */
 .fuel-prices {
-  position: absolute;      /* allow us to place it freely */
-  top: 16px;               /* distance from top */
-  right: 16px;             /* distance from right */
-  background: #ffffff;
-  padding: 12px 16px;
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: white;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  width: fit-content;      /* only as wide as the content */
-  z-index: 1000;           /* ensure it appears above other elements */
+  padding: 8px 14px;
+  box-shadow: var(--shadow);
+  z-index: 200;
+  display: flex;
+  gap: 16px;
 }
 
-.fuel-prices h2 {
-  font-size: 15px;
-  font-weight: 600;
-  color: #0d1b2a;
-  margin: 0 0 8px 0;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 4px;
-}
+.fuel-prices h2 { display: none; }
 
 .fuel-prices p {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  color: #333;
-  margin: 4px 0;
+  color: var(--muted);
+  margin: 0;
 }
 
 .fuel-prices span {
   font-weight: 700;
-  color: #1b263b; /* navy accent */
+  color: var(--navy);
 }
 
-
-/* Parent */
-.dropdown {
+/* ── HEADER ──────────────────────────────────── */
+header {
+  background: var(--navy);
+  color: white;
+  padding: 12px 20px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
   position: relative;
 }
 
-/* Dropdown hidden by default */
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;     /* appear just below */
-  left: 0;
-  background: white;
-  border: 1px solid #ccc;
+header h1 {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+header div strong {
+  font-size: 12px;
+  color: rgba(255,255,255,0.75);
+}
+
+header input[type="email"],
+header input[type="date"] {
+  padding: 5px 9px;
+  border: 1.5px solid rgba(255,255,255,0.3);
   border-radius: 6px;
-  list-style: none;
-  padding: 0px 0;
-  min-width: 180px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  z-index: 1000;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  margin-left: 4px;
 }
 
-/* Show dropdown on hover */
-.dropdown:hover .dropdown-menu {
-  display: block;
+header input:focus {
+  border-color: white;
+  outline: none;
 }
 
-.dropdown-menu li {
-  padding: 2px 8px;
-}
-
-.dropdown-menu li a {
-  text-decoration: none;
-  color: #333;
-  display: block;
-}
-
-.dropdown-menu li a:hover {
-  background: #f2f2f2;
+/* ── NAV ─────────────────────────────────────── */
+nav {
+  background: var(--navy-dark);
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 nav ul {
-    list-style: none;
-    background-color: #2c3e50;
-    justify-content: center;
-    display: flex;
-    border-radius: 6px;
-    padding: 8px;
+  list-style: none;
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  margin: 0;
 }
 
 nav ul li a {
-    color: white;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 4px 10px;
+  display: block;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 11px 14px;
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
 }
+
+nav ul li a:hover {
+  color: white;
+  border-bottom-color: var(--pms);
+}
+
+.dropdown { position: relative; }
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  list-style: none;
+  padding: 4px 0;
+  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.dropdown:hover .dropdown-menu { display: block; }
+
+.dropdown-menu li a {
+  color: var(--text);
+  padding: 9px 14px;
+  border-bottom: none;
+  font-size: 13px;
+  display: block;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.dropdown-menu li a:hover {
+  background: #f8fafc;
+  color: var(--navy);
+  border-bottom: none;
+}
+
+/* ── MAIN SHEET ──────────────────────────────── */
+.sheet {
+  background: var(--card);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  max-width: 1100px;
+  margin: 18px auto;
+  padding: 18px;
+}
+
+/* ── INDICES TABLE ───────────────────────────── */
+.indices-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+
+.indices-table thead th {
+  background: var(--navy);
+  color: white;
+  padding: 8px 10px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  text-align: left;
+  border: 1px solid var(--navy-light);
+}
+
+.indices-table tbody td {
+  border: 1px solid var(--border);
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.indices-table tbody tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+/* Pump row color hints */
+.indices-table tbody tr:nth-child(1) td:first-child,
+.indices-table tbody tr:nth-child(2) td:first-child {
+  background: var(--pms-bg);
+  color: var(--pms);
+  font-weight: 700;
+}
+
+.indices-table tbody tr:nth-child(3) td:first-child,
+.indices-table tbody tr:nth-child(4) td:first-child {
+  background: var(--ago-bg);
+  color: var(--ago);
+  font-weight: 700;
+}
+
+.indices-table tbody tr:nth-last-child(-n+4) td {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+/* ── PAYMENTS SECTION ────────────────────────── */
+.totals-and-payments {
+  display: flex;
+  gap: 14px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.payments {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  flex: 1 1 300px;
+  border-top: 3px solid var(--navy);
+}
+
+.payments h3 {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--navy);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pay-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px dashed #f1f5f9;
+  font-size: 12px;
+}
+
+.pay-row:last-child { border-bottom: none; }
+
+.pay-row label {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 12px;
+  width: auto;
+  display: inline;
+  margin: 0;
+}
+
+.pay-row span {
+  font-weight: 700;
+  color: var(--navy);
+}
+
+/* ── PAGINATION ──────────────────────────────── */
+#pagination {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+#pageNumber {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* ── BUTTONS ─────────────────────────────────── */
+button, .action-btn {
+  background: var(--navy);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  margin: 8px 6px 0 0;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+button:hover, .action-btn:hover {
+  background: var(--navy-light);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(27,38,59,0.2);
+}
+
+.action-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── GAIN / LOSS ─────────────────────────────── */
+.gain { color: var(--gain) !important; font-weight: 700; }
+.loss { color: var(--loss) !important; font-weight: 700; }
+
+/* ── RESPONSIVE ──────────────────────────────── */
+@media (max-width: 860px) {
+  .sheet { margin: 12px; padding: 12px; }
+}
+
+@media (max-width: 600px) {
+  .indices-table th, .indices-table td {
+    font-size: 11px;
+    padding: 5px 6px;
+  }
+  header { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── PRINT ───────────────────────────────────── */
+@media print {
+  nav, .action-btn, button, .fuel-prices, #pagination { display: none !important; }
+  body { background: white; }
+  .sheet { box-shadow: none; border: none; margin: 0; padding: 8px; }
+}
+
+body p { font-size: 13px; font-weight: normal; }

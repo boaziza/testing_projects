@@ -174,8 +174,10 @@ async function payments() {
         
         document.getElementById("totalLoans").textContent = `${totalLoans.toLocaleString()} RWF`;
         document.getElementById("totalFiche").textContent = `${totalFiche.toLocaleString()} RWF`;
-        document.getElementById("totalPayments").textContent = `${totalPayments.toLocaleString()} RWF`;  
-        document.getElementById("gainPayments").textContent = `${gainPayments.toLocaleString()} RWF`;
+        document.getElementById("totalPayments").textContent = `${totalPayments.toLocaleString()} RWF`;
+        const gainEl = document.getElementById("gainPayments");
+        gainEl.textContent = `${gainPayments.toLocaleString()} RWF`;
+        gainEl.className = `output result-value ${gainPayments >= 0 ? 'gain' : 'loss'}`;
         document.getElementById("totalCash").textContent = `${totalCash.toLocaleString()} RWF`;
     } catch (error) {
         console.log(error)  
@@ -543,29 +545,24 @@ async function situation() {
 async function addLoan() {
 
     try {
-    
-    
+
+
         const container = document.getElementById("loanContainer");
         container.innerHTML = "";
 
-        const res = await fetch("https://testing-projects-4ttw.onrender.com/api/attributes/loans");
-        const data = await res.json();
-        const attributes = data.attributes;
+        const fields = [
+            { key: "plate",   type: "text"   },
+            { key: "company", type: "text"   },
+            { key: "amount",  type: "number" },
+        ];
 
-        for (let i = 0; i < attributes.length; i++) {
-
-        const div = document.createElement("div");
-        
-        if (attributes[i].key === "employee" || attributes[i].key === "logDate" || attributes[i].key === "monthYear" ) {
-            continue;
-        }
-
-        div.innerHTML = `
-            <label for="${attributes[i].key}"> ${(attributes[i].key).toUpperCase()}: &nbsp;</label>
-            <input class="loan" type="${mapTypeToInput(attributes[i].type)}" id="${attributes[i].key}" placeholder="Enter the ${attributes[i].key}">
-        `;
-
-        container.appendChild(div);    
+        for (const field of fields) {
+            const div = document.createElement("div");
+            div.innerHTML = `
+                <label for="${field.key}"> ${field.key.toUpperCase()}: &nbsp;</label>
+                <input class="loan" type="${field.type}" id="${field.key}" placeholder="Enter the ${field.key}">
+            `;
+            container.appendChild(div);
         }
 
         const submit = document.createElement("button");
@@ -724,29 +721,24 @@ async function storeLoan() {
 async function addFiche() {
 
     try {
-    
-    
+
+
         const container = document.getElementById("ficheContainer");
         container.innerHTML = "";
 
-        const res = await fetch("https://testing-projects-4ttw.onrender.com/api/attributes/fiche");
-        const data = await res.json();
-        const attributes = data.attributes;
+        const fields = [
+            { key: "plate",   type: "text"   },
+            { key: "company", type: "text"   },
+            { key: "amount",  type: "number" },
+        ];
 
-        for (let i = 0; i < attributes.length; i++) {
-
-        const div = document.createElement("div");
-        
-        if (attributes[i].key === "employee" || attributes[i].key === "logDate" ) {
-            continue;
-        }
-
-        div.innerHTML = `
-            <label for="${attributes[i].key}"> ${(attributes[i].key).toUpperCase()}: &nbsp;</label>
-            <input class="loan" type="${mapTypeToInput(attributes[i].type)}" id="${attributes[i].key}" placeholder="Enter the ${attributes[i].key}">
-        `;
-
-        container.appendChild(div);    
+        for (const field of fields) {
+            const div = document.createElement("div");
+            div.innerHTML = `
+                <label for="${field.key}"> ${field.key.toUpperCase()}: &nbsp;</label>
+                <input class="loan" type="${field.type}" id="${field.key}" placeholder="Enter the ${field.key}">
+            `;
+            container.appendChild(div);
         }
 
         const submit = document.createElement("button");

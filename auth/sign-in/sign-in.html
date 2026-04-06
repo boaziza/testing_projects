@@ -9,6 +9,11 @@
 <body>
   <div class="split-page">
     <div class="form-half">
+      <div class="auth-brand">
+        <div class="auth-brand-icon">RP</div>
+        <span class="auth-brand-name">Rapport Pompiste</span>
+        <span class="auth-brand-sub">Gas Station Management System</span>
+      </div>
       <div class="login-container">
         <h1>Welcome Back</h1>
         <p>Please sign in to your account</p>
@@ -74,10 +79,17 @@
           data
         );
 
-        alert("Data saved successfully!");
+        // Step 3: Check role and redirect
+        const adminCollectionId = "68d95af4003245ef87a7";
+        const adminCheck = await databases.listDocuments(databaseId, adminCollectionId, [
+          Appwrite.Query.equal("email", email)
+        ]);
 
-        // Step 3: Redirect
-        window.location.replace("../../index");
+        if (adminCheck.documents.length > 0) {
+          window.location.replace("../../pages/report_dashboard/report");
+        } else {
+          window.location.replace("../../index");
+        }
 
       } catch (err) {
         console.error("Error:", err.message);
