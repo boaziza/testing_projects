@@ -8,37 +8,46 @@
   
 </head>
 <body>
-  <p id="welcomeMessage"></p>
-  <div class="fuel-prices">
-    <h2>Live Fuel Prices</h2>
-    <p>ESSENCE: <span id="pmsPrice"></span></p>
-    <p>MAZOUT: <span id="agoPrice"></span></p>
-  </div>
-  <header>
-    <div style="justify-content: center; display: flex;">
-      <h1>SITUATION</h1>
-    </div>
 
-    <div>
-      <div><strong>Date:&nbsp;&nbsp;<input type="date" name="logDate" id="logDate"></strong></div>
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="header-brand">
+      <div class="brand-icon">RP</div>
+      <div>
+        <div class="brand-title">Situation</div>
+        <div class="brand-sub" id="welcomeMessage"></div>
+      </div>
+    </div>
+    <div class="fuel-prices">
+      <p>ESSENCE: <span id="pmsPrice">—</span></p>
+      <p>MAZOUT: <span id="agoPrice">—</span></p>
     </div>
   </header>
 
+  <!-- ── NAV ── -->
   <nav>
     <ul>
-      <li><a href="../../index">Rapport&nbsp;&nbsp;&nbsp;</a></li>
-      <li><a href="../stock/stock">Stock&nbsp;&nbsp;&nbsp;</a></li>
-      <li><a href="situation">Situation&nbsp;&nbsp;&nbsp;</a></li>
-        <li class="dropdown">
-            <a href="#"> Reports </a>
-            <ul class="dropdown-menu">                
-                <li><a href="../employeeCheck/logsDetail">Pompiste's Report</a></li>
-                <li><a href="../report_dashboard/report">Report Dashboard</a></li>
-            </ul>
-        </li>
-        <li><a href="../settings/settings">Settings</a></li>
+      <li><a href="../../index">Rapport</a></li>
+      <li><a href="../stock/stock">Stock</a></li>
+      <li><a href="situation">Situation</a></li>
+      <li class="dropdown">
+        <a href="#">Reports</a>
+        <ul class="dropdown-menu">
+          <li><a href="../employeeCheck/logsDetail">Pompiste's Report</a></li>
+          <li><a href="../report_dashboard/report">Report Dashboard</a></li>
+        </ul>
+      </li>
+      <li><a href="../settings/settings">Settings</a></li>
     </ul>
-  </nav><br>
+  </nav>
+
+  <!-- ── DATE BAR ── -->
+  <div class="date-bar">
+    <label for="logDate">Date</label>
+    <input type="date" name="logDate" id="logDate">
+    <button class="action-btn" onclick="this.disabled=true; fetchSituation().finally(() => this.disabled=false)">Fetch Situation</button>
+    <button class="action-btn btn-secondary" onclick="this.disabled=true; download().finally(() => this.disabled=false)">Download PDF</button>
+  </div>
 
   <main class="sheet">
 
@@ -215,9 +224,10 @@
 
   </main>
   <div class="meta-row">Done: <span id="done"></span></div>
-  <button class="action-btn" onclick="this.disabled=true; fetchSituation().finally(() => this.disabled=false)"> Fetch Situation</button>
-  <button class="action-btn" onclick="this.disabled=true; download().finally(() => this.disabled=false)"> Download Situation</button><br><br>
-  <button class="action-btn" onclick="this.disabled=true; logout().finally(() => this.disabled=false)"> Log Out</button>
+
+  <footer>
+    <button class="action-btn btn-logout" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Log Out</button>
+  </footer>
   <script src="situation.js"> </script>
   <script type="module" src="../../utils/utils.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>

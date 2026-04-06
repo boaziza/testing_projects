@@ -8,38 +8,48 @@
   
 </head>
 <body>
-  <div class="fuel-prices">
-    <h2>Live Fuel Prices</h2>
-    <p>ESSENCE: <span id="pmsPrice"></span></p>
-    <p>MAZOUT: <span id="agoPrice"></span></p>
-  </div>
 
-  <header>
-    <div style="justify-content: center; display: flex;">
-      <h1>Pompiste Report</h1>
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="header-brand">
+      <div class="brand-icon">RP</div>
+      <div>
+        <div class="brand-title">Pompiste Report</div>
+        <div class="brand-sub" id="welcomeMessage"></div>
+      </div>
     </div>
-
-    <div>
-      <div><strong>Email:&nbsp;&nbsp;<input type="email" name="email" id="email"></strong></div>
-      <div><strong>Date:&nbsp;&nbsp;<input type="date" name="logDate" id="logDate"></strong></div>
+    <div class="fuel-prices">
+      <p>ESSENCE: <span id="pmsPrice">—</span></p>
+      <p>MAZOUT: <span id="agoPrice">—</span></p>
     </div>
   </header>
 
+  <!-- ── NAV ── -->
   <nav>
     <ul>
-      <li><a href="../../index">Rapport&nbsp;&nbsp;&nbsp;</a></li>
-      <li><a href="../stock/stock">Stock&nbsp;&nbsp;&nbsp;</a></li>
-      <li><a href="../situation/situation">Situation&nbsp;&nbsp;&nbsp;</a></li>
-        <li class="dropdown">
-            <a href="#"> Reports </a>
-            <ul class="dropdown-menu">                
-                <li><a href="logsDetail">Pompiste's Report</a></li>
-                <li><a href="../report_dashboard/report">Report Dashboard</a></li>
-            </ul>
-        </li>
-        <li><a href="../settings/settings">Settings</a></li>
+      <li><a href="../../index">Rapport</a></li>
+      <li><a href="../stock/stock">Stock</a></li>
+      <li><a href="../situation/situation">Situation</a></li>
+      <li class="dropdown">
+        <a href="#">Reports</a>
+        <ul class="dropdown-menu">
+          <li><a href="logsDetail">Pompiste's Report</a></li>
+          <li><a href="../report_dashboard/report">Report Dashboard</a></li>
+        </ul>
+      </li>
+      <li><a href="../settings/settings">Settings</a></li>
     </ul>
-  </nav><br>
+  </nav>
+
+  <!-- ── FILTER BAR ── -->
+  <div class="date-bar">
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" placeholder="employee@email.com">
+    <label for="logDate">Date</label>
+    <input type="date" name="logDate" id="logDate">
+    <button class="action-btn" onclick="this.disabled=true; displayDetails().finally(() => this.disabled=false)">Fetch Report</button>
+    <button class="action-btn btn-secondary" onclick="this.disabled=true; download().finally(() => this.disabled=false)">Download PDF</button>
+  </div>
 
   <main class="sheet">
 
@@ -164,13 +174,12 @@
     </div>
 
   </main>
-  <script type="module" src="logs.js"></script>
-  <button class="action-btn" onclick="this.disabled=true; displayDetails().finally(() => this.disabled=false)">Fetch Report</button>
-  <button class="action-btn" onclick="this.disabled=true; download().finally(() => this.disabled=false)">Download Report</button><br><br>
-  <button class="action-btn" onclick="this.disabled=true; logout().finally(() => this.disabled=false)"> Log Out</button>
+  <footer>
+    <button class="action-btn btn-logout" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Log Out</button>
+  </footer>
 
+  <script type="module" src="logs.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
-  <!-- html2pdf.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script type="module" src="../../utils/utils.js"></script>
 </body>
