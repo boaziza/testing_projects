@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="header-brand">
+      <div class="brand-icon">RP</div>
+      <div>
+        <div class="brand-title">Settings</div>
+        <div class="brand-sub" id="welcomeMessage"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <ul>
+      <li><a href="../../index">Rapport</a></li>
+      <li><a href="../stock/stock">Stock</a></li>
+      <li><a href="../situation/situation">Situation</a></li>
+      <li class="dropdown">
+        <a href="#">Reports</a>
+        <ul class="dropdown-menu">
+          <li><a href="../employeeCheck/logsDetail">Pompiste's Report</a></li>
+          <li><a href="../report_dashboard/report">Report Dashboard</a></li>
+        </ul>
+      </li>
+      <li><a href="settings" class="active">Settings</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── TABS ── -->
+  <div class="settings-wrapper">
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('fuel')">Fuel Prices</button>
+      <button class="tab-btn" onclick="switchTab('staff')">Admin Access</button>
+    </div>
+
+    <!-- TAB 1: FUEL PRICES -->
+    <div id="tab-fuel" class="tab-content">
+      <div class="settings-card">
+        <div class="settings-card-title">Fuel Prices (RWF / Litre)</div>
+        <div class="settings-field">
+          <label for="pmsPriceInput">Essence (PMS)</label>
+          <input type="number" id="pmsPriceInput" placeholder="e.g. 1989">
+        </div>
+        <div class="settings-field">
+          <label for="agoPriceInput">Mazout (AGO)</label>
+          <input type="number" id="agoPriceInput" placeholder="e.g. 1900">
+        </div>
+        <div class="settings-field">
+          <label for="stationName">Station Name</label>
+          <input type="text" id="stationName" placeholder="e.g. Station Total Kigali">
+        </div>
+        <div class="settings-actions">
+          <button class="action-btn btn-store" onclick="this.disabled=true; saveFuelPrices().finally(() => this.disabled=false)">Save Prices</button>
+        </div>
+        <div id="fuelStatus" class="status-msg"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: ADMIN ACCESS -->
+    <div id="tab-staff" class="tab-content" style="display:none;">
+      <div class="settings-card">
+        <div class="settings-card-title">Admin Access</div>
+        <p class="settings-hint">Users listed here have access to all admin pages. Pompistes are not listed — they only access the Rapport page.</p>
+
+        <div id="adminList" class="admin-list">
+          <div class="loading">Loading...</div>
+        </div>
+
+        <div class="add-admin-row">
+          <input type="email" id="newAdminEmail" placeholder="Enter email address">
+          <select id="newAdminRole">
+            <option value="admin">Admin</option>
+            <option value="manager">Manager</option>
+          </select>
+          <button class="action-btn" onclick="this.disabled=true; addAdmin().finally(() => this.disabled=false)">Add</button>
+        </div>
+        <div id="staffStatus" class="status-msg"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <button class="action-btn btn-logout" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Log Out</button>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <script src="settings.js"></script>
+  <script type="module" src="../../utils/utils.js"></script>
+</body>
+</html>

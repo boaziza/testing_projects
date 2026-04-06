@@ -13,8 +13,20 @@ async function calculateIndex() {
     const databaseId = "695f766c003a8dc2b3be";
     const indexId = "68cd1987002bae34ea4b";
 
-    pmsPrice = 1989;
-    agoPrice = 1900;
+    const settingsId = "69d3ed400021197ed76e"; 
+    try {
+        const settingsRes = await databases.listDocuments(databaseId, settingsId);
+        if (settingsRes.documents.length > 0) {
+            pmsPrice = settingsRes.documents[0].pmsPrice ?? 1989;
+            agoPrice = settingsRes.documents[0].agoPrice ?? 1900;
+        } else {
+            pmsPrice = 1989;
+            agoPrice = 1900;
+        }
+    } catch {
+        pmsPrice = 1989;
+        agoPrice = 1900;
+    }
 
     pms1 =Number(document.getElementById("pms1").value);
     pms2 =Number(document.getElementById("pms2").value);

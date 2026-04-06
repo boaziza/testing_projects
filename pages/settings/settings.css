@@ -1,0 +1,420 @@
+/* =============================================
+   RAPPORT POMPISTE — Settings Page
+   ============================================= */
+:root {
+  --navy:       #1b263b;
+  --navy-dark:  #0d1b2a;
+  --navy-light: #415a77;
+  --pms:        #16a34a;
+  --gain:       #16a34a;
+  --loss:       #dc2626;
+  --bg:         #f1f5f9;
+  --card:       #ffffff;
+  --border:     #e2e8f0;
+  --text:       #0f172a;
+  --muted:      #64748b;
+  --shadow:     0 2px 8px rgba(0,0,0,0.07);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: var(--navy);
+  color: white;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand-icon {
+  width: 38px;
+  height: 38px;
+  background: var(--navy-light);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 15px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.brand-sub {
+  font-size: 11px;
+  opacity: 0.65;
+  margin-top: 2px;
+}
+
+/* ── NAV ── */
+nav {
+  background: var(--navy-dark);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li a {
+  display: block;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 11px 16px;
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+  color: white;
+  border-bottom-color: var(--pms);
+}
+
+.dropdown { position: relative; }
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  list-style: none;
+  padding: 4px 0;
+  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.dropdown:hover .dropdown-menu { display: block; }
+
+.dropdown-menu li a {
+  color: var(--text);
+  padding: 9px 14px;
+  font-size: 13px;
+  border-bottom: none;
+  font-weight: 500;
+}
+
+.dropdown-menu li a:hover {
+  background: #f8fafc;
+  color: var(--navy);
+  border-bottom: none;
+}
+
+/* ── WRAPPER ── */
+.settings-wrapper {
+  max-width: 680px;
+  margin: 24px auto;
+  padding: 0 20px;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  margin-bottom: -2px;
+  border-radius: 0;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--navy);
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+.tab-btn.active {
+  color: var(--navy);
+  border-bottom-color: var(--navy);
+}
+
+/* ── SETTINGS CARD ── */
+.settings-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+}
+
+.settings-card-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--navy);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* ── SETTINGS FIELDS ── */
+.settings-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.settings-field:last-of-type {
+  border-bottom: none;
+}
+
+.settings-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+  width: 160px;
+  min-width: 160px;
+}
+
+.settings-field input {
+  padding: 6px 10px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 5px;
+  background: white;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text);
+  width: 200px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.settings-field input:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(27,38,59,0.1);
+  outline: none;
+}
+
+.settings-actions {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── STATUS MESSAGE ── */
+.status-msg {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  min-height: 18px;
+}
+
+.status-msg.success { color: var(--gain); }
+.status-msg.error   { color: var(--loss); }
+
+/* ── ADMIN LIST ── */
+.admin-list {
+  margin-bottom: 16px;
+}
+
+.admin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid #f1f5f9;
+  gap: 10px;
+}
+
+.admin-row:last-child { border-bottom: none; }
+
+.admin-email {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+.admin-role {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #eff6ff;
+  color: var(--navy);
+}
+
+.loading {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 10px 0;
+}
+
+/* ── ADD ADMIN ROW ── */
+.add-admin-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.add-admin-row input[type="email"] {
+  flex: 1;
+  min-width: 180px;
+  padding: 6px 10px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 5px;
+  background: white;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.add-admin-row input[type="email"]:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(27,38,59,0.1);
+  outline: none;
+}
+
+.add-admin-row select {
+  padding: 6px 10px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 5px;
+  background: white;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* ── BUTTONS ── */
+button, .action-btn {
+  background: var(--navy);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+button:hover, .action-btn:hover {
+  background: var(--navy-light);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(27,38,59,0.2);
+}
+
+.action-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-store {
+  background: var(--navy);
+  padding: 10px 28px;
+}
+
+.btn-remove {
+  background: transparent;
+  color: var(--loss);
+  border: 1.5px solid var(--loss);
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+.btn-remove:hover {
+  background: var(--loss);
+  color: white;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 12px 24px;
+  background: var(--card);
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+}
+
+.btn-logout {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  padding: 6px 14px;
+  font-weight: 600;
+}
+
+.btn-logout:hover {
+  background: #fee2e2;
+  color: var(--loss);
+  border-color: #fca5a5;
+  box-shadow: none;
+  transform: none;
+}
