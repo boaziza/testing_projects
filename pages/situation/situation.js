@@ -1,119 +1,131 @@
+function fmt(value) {
+    return (Number(value) || 0).toLocaleString();
+}
+
 async function fetchSituation() {
-  const client = new Appwrite.Client()
-        .setEndpoint("https://cloud.appwrite.io/v1") 
+    const logDate = document.getElementById("logDate").value;
+    if (!logDate) { alert("Select a date to fetch the situation."); return; }
+
+    const client = new Appwrite.Client()
+        .setEndpoint("https://cloud.appwrite.io/v1")
         .setProject("68a9b3e90029e6a10ff5");
 
-    const account = new Appwrite.Account(client);
     const databases = new Appwrite.Databases(client);
 
     const databaseId = "695f766c003a8dc2b3be";
     const situationId = "68cd6b7f00330a840d96";
-    const stockId = "6908ab260012e0412ca8"
+    const stockId = "6908ab260012e0412ca8";
 
     try {
-
-        const logDate = document.getElementById("logDate").value;
-
         const selectedDate = new Date(logDate);
-        
-        const mm = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
         const yyyy = selectedDate.getFullYear();
-
         const monthYear = `${yyyy}-${mm}`;
 
         const response = await databases.listDocuments(databaseId, situationId, [Appwrite.Query.equal("logDate", logDate)]);
         const responseStock = await databases.listDocuments(databaseId, stockId, [Appwrite.Query.equal("monthYear", monthYear)]);
 
-        if (response.documents.length > 0) {
-            const doc = response.documents[0]; 
-            const stockDoc = responseStock.documents[0];
-
-            document.getElementById("receivedAgo").textContent = (doc.receivedAgo || 0).toLocaleString();
-            document.getElementById("receivedPms").textContent = (doc.receivedPms || 0).toLocaleString();
-            document.getElementById("initialPms").textContent = (doc.initialPms || 0).toLocaleString();
-            document.getElementById("initialAgo").textContent = (doc.initialAgo || 0).toLocaleString();
-            document.getElementById("physicalStockAgo").textContent = (doc.physicalStockAgo || 0).toLocaleString();
-            document.getElementById("physicalStockPms").textContent = (doc.physicalStockPms || 0).toLocaleString();
-            document.getElementById("theoryStockAgo").textContent = (doc.theoryStockAgo || 0).toLocaleString();
-            document.getElementById("theoryStockPms").textContent = (doc.theoryStockPms || 0).toLocaleString();
-            document.getElementById("gainFuelAgo").textContent = (doc.gainFuelAgo || 0).toLocaleString();
-            document.getElementById("gainFuelPms").textContent = (doc.gainFuelPms || 0).toLocaleString();
-            document.getElementById("momo").textContent = (doc.momo || 0).toLocaleString();
-            document.getElementById("momoLoss").textContent = (doc.momoLoss || 0).toLocaleString();
-            document.getElementById("totalFiche").textContent = (doc.totalFiche || 0).toLocaleString();
-            document.getElementById("bon").textContent = (doc.bon || 0).toLocaleString();
-            document.getElementById("spFuelCard").textContent = (doc.spFuelCard || 0).toLocaleString();
-            document.getElementById("bankCard").textContent = (doc.bankCard || 0).toLocaleString();
-            document.getElementById("totalCash").textContent = ((doc.totalCash || 0) + (doc.totalLoans || 0) + Math.abs(doc.gainPayments || 0)).toLocaleString();
-            document.getElementById("totalPayments").textContent = (doc.totalPayments) || "0";
-            document.getElementById("pms1").textContent = (doc.pms1 || 0).toLocaleString();
-            document.getElementById("pms2").textContent = (doc.pms2 || 0).toLocaleString();
-            document.getElementById("pms3").textContent = (doc.pms3 || 0).toLocaleString();
-            document.getElementById("pms4").textContent = (doc.pms4 || 0).toLocaleString();
-            document.getElementById("ago1").textContent = (doc.ago1 || 0).toLocaleString();
-            document.getElementById("ago2").textContent = (doc.ago2 || 0).toLocaleString();
-            document.getElementById("ago3").textContent = (doc.ago3 || 0).toLocaleString();
-            document.getElementById("ago4").textContent = (doc.ago4 || 0).toLocaleString();
-            document.getElementById("pmsPrice").textContent = (doc.pmsPrice || 0).toLocaleString();
-            document.getElementById("agoPrice").textContent = (doc.agoPrice || 0).toLocaleString();
-            document.getElementById("totalAgo").textContent = (doc.totalAgo || 0).toLocaleString();
-            document.getElementById("totalPms").textContent = (doc.totalPms || 0).toLocaleString();
-            document.getElementById("totalVente").textContent = (Number(doc.totalVente) || 0).toLocaleString();
-            document.getElementById("venteLitresAgo").textContent = ((doc.venteLitresAgo || 0).toFixed(2)).toLocaleString();
-            document.getElementById("venteLitresPms").textContent = ((doc.venteLitresPms || 0).toFixed(2)).toLocaleString();
-            document.getElementById("done").textContent = doc.done || false;
-
-            if (doc.done === true) {            
-                document.getElementById("p1_essence").textContent = (((doc.pms2 || 0) - (doc.pms1 || 0)).toFixed(2)).toLocaleString();
-                document.getElementById("p2_essence").textContent = (((doc.pms4 || 0) - (doc.pms3 || 0)).toFixed(2)).toLocaleString();
-                document.getElementById("p3_gasoil").textContent = (((doc.ago2 || 0) - (doc.ago1 || 0)).toFixed(2)).toLocaleString();
-                document.getElementById("p4_gasoil").textContent = (((doc.ago4 || 0) - (doc.ago3 || 0)).toFixed(2)).toLocaleString();
-            }
-
-            document.getElementById("venteLitresPmsStock").textContent = (parseInt(doc.venteLitresPms) || 0).toLocaleString();
-            document.getElementById("venteLitresAgoStock").textContent = (parseInt(doc.venteLitresAgo) || 0).toLocaleString();
-            document.getElementById("totalGainFuelPms").textContent = (stockDoc.totalGainFuelPms || 0).toLocaleString();
-            document.getElementById("totalGainFuelAgo").textContent = (stockDoc.totalGainFuelAgo || 0).toLocaleString();           
-            document.getElementById("pmsPrices").textContent = (doc.pmsPrice || 0).toLocaleString();
-            document.getElementById("agoPrices").textContent = (doc.agoPrice || 0).toLocaleString();
-        } else {
-            console.log("No documents found for date:", logDate);
+        if (response.documents.length === 0) {
+            alert("No situation found for " + logDate);
+            return;
         }
 
-        alert("Data fetched successfully");
+        const doc = response.documents[0];
+        const stockDoc = responseStock.documents[0] || null;
+
+        // Stocks de cuves
+        document.getElementById("receivedAgo").textContent = fmt(doc.receivedAgo);
+        document.getElementById("receivedPms").textContent = fmt(doc.receivedPms);
+        document.getElementById("initialPms").textContent = fmt(doc.initialPms);
+        document.getElementById("initialAgo").textContent = fmt(doc.initialAgo);
+        document.getElementById("physicalStockAgo").textContent = fmt(doc.physicalStockAgo);
+        document.getElementById("physicalStockPms").textContent = fmt(doc.physicalStockPms);
+        document.getElementById("theoryStockAgo").textContent = fmt(doc.theoryStockAgo);
+        document.getElementById("theoryStockPms").textContent = fmt(doc.theoryStockPms);
+        document.getElementById("gainFuelAgo").textContent = fmt(doc.gainFuelAgo);
+        document.getElementById("gainFuelPms").textContent = fmt(doc.gainFuelPms);
+
+        // Payments
+        document.getElementById("momo").textContent = fmt(doc.momo);
+        document.getElementById("momoLoss").textContent = fmt(doc.momoLoss);
+        document.getElementById("totalFiche").textContent = fmt(doc.totalFiche);
+        document.getElementById("bon").textContent = fmt(doc.bon);
+        document.getElementById("spFuelCard").textContent = fmt(doc.spFuelCard);
+        document.getElementById("bankCard").textContent = fmt(doc.bankCard);
+        document.getElementById("totalCash").textContent = ((Number(doc.totalCash) || 0) + (Number(doc.totalLoans) || 0) + Math.abs(Number(doc.gainPayments) || 0)).toLocaleString();
+        document.getElementById("totalPayments").textContent = fmt(doc.totalPayments);
+
+        // Pump indices
+        document.getElementById("pms1").textContent = fmt(doc.pms1);
+        document.getElementById("pms2").textContent = fmt(doc.pms2);
+        document.getElementById("pms3").textContent = fmt(doc.pms3);
+        document.getElementById("pms4").textContent = fmt(doc.pms4);
+        document.getElementById("ago1").textContent = fmt(doc.ago1);
+        document.getElementById("ago2").textContent = fmt(doc.ago2);
+        document.getElementById("ago3").textContent = fmt(doc.ago3);
+        document.getElementById("ago4").textContent = fmt(doc.ago4);
+
+        // Sales totals
+        document.getElementById("totalAgo").textContent = fmt(doc.totalAgo);
+        document.getElementById("totalPms").textContent = fmt(doc.totalPms);
+        document.getElementById("totalVente").textContent = fmt(doc.totalVente);
+
+        // Indices: Total litres A and Sold C (B = 0 → C = A)
+        const venteLitresPms = Number(doc.venteLitresPms) || 0;
+        const venteLitresAgo = Number(doc.venteLitresAgo) || 0;
+        document.getElementById("litresAPms").textContent = venteLitresPms.toLocaleString();
+        document.getElementById("litresAAgo").textContent = venteLitresAgo.toLocaleString();
+        document.getElementById("litresCPms").textContent = venteLitresPms.toLocaleString();
+        document.getElementById("litresCAgo").textContent = venteLitresAgo.toLocaleString();
+
+        // Per-pump sales (only if the day was completed)
+        if (doc.done === true) {
+            document.getElementById("p1_essence").textContent = (((doc.pms2 || 0) - (doc.pms1 || 0))).toLocaleString();
+            document.getElementById("p2_essence").textContent = (((doc.pms4 || 0) - (doc.pms3 || 0))).toLocaleString();
+            document.getElementById("p3_gasoil").textContent = (((doc.ago2 || 0) - (doc.ago1 || 0))).toLocaleString();
+            document.getElementById("p4_gasoil").textContent = (((doc.ago4 || 0) - (doc.ago3 || 0))).toLocaleString();
+        }
+
+        document.getElementById("done").textContent = doc.done ? "Yes" : "No";
+
+        // Stock-table sales
+        document.getElementById("venteLitresPmsStock").textContent = venteLitresPms.toLocaleString();
+        document.getElementById("venteLitresAgoStock").textContent = venteLitresAgo.toLocaleString();
+
+        // Monthly running gain/loss (may be missing for the very first day of a new month)
+        document.getElementById("totalGainFuelPms").textContent = stockDoc ? fmt(stockDoc.totalGainFuelPms) : "—";
+        document.getElementById("totalGainFuelAgo").textContent = stockDoc ? fmt(stockDoc.totalGainFuelAgo) : "—";
+
+        // Snapshot prices for the day (table only — header keeps live prices)
+        document.getElementById("pmsPrices").textContent = fmt(doc.pmsPrice);
+        document.getElementById("agoPrices").textContent = fmt(doc.agoPrice);
 
     } catch (err) {
         console.error("Error fetching:", err);
+        alert("Error fetching situation: " + (err?.message || err));
     }
 }
 
-function download() {
+async function download() {
+    const logDate = document.getElementById("logDate").value;
+    if (!logDate) { alert("Select a date before downloading."); return; }
 
     try {
-        // Ensure data is up to date
-        // If your displayDetails() fetches/fills data, call it here or make sure it's already run
-        // displayDetails();
-
-        // Choose the section to export: body, main, or a wrapper
-
-        const logDate = document.getElementById("logDate").value;
-        // const email = document.getElementById("email").value;
-
-        const element = document.body;
+        const element = document.querySelector(".sheet");
+        if (!element) { alert("Nothing to export."); return; }
 
         const opt = {
-        margin:       0.4,
-        filename:     "Situation "+logDate + ".pdf",
-        image:        { type: "jpeg", quality: 0.98 },
-        html2canvas:  { scale: 4, useCORS: true, scrollY: 0 },        
-        jsPDF:        { unit: "px", format: [element.scrollWidth, element.scrollHeight], orientation: "portrait" },
-        pagebreak:    { mode: ['css', 'legacy'] } 
+            margin:      [10, 10, 10, 10],
+            filename:    `Situation_${logDate}.pdf`,
+            image:       { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+            jsPDF:       { unit: "mm", format: "a4", orientation: "portrait" },
+            pagebreak:   { mode: ['css', 'legacy'] }
         };
 
-        html2pdf().set(opt).from(element).save();
-
+        await html2pdf().set(opt).from(element).save();
     } catch (error) {
-        console.log("This is the error:", error);
-        
+        console.error("Download error:", error);
+        alert("Download failed: " + (error?.message || error));
     }
 }

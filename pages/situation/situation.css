@@ -27,6 +27,9 @@ body {
   color: var(--text);
   font-size: 13px;
   -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* ── SITE HEADER ─────────────────────────────── */
@@ -115,6 +118,9 @@ body {
   gap: 12px;
   flex-wrap: wrap;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 40px;
+  z-index: 90;
 }
 
 .date-bar label {
@@ -372,15 +378,16 @@ nav ul li a:hover {
   gap: 8px;
   font-size: 12px;
   color: var(--muted);
-  margin: 10px 0;
-  padding: 5px 12px;
-  background: var(--card);
+  margin-top: 14px;
+  padding: 6px 14px;
+  background: #f8fafc;
   border: 1px solid var(--border);
   border-radius: 20px;
 }
 
 .meta-row span {
   font-weight: 700;
+  color: var(--navy);
 }
 
 /* ── BUTTONS ─────────────────────────────────── */
@@ -440,23 +447,76 @@ footer {
   display: flex;
   justify-content: flex-end;
   border-top: 1px solid var(--border);
-  margin-top: 16px;
+  margin-top: auto;
 }
 
 .btn-logout {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  font-size: 12px;
-  padding: 6px 14px;
-  font-weight: 600;
-}
-.btn-logout:hover {
   background: #fee2e2;
   color: var(--loss);
-  border-color: #fca5a5;
+  border: 1.5px solid #fca5a5;
+  font-size: 12px;
+  padding: 7px 18px;
+  font-weight: 700;
+}
+.btn-logout:hover {
+  background: var(--loss);
+  color: white;
+  border-color: var(--loss);
   box-shadow: none;
   transform: none;
+}
+
+/* ── POPUP ───────────────────────────────────── */
+.popup {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-content {
+  background: white;
+  padding: 18px 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 280px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.popup-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.popup-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.popup-content button {
+  margin: 4px 4px 0;
+  padding: 7px 18px;
+  font-size: 12px;
+}
+
+#confirmLogout { background: var(--loss); }
+#confirmLogout:hover { background: #b91c1c; }
+#cancelLogout {
+  background: #f1f5f9;
+  color: var(--navy);
+  border: 1px solid var(--border);
+}
+#cancelLogout:hover {
+  background: #e2e8f0;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-secondary {
@@ -488,7 +548,7 @@ footer {
 
 /* ── PRINT STYLES ────────────────────────────── */
 @media print {
-  nav, .action-btn, button, .fuel-prices, .date-bar, footer { display: none !important; }
+  nav, .action-btn, button, .fuel-prices, .date-bar, footer, .popup { display: none !important; }
   body { background: white; padding: 0; }
   .sheet { box-shadow: none; border: none; margin: 0; padding: 10px; }
 }

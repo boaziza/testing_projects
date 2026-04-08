@@ -56,7 +56,7 @@
         <thead>
           <tr>
             <th>P</th>
-            <th>POMPE N°</th>
+            <th>PUMP N°</th>
             <th>Fin journée</th>
             <th>Début journée</th>
             <th>Essence (L)</th>
@@ -109,17 +109,17 @@
             <td></td>
             <td></td>
             <td>Total litres (A)</td>
-            <td><span id="venteLitresPms"></span></td>
-            <td><span id="venteLitresAgo"></span></td>
-            <td><span id="venteLitresKerosene">-</span></td>
+            <td><span id="litresAPms"></span></td>
+            <td><span id="litresAAgo"></span></td>
+            <td><span id="litresAKerosene">-</span></td>
           </tr>
           <tr>
             <td></td>
             <td></td>
             <td></td>
             <td>Fuel Transfered(B)</td>
-            <td><span id="transferedPms"></span></td>
-            <td><span id="transferedAgo"></span></td>
+            <td><span id="transferedPms">-</span></td>
+            <td><span id="transferedAgo">-</span></td>
             <td><span id="transferedKerosene">-</span></td>
           </tr>
           <tr>
@@ -127,9 +127,9 @@
             <td></td>
             <td></td>
             <td>Total litres Sold (C=A-B)</td>
-            <td><span id="venteLitresPms"></span></td>
-            <td><span id="venteLitresAgo"></span></td>
-            <td><span id="venteLitresKerosene">-</span></td>
+            <td><span id="litresCPms"></span></td>
+            <td><span id="litresCAgo"></span></td>
+            <td><span id="litresCKerosene">-</span></td>
           </tr>
           <tr>
             <td></td>
@@ -179,7 +179,7 @@
 
     <!-- Tanks / stocks table -->
     <section class="stocks">
-      <h3>Stocks de cuves</h3>
+      <h3>TANK STOCK</h3>
       <table class="stocks-table">
         <thead>
           <tr>
@@ -200,7 +200,7 @@
             <td><span id="initialPms"></span></td>
             <td><span id="receivedPms"></span></td>
             <td><span id="venteLitresPmsStock"></span></td>
-            <td><span id="transferedPms">-</span></td>
+            <td><span id="transferedStockPms">-</span></td>
             <td><span id="theoryStockPms"></span></td>
             <td><span id="physicalStockPms"></span></td>
             <td><span id="gainFuelPms"></span></td>
@@ -212,7 +212,7 @@
             <td><span id="initialAgo"></span></td>
             <td><span id="receivedAgo"></span></td>
             <td><span id="venteLitresAgoStock"></span></td>
-            <td><span id="transferedAgo">-</span></td>
+            <td><span id="transferedStockAgo">-</span></td>
             <td><span id="theoryStockAgo"></span></td>
             <td><span id="physicalStockAgo"></span></td>
             <td><span id="gainFuelAgo"></span></td>
@@ -222,12 +222,24 @@
       </table>
     </section>
 
+    <div class="meta-row">Done: <span id="done">—</span></div>
+
   </main>
-  <div class="meta-row">Done: <span id="done"></span></div>
 
   <footer>
-    <button class="action-btn btn-logout" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Log Out</button>
+    <button class="action-btn btn-logout" onclick="document.getElementById('confirmLogoutPopup').style.display='flex'">Log Out</button>
   </footer>
+
+  <!-- ── LOGOUT CONFIRMATION POPUP ── -->
+  <div class="popup" id="confirmLogoutPopup" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title">Log Out?</p>
+      <p class="popup-sub">Any unsaved data will be lost.</p>
+      <button id="confirmLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'; logout()">Log Out</button>
+      <button id="cancelLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'">Cancel</button>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="situation.js"></script>
