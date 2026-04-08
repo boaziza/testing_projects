@@ -1,6 +1,7 @@
 let totalVente,pms1,pms2,pms3,pms4,ago1,ago2,ago3,ago4;
 let venteLitresPms, totalPms, venteLitresAgo, totalAgo;
 let pmsPrice, agoPrice, logDate, shift;
+let momoFeePercent = 0.5;
 
 async function calculateIndex() {
     const client = new Appwrite.Client()
@@ -17,15 +18,18 @@ async function calculateIndex() {
     try {
         const settingsRes = await databases.listDocuments(databaseId, settingsId);
         if (settingsRes.documents.length > 0) {
-            pmsPrice = settingsRes.documents[0].pmsPrice ?? 1989;
-            agoPrice = settingsRes.documents[0].agoPrice ?? 1900;
+            pmsPrice       = settingsRes.documents[0].pmsPrice       ?? 1989;
+            agoPrice       = settingsRes.documents[0].agoPrice       ?? 1900;
+            momoFeePercent = settingsRes.documents[0].momoFeePercent ?? 0.5;
         } else {
             pmsPrice = 1989;
             agoPrice = 1900;
+            momoFeePercent = 0.5;
         }
     } catch {
         pmsPrice = 1989;
         agoPrice = 1900;
+        momoFeePercent = 0.5;
     }
 
     pms1 =Number(document.getElementById("pms1").value);
@@ -831,9 +835,8 @@ async function storeFiche() {
 }
 
 async function MomoLoss() {
-    const momo = document.getElementById("momo").value;
-
-    document.getElementById("tempMomoLoss").textContent = (parseInt((momo/100)*0.5).toLocaleString()) ;
+    const momo = Number(document.getElementById("momo").value);
+    document.getElementById("momoLoss").value = parseInt((momo / 100) * momoFeePercent) || 0;
 }
 
 function cancel(id) {

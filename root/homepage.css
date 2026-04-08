@@ -429,9 +429,35 @@ form {
   margin: 0;
 }
 
-.hint-span {
-  font-size: 11px;
+.momo-loss-inline {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 3px 8px;
+}
+
+.momo-loss-label {
+  font-size: 10px;
+  font-weight: 700;
   color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.momo-loss-inline input[type="number"] {
+  width: 70px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--loss);
+  box-shadow: none;
+  cursor: default;
 }
 
 /* Cash Bulletage section */

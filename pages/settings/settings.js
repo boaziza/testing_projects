@@ -23,9 +23,10 @@ async function loadFuelSettings() {
         const res = await databases.listDocuments(databaseId, settingsId);
         if (res.documents.length > 0) {
             const doc = res.documents[0];
-            document.getElementById("pmsPriceInput").value = doc.pmsPrice ?? "";
-            document.getElementById("agoPriceInput").value = doc.agoPrice ?? "";
-            document.getElementById("stationName").value   = doc.stationName ?? "";
+            document.getElementById("pmsPriceInput").value = doc.pmsPrice       ?? "";
+            document.getElementById("agoPriceInput").value = doc.agoPrice       ?? "";
+            document.getElementById("stationName").value   = doc.stationName    ?? "";
+            document.getElementById("momoFeeInput").value  = doc.momoFeePercent ?? "";
         }
     } catch (err) {
         console.error("Could not load settings:", err);
@@ -33,13 +34,19 @@ async function loadFuelSettings() {
 }
 
 async function saveFuelPrices() {
-    const pmsPrice    = parseInt(document.getElementById("pmsPriceInput").value);
-    const agoPrice    = parseInt(document.getElementById("agoPriceInput").value);
-    const stationName = document.getElementById("stationName").value.trim();
-    const statusEl    = document.getElementById("fuelStatus");
+    const pmsPrice       = parseInt(document.getElementById("pmsPriceInput").value);
+    const agoPrice       = parseInt(document.getElementById("agoPriceInput").value);
+    const stationName    = document.getElementById("stationName").value.trim();
+    const momoFeePercent = parseFloat(document.getElementById("momoFeeInput").value);
+    const statusEl       = document.getElementById("fuelStatus");
 
     if (!pmsPrice || !agoPrice) {
         showStatus(statusEl, "Both fuel prices are required.", "error");
+        return;
+    }
+
+    if (isNaN(momoFeePercent) || momoFeePercent < 0) {
+        showStatus(statusEl, "Enter a valid MoMo fee percentage.", "error");
         return;
     }
 
@@ -48,11 +55,11 @@ async function saveFuelPrices() {
 
         if (res.documents.length === 0) {
             await databases.createDocument(databaseId, settingsId, "unique()", {
-                pmsPrice, agoPrice, stationName
+                pmsPrice, agoPrice, stationName, momoFeePercent
             });
         } else {
             await databases.updateDocument(databaseId, settingsId, res.documents[0].$id, {
-                pmsPrice, agoPrice, stationName
+                pmsPrice, agoPrice, stationName, momoFeePercent
             });
         }
 
