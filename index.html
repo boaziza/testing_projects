@@ -132,17 +132,25 @@
                         <input type="number" name="momoLoss" id="momoLoss">
                         <span id="tempMomoLoss" class="hint-span" data-original="&nbsp;&nbsp;RWF"></span>&nbsp;RWF
                     </div>
-                    <div class="pay-input-row">
-                        <label for="spFuelCard">SP Fuel Card</label>
-                        <input type="text" name="spFuelCard" id="spFuelCard" placeholder="e.g. 10000,10000">
+                    <div class="pay-input-row chip-row">
+                        <label>SP Fuel Card</label>
+                        <div class="chip-input-group">
+                            <input type="number" id="spFuelCardInput" placeholder="Amount" onkeydown="if(event.key==='Enter'){event.preventDefault();addSpCard();}">
+                            <button type="button" class="btn-secondary" onclick="addSpCard()">Add</button>
+                        </div>
+                        <div id="spFuelCardChips" class="chips-row"></div>
                     </div>
                     <div class="pay-input-row">
                         <label for="bon">Bon</label>
                         <input type="number" name="bon" id="bon">
                     </div>
-                    <div class="pay-input-row">
-                        <label for="bankCard">Bank Card</label>
-                        <input type="text" name="bankCard" id="bankCard" placeholder="e.g. 10000,10000">
+                    <div class="pay-input-row chip-row">
+                        <label>Bank Card</label>
+                        <div class="chip-input-group">
+                            <input type="number" id="bankCardInput" placeholder="Amount" onkeydown="if(event.key==='Enter'){event.preventDefault();addBankCard();}">
+                            <button type="button" class="btn-secondary" onclick="addBankCard()">Add</button>
+                        </div>
+                        <div id="bankCardChips" class="chips-row"></div>
                     </div>
                 </div>
 
@@ -175,13 +183,63 @@
 
                 <!-- Fiche & Loans -->
                 <div class="fiche-loan-section">
-                    <button class="action-btn btn-secondary" type="button" onclick="this.disabled=true; addFiche().finally(() => this.disabled=false)">+ Add Fiche</button>
-                    <span class="fiche-total">Fiche: <span id="totalFiche" class="output">—</span></span>
-                    <div id="ficheContainer"></div>
+                    <div class="fiche-loan-panels">
 
-                    <button class="action-btn btn-secondary" type="button" style="margin-top:8px;" onclick="this.disabled=true; addLoan().finally(() => this.disabled=false)">+ Add Loan</button>
-                    <span class="loan-total">Loans: <span id="totalLoans" class="output">—</span></span>
-                    <div id="loanContainer"></div>
+                        <!-- FICHE CARD -->
+                        <div class="entry-panel">
+                            <div class="entry-card">
+                                <div class="entry-card-title">New Fiche</div>
+                                <div class="entry-field">
+                                    <label for="fiche-plate">Plate</label>
+                                    <input class="loan" type="text" id="fiche-plate" placeholder="e.g. RAB 123A" oninput="this.value=this.value.toUpperCase()">
+                                </div>
+                                <div class="entry-field">
+                                    <label for="fiche-company">Company</label>
+                                    <input class="loan" type="text" id="fiche-company" placeholder="e.g. Total, Shell">
+                                </div>
+                                <div class="entry-field">
+                                    <label for="fiche-amount">Amount</label>
+                                    <input class="loan" type="number" id="fiche-amount" placeholder="e.g. 50000">
+                                </div>
+                                <div class="entry-actions">
+                                    <button type="button" class="action-btn" onclick="this.disabled=true; storeFiche().finally(()=>this.disabled=false)">Save Fiche</button>
+                                    <button type="button" class="cancel" onclick="clearFiche()">Cancel</button>
+                                </div>
+                            </div>
+                            <div class="entry-total">
+                                <span class="entry-total-label">Total Fiche</span>
+                                <span class="entry-total-value output" id="totalFiche">—</span>
+                            </div>
+                        </div>
+
+                        <!-- LOAN CARD -->
+                        <div class="entry-panel">
+                            <div class="entry-card">
+                                <div class="entry-card-title">New Loan</div>
+                                <div class="entry-field">
+                                    <label for="loan-plate">Plate</label>
+                                    <input class="loan" type="text" id="loan-plate" placeholder="e.g. RAB 123A" oninput="this.value=this.value.toUpperCase()">
+                                </div>
+                                <div class="entry-field">
+                                    <label for="loan-company">Company</label>
+                                    <input class="loan" type="text" id="loan-company" placeholder="e.g. Total, Shell">
+                                </div>
+                                <div class="entry-field">
+                                    <label for="loan-amount">Amount</label>
+                                    <input class="loan" type="number" id="loan-amount" placeholder="e.g. 50000">
+                                </div>
+                                <div class="entry-actions">
+                                    <button type="button" class="action-btn" onclick="this.disabled=true; storeLoan().finally(()=>this.disabled=false)">Save Loan</button>
+                                    <button type="button" class="cancel" onclick="clearLoan()">Cancel</button>
+                                </div>
+                            </div>
+                            <div class="entry-total">
+                                <span class="entry-total-label">Total Loans</span>
+                                <span class="entry-total-value output" id="totalLoans">—</span>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
             </form>

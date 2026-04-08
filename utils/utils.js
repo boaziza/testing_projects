@@ -118,6 +118,7 @@ window.logout = async function logout() {
     const account = new Appwrite.Account(client);
     
     await account.deleteSession("current");
+    localStorage.removeItem("pompisteLoginTime");
     alert("Logged out successfully");
     window.location.href= "/testing_projects/auth/sign-in/sign-in";
     
@@ -127,9 +128,32 @@ window.logout = async function logout() {
 }
 
 
+function checkPompisteSession() {
+    const currentPage = window.location.pathname.split("/").pop();
+    if (currentPage !== "index") return;
+
+    const loginTime = parseInt(localStorage.getItem("pompisteLoginTime"));
+    if (!loginTime) return;
+
+    const ONE_HOUR = 60 * 60 * 1000;
+    const elapsed = Date.now() - loginTime;
+    const remaining = ONE_HOUR - elapsed;
+
+    if (remaining <= 0) {
+        logout();
+        return;
+    }
+
+    setTimeout(() => {
+        alert("Your session has expired. You will be logged out.");
+        logout();
+    }, remaining);
+}
+
 loadFuelPrices();
 userAccess();
 welcomeMessage();
+checkPompisteSession();
 
 // async function checkAccess() {
 //     try {

@@ -161,8 +161,6 @@ async function payments() {
         momo = Number(document.getElementById("momo").value);
         momoLoss = Number(document.getElementById("momoLoss").value);
         bon = Number(document.getElementById("bon").value);
-        spFuelCard = document.getElementById("spFuelCard").value;
-        bankCard = document.getElementById("bankCard").value;
         cash5000 = Number(document.getElementById("5000").value);
         cash2000 = Number(document.getElementById("2000").value);
         cash1000 = Number(document.getElementById("1000").value);
@@ -170,11 +168,11 @@ async function payments() {
         logDate= document.getElementById("logDate").value;
         shift = document.getElementById("shift").value;
 
-        listSFC = spFuelCard.split(",").map(v => parseInt(v.trim())).filter(v => !isNaN(v));
-        listBC =  bankCard.split(",").map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+        listSFC = [...spFuelCardList];
+        listBC  = [...bankCardList];
 
-        spFuelCard = listSFC.reduce((sum,n) => sum + n, 0);
-        bankCard = listBC.reduce((sum,n) => sum + n, 0);
+        spFuelCard = listSFC.reduce((sum, n) => sum + n, 0);
+        bankCard   = listBC.reduce((sum, n) => sum + n, 0);
 
         totalLoans = loans.reduce((sum, loan) => sum + loan.amount, 0);
         totalFiche = fiche.reduce((sum, item) => sum + item.amount, 0);
@@ -528,12 +526,18 @@ async function situation() {
         function clearOutputs() {
 
             const outputs = document.querySelectorAll(".output");
-            outputs.forEach(el => {
-                el.textContent = "0";
-            });
+            outputs.forEach(el => { el.textContent = "0"; });
+
             document.getElementById("momo").value = "";
+            clearFiche();
+            clearLoan();
+
             loans = [];
             fiche = [];
+            spFuelCardList = [];
+            bankCardList = [];
+            document.getElementById("spFuelCardChips").innerHTML = "";
+            document.getElementById("bankCardChips").innerHTML = "";
         }
 
         clearOutputs();
@@ -554,58 +558,16 @@ async function situation() {
     } 
 }
 
-async function addLoan() {
+function clearFiche() {
+    document.getElementById("fiche-plate").value = "";
+    document.getElementById("fiche-company").value = "";
+    document.getElementById("fiche-amount").value = "";
+}
 
-    try {
-
-
-        const container = document.getElementById("loanContainer");
-        container.innerHTML = "";
-
-        const fields = [
-            { key: "plate",   type: "text"   },
-            { key: "company", type: "text"   },
-            { key: "amount",  type: "number" },
-        ];
-
-        for (const field of fields) {
-            const div = document.createElement("div");
-            div.innerHTML = `
-                <label for="${field.key}"> ${field.key.toUpperCase()}: &nbsp;</label>
-                <input class="loan" type="${field.type}" id="${field.key}" placeholder="Enter the ${field.key}">
-            `;
-            container.appendChild(div);
-        }
-
-        const submit = document.createElement("button");
-        submit.type = "button"; 
-        submit.className = "action-btn";
-        submit.textContent = "Save Loan";
-        submit.onclick = async (e) => {
-            submit.disabled = true;
-            try {
-                await storeLoan(e);
-            } finally {
-                submit.disabled = false;
-            }
-        };
-        submit.style.marginRight = "10px";
-        container.appendChild(submit);
-
-
-
-
-        const cancelBtn = document.createElement("button");
-        cancelBtn.type = "button"; 
-        cancelBtn.className = "cancel";
-        cancelBtn.textContent = "Cancel";
-        cancelBtn.onclick = (e) => cancel("loanContainer");
-        container.appendChild(cancelBtn);
-
-
-    } catch (error) {
-        console.log(error);    
-    }
+function clearLoan() {
+    document.getElementById("loan-plate").value = "";
+    document.getElementById("loan-company").value = "";
+    document.getElementById("loan-amount").value = "";
 }
 
 
@@ -626,6 +588,54 @@ function mapTypeToInput(appwriteType) {
     default:
       return "text"; // for string, enum, etc.
   }
+}
+
+let spFuelCardList = [];
+let bankCardList = [];
+
+function renderChips(containerId, list, removeFn) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    list.forEach((amt, i) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = amt.toLocaleString() + " RWF";
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip-remove";
+        btn.textContent = "×";
+        btn.onclick = () => removeFn(i);
+        chip.appendChild(btn);
+        container.appendChild(chip);
+    });
+}
+
+function addSpCard() {
+    const input = document.getElementById("spFuelCardInput");
+    const val = parseInt(input.value);
+    if (!val || val <= 0) return;
+    spFuelCardList.push(val);
+    renderChips("spFuelCardChips", spFuelCardList, removeSpCard);
+    input.value = "";
+    input.focus();
+}
+function removeSpCard(i) {
+    spFuelCardList.splice(i, 1);
+    renderChips("spFuelCardChips", spFuelCardList, removeSpCard);
+}
+
+function addBankCard() {
+    const input = document.getElementById("bankCardInput");
+    const val = parseInt(input.value);
+    if (!val || val <= 0) return;
+    bankCardList.push(val);
+    renderChips("bankCardChips", bankCardList, removeBankCard);
+    input.value = "";
+    input.focus();
+}
+function removeBankCard(i) {
+    bankCardList.splice(i, 1);
+    renderChips("bankCardChips", bankCardList, removeBankCard);
 }
 
 let loans = [];
@@ -653,40 +663,38 @@ async function storeLoan() {
     logDate = document.getElementById("logDate").value;
     const monthYear = `${year}-${month}`;
 
-    const plate = document.getElementById("plate").value;
-    const amount = parseInt(document.getElementById("amount").value);
-    const company = document.getElementById("company").value;
-    
+    const plate = document.getElementById("loan-plate").value;
+    const amount = parseInt(document.getElementById("loan-amount").value);
+    const company = document.getElementById("loan-company").value;
+
     try {
 
         const loanData = {
             plate,
             company,
             logDate,
-            monthYear, 
+            monthYear,
             employee,
             amount
- 
         };
 
         await databases.createDocument(
         databaseId,
         loansId,
-        "unique()", // Appwrite generates an ID
+        "unique()",
         loanData
         );
 
-        alert("Data saved successfully");        
-        
+        alert("Data saved successfully");
+
     } catch (err) {
       console.error("Error:", err.message);
       alert("Error: " + err.message);
     }
-    const container = document.getElementById("loanContainer");
-    container.innerHTML = "";
 
+    clearLoan();
 
-    loans.push({company,amount});
+    loans.push({company, amount});
     
     
 
@@ -730,57 +738,6 @@ async function storeLoan() {
     //     alert("Error updating:", error);
     // }
 }
-async function addFiche() {
-
-    try {
-
-
-        const container = document.getElementById("ficheContainer");
-        container.innerHTML = "";
-
-        const fields = [
-            { key: "plate",   type: "text"   },
-            { key: "company", type: "text"   },
-            { key: "amount",  type: "number" },
-        ];
-
-        for (const field of fields) {
-            const div = document.createElement("div");
-            div.innerHTML = `
-                <label for="${field.key}"> ${field.key.toUpperCase()}: &nbsp;</label>
-                <input class="loan" type="${field.type}" id="${field.key}" placeholder="Enter the ${field.key}">
-            `;
-            container.appendChild(div);
-        }
-
-        const submit = document.createElement("button");
-        submit.type = "button"; 
-        submit.className = "action-btn";
-        submit.textContent = "Save Fiche";
-        submit.onclick = async (e) => {
-            submit.disabled = true;
-            try {
-                await storeFiche(e);
-            } finally {
-                submit.disabled = false;
-            }
-        };
-        submit.style.marginRight = "10px";
-        container.appendChild(submit);
-
-        const cancelBtn = document.createElement("button");
-        cancelBtn.type = "button"; 
-        cancelBtn.className = "cancel";
-        cancelBtn.textContent = "Cancel";
-        cancelBtn.onclick = (e) => cancel("ficheContainer");
-        container.appendChild(cancelBtn);
-
-
-    } catch (error) {
-        console.log(error);    
-    }
-}
-
 let fiche = [];
 async function storeFiche() {
     const client = new Appwrite.Client()
@@ -798,40 +755,37 @@ async function storeFiche() {
 
     logDate = document.getElementById("logDate").value;
 
-    const plate = document.getElementById("plate").value;
-    const amount = parseInt(document.getElementById("amount").value);
-    const company = document.getElementById("company").value;
-    
+    const plate = document.getElementById("fiche-plate").value;
+    const amount = parseInt(document.getElementById("fiche-amount").value);
+    const company = document.getElementById("fiche-company").value;
+
     try {
 
         const ficheData = {
             plate,
             company,
-            logDate, 
+            logDate,
             employee,
             amount
- 
         };
 
         await databases.createDocument(
         databaseId,
         ficheId,
-        "unique()", // Appwrite generates an ID
+        "unique()",
         ficheData
         );
 
-        alert("Data saved successfully");        
-        
+        alert("Data saved successfully");
+
     } catch (err) {
       console.error("Error:", err.message);
       alert("Error: " + err.message);
     }
 
-    const container = document.getElementById("ficheContainer");
-    container.innerHTML = "";
+    clearFiche();
 
-
-    fiche.push({company,amount});
+    fiche.push({company, amount});
     
     
 

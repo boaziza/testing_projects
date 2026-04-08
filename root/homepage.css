@@ -497,13 +497,90 @@ form {
   border-top: 1px solid var(--border);
 }
 
-.fiche-total,
-.loan-total {
-  display: inline-block;
-  margin-left: 10px;
+
+/* ── FICHE / LOAN SIDE-BY-SIDE ───────────────── */
+
+.fiche-loan-panels {
+  display: flex;
+  gap: 8px;
+}
+
+.entry-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── ENTRY CARD (Add Fiche / Add Loan) ───────── */
+.entry-card {
+  margin-top: 10px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.entry-card-title {
+  background: var(--navy);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 7px 12px;
+}
+
+.entry-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.entry-field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--navy-dark);
+  width: 60px;
+  min-width: 60px;
+  margin: 0;
+}
+
+input.loan {
+  flex: 1;
+  width: auto;
   font-size: 12px;
-  color: var(--muted);
-  font-weight: 500;
+  padding: 5px 8px;
+}
+
+.entry-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f8fafc;
+}
+
+.entry-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  background: #dde3ee;
+  border-radius: 6px;
+  padding: 7px 12px;
+}
+
+.entry-total-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.entry-total-value {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
 }
 
 /* ── BUTTONS ─────────────────────────────────── */
@@ -563,6 +640,61 @@ button:hover,
 .cancel:hover {
   background: var(--loss);
   color: white;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── CHIP INPUT (SP Fuel Card / Bank Card) ───── */
+.chip-row {
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding-bottom: 8px;
+}
+
+.chip-input-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex: 1;
+}
+
+.chip-input-group input {
+  width: 100px;
+}
+
+.chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.chip {
+  background: var(--navy-light);
+  color: white;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chip-remove {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 400;
+}
+.chip-remove:hover {
+  color: white;
+  background: none;
   transform: none;
   box-shadow: none;
 }
