@@ -288,6 +288,13 @@ label {
   flex-direction: column;
 }
 
+/* Pump Index column sticks while payments scrolls */
+.form-side:first-child {
+  position: sticky;
+  top: 68px; /* 38px nav + 10px gap */
+  z-index: 10;
+}
+
 /* Card section header */
 .section-title {
   background: var(--navy);
@@ -835,6 +842,9 @@ span { font-weight: 600; }
     padding: 12px 16px;
   }
   .form-side { width: 100%; }
+  .form-side:first-child {
+    position: static; /* no sticky when stacked */
+  }
 }
 
 @media (max-width: 600px) {
