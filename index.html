@@ -263,12 +263,32 @@
 
     <!-- ── STORE REPORT ── -->
     <div class="store-bar">
-        <button class="action-btn btn-store" onclick="this.disabled=true; situation().finally(() => this.disabled=false)">Store Report</button>
+        <button class="action-btn btn-store" onclick="document.getElementById('confirmStorePopup').style.display='flex'">Store Report</button>
     </div>
 
     <footer>
-        <button class="action-btn btn-logout" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Log Out</button>
+        <button class="action-btn btn-logout" onclick="document.getElementById('confirmLogoutPopup').style.display='flex'">Log Out</button>
     </footer>
+
+    <!-- ── LOGOUT CONFIRMATION POPUP ── -->
+    <div class="popup" id="confirmLogoutPopup" style="display:none;">
+        <div class="popup-content">
+            <p style="font-size:14px; font-weight:700; margin-bottom:4px;">Log Out?</p>
+            <p style="color:var(--muted); font-size:11px; margin-bottom:12px;">Any unsaved data will be lost.</p>
+            <button id="confirmLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'; logout()">Log Out</button>
+            <button id="cancelLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ── STORE REPORT CONFIRMATION POPUP ── -->
+    <div class="popup" id="confirmStorePopup" style="display:none;">
+        <div class="popup-content">
+            <p style="font-size:14px; font-weight:700; margin-bottom:4px;">Store Report?</p>
+            <p style="color:var(--muted); font-size:11px; margin-bottom:12px;">Make sure all data is correct before saving.</p>
+            <button id="confirmStore" onclick="document.getElementById('confirmStorePopup').style.display='none'; this.disabled=true; situation().finally(()=>this.disabled=false)">Confirm</button>
+            <button id="cancelStore" onclick="document.getElementById('confirmStorePopup').style.display='none'">Cancel</button>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
     <script src="root/index.js"></script>

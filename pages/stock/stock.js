@@ -66,8 +66,11 @@ async function stock() {
 }
 
 async function storeStock() {
+    if (!logDate) { alert("Select a date and calculate stock first."); return; }
+    if (isNaN(theoryStockPms) || isNaN(theoryStockAgo)) { alert("Calculate stock before storing."); return; }
+
     const client = new Appwrite.Client()
-        .setEndpoint("https://cloud.appwrite.io/v1") 
+        .setEndpoint("https://cloud.appwrite.io/v1")
         .setProject("68a9b3e90029e6a10ff5");
 
     const account = new Appwrite.Account(client);
@@ -250,33 +253,24 @@ async function storeStock() {
 }
 
 function download() {
-
     try {
-        // Ensure data is up to date
-        // If your displayDetails() fetches/fills data, call it here or make sure it's already run
-        // displayDetails();
+        const date = document.getElementById("logDate").value;
+        if (!date) { alert("Select a date before downloading."); return; }
 
-        // Choose the section to export: body, main, or a wrapper
-
-        const logDate = document.getElementById("logDate").value;
-        // const email = document.getElementById("email").value;
-
-        const element = document.body;
+        const element = document.getElementById("stockForm");
 
         const opt = {
-        margin:       0.4,
-        filename:     "Stock "+logDate + ".pdf",
-        image:        { type: "jpeg", quality: 0.98 },
-        html2canvas:  { scale: 4, useCORS: true, scrollY: 0 },        
-        jsPDF:        { unit: "px", format: [element.scrollWidth, element.scrollHeight], orientation: "portrait" },
-        pagebreak:    { mode: ['css', 'legacy'] } 
+            margin:      [10, 10, 10, 10],
+            filename:    `Stock_${date}.pdf`,
+            image:       { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+            jsPDF:       { unit: "mm", format: "a4", orientation: "portrait" },
         };
 
         html2pdf().set(opt).from(element).save();
 
     } catch (error) {
-        console.log("This is the error ", error);
-        
+        console.log("Download error:", error);
     }
 }
 

@@ -764,17 +764,17 @@ footer {
 }
 
 .btn-logout {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  font-size: 12px;
-  padding: 6px 14px;
-  font-weight: 600;
-}
-.btn-logout:hover {
   background: #fee2e2;
   color: var(--loss);
-  border-color: #fca5a5;
+  border: 1.5px solid #fca5a5;
+  font-size: 12px;
+  padding: 7px 18px;
+  font-weight: 700;
+}
+.btn-logout:hover {
+  background: var(--loss);
+  color: white;
+  border-color: var(--loss);
   box-shadow: none;
   transform: none;
 }
@@ -804,36 +804,41 @@ span { font-weight: 600; }
 
 .popup-content {
   background: white;
-  padding: 30px 28px;
-  border-radius: 12px;
+  padding: 18px 20px;
+  border-radius: 10px;
   text-align: center;
-  width: 340px;
-  margin: 14% auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  font-size: 14px;
+  width: 280px;
+  margin: 18% auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  font-size: 13px;
   font-weight: 500;
   color: var(--text);
 }
 
 .popup-content button {
-  margin: 8px 6px;
-  padding: 9px 22px;
-  font-size: 13px;
+  margin: 4px 4px 0;
+  padding: 7px 18px;
+  font-size: 12px;
 }
 
 #confirmLogout { background: var(--loss); }
 #confirmLogout:hover { background: #b91c1c; }
 
-#cancelLogout {
+#cancelLogout,
+#cancelStore {
   background: #f1f5f9;
   color: var(--navy);
   border: 1px solid var(--border);
 }
-#cancelLogout:hover {
+#cancelLogout:hover,
+#cancelStore:hover {
   background: #e2e8f0;
   transform: none;
   box-shadow: none;
 }
+
+#confirmStore { background: var(--pms); }
+#confirmStore:hover { background: #15803d; }
 
 /* ── RESPONSIVE ──────────────────────────────── */
 @media (max-width: 1100px) {
