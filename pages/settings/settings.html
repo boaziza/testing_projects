@@ -17,6 +17,10 @@
         <div class="brand-sub" id="welcomeMessage"></div>
       </div>
     </div>
+    <div class="fuel-prices">
+      <p>ESSENCE: <span id="pmsPrice">—</span></p>
+      <p>MAZOUT: <span id="agoPrice">—</span></p>
+    </div>
   </header>
 
   <!-- ── NAV ── -->
@@ -36,12 +40,12 @@
     </ul>
   </nav>
 
-  <!-- ── TABS ── -->
+  <!-- ── SETTINGS WRAPPER ── -->
   <div class="settings-wrapper">
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('fuel')">Fuel Prices</button>
-      <button class="tab-btn" onclick="switchTab('staff')">Admin Access</button>
+      <button class="tab-btn active" onclick="switchTab('fuel', this)">Fuel Prices</button>
+      <button class="tab-btn"        onclick="switchTab('staff', this)">Admin Access</button>
     </div>
 
     <!-- TAB 1: FUEL PRICES -->
@@ -65,7 +69,7 @@
           <input type="number" id="momoFeeInput" placeholder="e.g. 0.5" step="0.1" min="0" max="100">
         </div>
         <div class="settings-actions">
-          <button class="action-btn btn-store" onclick="this.disabled=true; saveFuelPrices().finally(() => this.disabled=false)">Save Prices</button>
+          <button class="action-btn btn-store" id="savePricesBtn" onclick="handleSavePrices(this)">Save Prices</button>
         </div>
         <div id="fuelStatus" class="status-msg"></div>
       </div>
@@ -87,17 +91,49 @@
             <option value="admin">Admin</option>
             <option value="manager">Manager</option>
           </select>
-          <button class="action-btn" onclick="this.disabled=true; addAdmin().finally(() => this.disabled=false)">Add</button>
+          <button class="action-btn" id="addAdminBtn" onclick="handleAddAdmin(this)">Add</button>
         </div>
         <div id="staffStatus" class="status-msg"></div>
       </div>
     </div>
 
-  </div>
+  </div><!-- /settings-wrapper -->
 
   <footer>
-    <button class="action-btn btn-logout" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Log Out</button>
+    <button class="btn-logout"
+      onclick="document.getElementById('confirmLogoutPopup').style.display='flex'">
+      Log Out
+    </button>
   </footer>
+
+  <!-- ── LOGOUT POPUP ── -->
+  <div class="popup" id="confirmLogoutPopup" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title">Log Out?</p>
+      <p class="popup-sub">Any unsaved changes will be lost.</p>
+      <button id="confirmLogout"
+        onclick="document.getElementById('confirmLogoutPopup').style.display='none'; logout()">
+        Log Out
+      </button>
+      <button id="cancelLogout"
+        onclick="document.getElementById('confirmLogoutPopup').style.display='none'">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <!-- ── REMOVE ADMIN POPUP ── -->
+  <div class="popup" id="confirmRemovePopup" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title">Remove Access?</p>
+      <p class="popup-sub" id="removePopupSub">This admin will lose access immediately.</p>
+      <button id="confirmRemove" onclick="confirmRemoveAdmin()">Remove</button>
+      <button id="cancelRemove"
+        onclick="document.getElementById('confirmRemovePopup').style.display='none'">
+        Cancel
+      </button>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script src="settings.js"></script>

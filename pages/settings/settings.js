@@ -4,20 +4,19 @@ const client = new Appwrite.Client()
 
 const databases = new Appwrite.Databases(client);
 
-const databaseId  = "695f766c003a8dc2b3be";
-const adminId     = "68d95af4003245ef87a7";
-const settingsId  = "69d3ed400021197ed76e";
+const databaseId = "695f766c003a8dc2b3be";
+const adminId    = "68d95af4003245ef87a7";
+const settingsId = "69d3ed400021197ed76e";
 
-// ── TABS ─────────────────────────────────────────
-function switchTab(tab) {
+// ── TABS ─────────────────────────────────────────────────────
+function switchTab(tab, btn) {
     document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
     document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-
     document.getElementById("tab-" + tab).style.display = "block";
-    event.target.classList.add("active");
+    btn.classList.add("active");
 }
 
-// ── FUEL PRICES ───────────────────────────────────
+// ── FUEL PRICES ───────────────────────────────────────────────
 async function loadFuelSettings() {
     try {
         const res = await databases.listDocuments(databaseId, settingsId);
@@ -30,6 +29,16 @@ async function loadFuelSettings() {
         }
     } catch (err) {
         console.error("Could not load settings:", err);
+    }
+}
+
+// Wrapper: handles disable/re-enable even on validation failure
+async function handleSavePrices(btn) {
+    btn.disabled = true;
+    try {
+        await saveFuelPrices();
+    } finally {
+        btn.disabled = false;
     }
 }
 
@@ -70,7 +79,7 @@ async function saveFuelPrices() {
     }
 }
 
-// ── ADMIN ACCESS ──────────────────────────────────
+// ── ADMIN ACCESS ──────────────────────────────────────────────
 async function loadAdmins() {
     const listEl = document.getElementById("adminList");
     try {
@@ -85,13 +94,23 @@ async function loadAdmins() {
             <div class="admin-row" id="row-${doc.$id}">
                 <span class="admin-email">${doc.email}</span>
                 <span class="admin-role">${doc.role ?? "admin"}</span>
-                <button class="btn-remove" onclick="removeAdmin('${doc.$id}')">Remove</button>
+                <button class="btn-remove" onclick="promptRemoveAdmin('${doc.$id}', '${doc.email}')">Remove</button>
             </div>
         `).join("");
 
     } catch (err) {
         listEl.innerHTML = `<div class="loading">Error loading admins.</div>`;
         console.error(err);
+    }
+}
+
+// Wrapper: handles disable/re-enable even on validation failure
+async function handleAddAdmin(btn) {
+    btn.disabled = true;
+    try {
+        await addAdmin();
+    } finally {
+        btn.disabled = false;
     }
 }
 
@@ -116,9 +135,24 @@ async function addAdmin() {
     }
 }
 
-async function removeAdmin(docId) {
-    if (!confirm("Remove this admin's access?")) return;
+// ── REMOVE ADMIN (popup-based) ────────────────────────────────
+let _pendingRemoveId = null;
+
+function promptRemoveAdmin(docId, email) {
+    _pendingRemoveId = docId;
+    document.getElementById("removePopupSub").textContent =
+        `${email} will lose admin access immediately.`;
+    document.getElementById("confirmRemovePopup").style.display = "flex";
+}
+
+async function confirmRemoveAdmin() {
+    document.getElementById("confirmRemovePopup").style.display = "none";
+    if (!_pendingRemoveId) return;
+
+    const docId    = _pendingRemoveId;
+    _pendingRemoveId = null;
     const statusEl = document.getElementById("staffStatus");
+
     try {
         await databases.deleteDocument(databaseId, adminId, docId);
         document.getElementById("row-" + docId)?.remove();
@@ -129,18 +163,31 @@ async function removeAdmin(docId) {
     }
 }
 
-// ── HELPERS ───────────────────────────────────────
+// ── STATUS MESSAGES ───────────────────────────────────────────
+const _statusTimers = new WeakMap();
+
 function showStatus(el, msg, type) {
+    // Cancel any existing auto-clear for this element
+    if (_statusTimers.has(el)) clearTimeout(_statusTimers.get(el));
+
     el.textContent = msg;
-    el.className = "status-msg " + type;
-    setTimeout(() => { el.textContent = ""; el.className = "status-msg"; }, 4000);
+    el.className   = "status-msg " + type;
+
+    const t = setTimeout(() => {
+        el.textContent = "";
+        el.className   = "status-msg";
+        _statusTimers.delete(el);
+    }, 4000);
+
+    _statusTimers.set(el, t);
 }
 
-// ── INIT ──────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────────
 loadFuelSettings();
 loadAdmins();
 
-window.switchTab     = switchTab;
-window.saveFuelPrices = saveFuelPrices;
-window.addAdmin      = addAdmin;
-window.removeAdmin   = removeAdmin;
+window.switchTab         = switchTab;
+window.handleSavePrices  = handleSavePrices;
+window.handleAddAdmin    = handleAddAdmin;
+window.promptRemoveAdmin = promptRemoveAdmin;
+window.confirmRemoveAdmin = confirmRemoveAdmin;
