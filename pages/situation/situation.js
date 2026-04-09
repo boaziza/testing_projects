@@ -14,7 +14,21 @@ let activeDate  = null;
 let monthCache  = {};   // { "YYYY-MM": [{ logDate, done }] }
 
 // ── HELPERS ───────────────────────────────────────────────────
+
+// Appwrite can return full ISO timestamps — always slice to YYYY-MM-DD
+function safeDate(dateStr) {
+  return dateStr ? String(dateStr).substring(0, 10) : "";
+}
+
 function fmt(v) { return (Number(v) || 0).toLocaleString(); }
+
+// Sidebar compact display: 1,240,000 → "1.2M" | 812,400 → "812k" | 850 → "850"
+function fmtShort(v) {
+  const n = Number(v) || 0;
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (n >= 1_000)     return Math.round(n / 1_000) + "k";
+  return n.toLocaleString();
+}
 
 function monthLabel(y, m) {
   return new Date(y, m - 1, 1).toLocaleString("default", { month: "long", year: "numeric" });
@@ -28,7 +42,7 @@ async function initSituation() {
   try {
     const recent = await _db.listDocuments(DB_ID, SIT_ID, [
       Appwrite.Query.orderDesc("logDate"),
-      Appwrite.Query.limit(10),
+      Appwrite.Query.limit(7),
     ]);
 
     if (recent.documents.length === 0) {
@@ -46,7 +60,7 @@ async function initSituation() {
     buildRecentList(recent.documents);
 
     // Set calendar to the most recent doc's month and build it
-    const latest = recent.documents[0].logDate;
+    const latest = safeDate(recent.documents[0].logDate);
     const [y, m] = latest.split("-").map(Number);
     calMonth = { year: y, month: m };
     await buildCalendar(y, m);
@@ -65,11 +79,12 @@ async function initSituation() {
 // ── MONTH CACHE ───────────────────────────────────────────────
 function cacheFromDocs(docs) {
   docs.forEach(doc => {
-    const [y, m] = doc.logDate.split("-");
+    const ld  = safeDate(doc.logDate);
+    const [y, m] = ld.split("-");
     const key = `${y}-${m}`;
     if (!monthCache[key]) monthCache[key] = [];
-    if (!monthCache[key].find(d => d.logDate === doc.logDate)) {
-      monthCache[key].push({ logDate: doc.logDate, done: doc.done });
+    if (!monthCache[key].find(d => d.logDate === ld)) {
+      monthCache[key].push({ logDate: ld, done: doc.done });
     }
   });
 }
@@ -161,23 +176,24 @@ function buildRecentList(docs) {
   list.innerHTML = "";
 
   docs.forEach(doc => {
-    const d       = new Date(doc.logDate + "T00:00:00");
+    const ld      = safeDate(doc.logDate);
+    const d       = new Date(ld + "T00:00:00");
     const display = d.toLocaleString("default", { day: "numeric", month: "short", year: "numeric" });
     const dayName = d.toLocaleString("default", { weekday: "short" });
-    const total   = Math.round((doc.totalPayments || 0) / 1000);
+    const total   = fmtShort(doc.totalPayments);
 
     const item = document.createElement("div");
     item.className    = "recent-item";
-    item.dataset.date = doc.logDate;
+    item.dataset.date = ld;
     item.innerHTML = `
       <div class="recent-dot" style="background:${doc.done ? "var(--pms)" : "var(--navy-light)"}"></div>
       <div class="recent-info">
         <div class="recent-date">${display}</div>
         <div class="recent-meta">${dayName} &middot; ${doc.done ? "Done ✓" : "Pending"}</div>
       </div>
-      <div class="recent-total">${total}k</div>
+      <div class="recent-total">${total}</div>
     `;
-    item.onclick = () => selectDate(doc.logDate);
+    item.onclick = () => selectDate(ld);
     list.appendChild(item);
   });
 }
@@ -208,6 +224,7 @@ async function selectDate(date) {
 //   1. Situation doc by logDate
 //   2. Monthly stock doc by monthYear (for overall gain/loss totals)
 async function loadSituation(date) {
+  date = safeDate(date);
   const mainEl = document.getElementById("sitMain");
   mainEl.classList.add("sit-loading");
 
@@ -231,9 +248,10 @@ async function loadSituation(date) {
     const stockDoc = stockRes.documents[0] || null;
 
     // ── Main bar ─────────────────────────────────────────────
-    const d = new Date(date + "T00:00:00");
-    document.getElementById("loadedDate").textContent =
-      d.toLocaleString("default", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const d = new Date(safeDate(date) + "T00:00:00");
+    document.getElementById("loadedDate").textContent = isNaN(d)
+      ? date
+      : d.toLocaleString("default", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
     const pill = document.getElementById("donePill");
     pill.textContent     = doc.done ? "Done ✓" : "Pending";

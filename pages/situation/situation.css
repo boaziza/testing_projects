@@ -133,10 +133,6 @@ nav ul li a:hover    { color: white; border-bottom-color: var(--pms); }
 .sit-sidebar-head {
   background: var(--navy);
   padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
   flex-shrink: 0;
 }
 
@@ -146,16 +142,6 @@ nav ul li a:hover    { color: white; border-bottom-color: var(--pms); }
 }
 
 .sit-sidebar-sub { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 2px; }
-
-.btn-pdf {
-  background: rgba(255,255,255,0.12);
-  color: white; border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 5px; padding: 5px 10px;
-  font-size: 10px; font-weight: 700;
-  cursor: pointer; font-family: inherit; white-space: nowrap;
-  flex-shrink: 0;
-}
-.btn-pdf:hover { background: rgba(255,255,255,0.22); }
 
 /* ── MINI CALENDAR ───────────────────────────── */
 .cal-section {
@@ -299,6 +285,36 @@ nav ul li a:hover    { color: white; border-bottom-color: var(--pms); }
 
 .loaded-date {
   font-size: 13px; font-weight: 700; color: var(--navy);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.main-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btn-download-main {
+  background: var(--navy);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-download-main:hover {
+  background: var(--navy-light);
+  transform: none;
+  box-shadow: none;
 }
 
 .done-pill {

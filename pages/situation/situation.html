@@ -47,11 +47,8 @@
     <aside class="sit-sidebar">
 
       <div class="sit-sidebar-head">
-        <div>
-          <div class="sit-sidebar-title">Situation Journal</div>
-          <div class="sit-sidebar-sub">Select a date to view</div>
-        </div>
-        <button class="btn-pdf" onclick="download()">⬇ PDF</button>
+        <div class="sit-sidebar-title">Situation Journal</div>
+        <div class="sit-sidebar-sub">Select a date to view</div>
       </div>
 
       <!-- Mini Calendar -->
@@ -82,7 +79,10 @@
 
       <div class="sit-main-bar">
         <div class="loaded-date" id="loadedDate">Loading most recent…</div>
-        <span class="done-pill" id="donePill"></span>
+        <div class="main-bar-actions">
+          <span class="done-pill" id="donePill"></span>
+          <button class="action-btn btn-download-main" onclick="download()">⬇ Download PDF</button>
+        </div>
       </div>
 
       <div class="sheet">
