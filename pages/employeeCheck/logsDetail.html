@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Pompiste Report</title>
   <link rel="stylesheet" href="logsDetail.css">
-  
 </head>
 <body>
 
@@ -41,142 +40,182 @@
     </ul>
   </nav>
 
-  <!-- ── FILTER BAR ── -->
-  <div class="date-bar">
-    <label for="email">Email</label>
-    <input type="email" name="email" id="email" placeholder="employee@email.com">
-    <label for="logDate">Date</label>
-    <input type="date" name="logDate" id="logDate">
-    <button class="action-btn" onclick="this.disabled=true; displayDetails().finally(() => this.disabled=false)">Fetch Report</button>
-    <button class="action-btn btn-secondary" onclick="this.disabled=true; download().finally(() => this.disabled=false)">Download PDF</button>
-  </div>
+  <!-- ── TWO-COLUMN LAYOUT ── -->
+  <div class="pom-layout">
 
-  <main class="sheet">
+    <!-- ── SIDEBAR ── -->
+    <aside class="pom-sidebar">
 
-    <section class="indices">
-      <table class="indices-table">
-        <thead>
-          <tr>
-            <th>P</th>
-            <th>POMPE N°</th>
-            <th>Fin journée</th>
-            <th>Début journée</th>
-            <th>Essence (L)</th>
-            <th>Gasoil (L)</th>
-            <th>Kérosène (L)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>P1</td>
-            <td>Pump 1</td>
-            <td><span id="pms2"></span></td>
-            <td><span id="pms1"></span></td>
-            <td><span id="p1_essence"></span></td>
-            <td><span id="p1_gasoil">-</span></td>
-            <td><span id="p1_kero">-</span></td>
-          </tr>
-
-          <tr>
-            <td>P2</td>
-            <td>Pump 2</td>
-            <td><span id="pms4"></span></td>
-            <td><span id="pms3"></span></td>
-            <td><span id="p2_essence"></span></td>
-            <td><span id="p2_gasoil">-</span></td>
-            <td><span id="p2_kero">-</span></td>
-          </tr>
-
-          <tr>
-            <td>P3</td>
-            <td>Pump 3</td>
-            <td><span id="ago2"></span></td>
-            <td><span id="ago1"></span></td>
-            <td><span id="p3_essence">-</span></td>
-            <td><span id="p3_gasoil"></span></td>
-            <td><span id="p3_kero">-</span></td>
-          </tr>
-
-          <tr>
-            <td>P4</td>
-            <td>Pump 4</td>
-            <td><span id="ago4"></span></td>
-            <td><span id="ago3"></span></td>
-            <td><span id="p4_essence">-</span></td>
-            <td><span id="p4_gasoil"></span></td>
-            <td><span id="p4_kero">-</span></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Total litres Sold (A)</td>
-            <td><span id="venteLitresPms"></span></td>
-            <td><span id="venteLitresAgo"></span></td>
-            <td><span id="venteLitresKerosene">-</span></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Price (B)</td>
-            <td><span id="pmsPrices"></span></td>
-            <td><span id="agoPrices"></span></td>
-            <td><span id="kerosenePrice">-</span></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Total Sales in Frws (AxB)</td>
-            <td><span id="totalPms"></span></td>
-            <td><span id="totalAgo"></span></td>
-            <td><span id="totalKerosene">-</span></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Total Sales(FRW)</td>
-            <td><span id="totalVente"></span></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="totals-and-payments avoid-break">     
-
-      <div class="payments">
-        <h3>Payments</h3>
-        <div class="pay-row"><label>MoMo:</label><span id="momo"></span></div>
-        <div class="pay-row"><label>MoMo Loss:</label><span id="momoLoss"></span></div>
-        <div class="pay-row"><label>SP Fuel Cards:</label><span id="listSFC"></span></div>
-        <div class="pay-row"><label>Bank Cards:</label><span id="listBC"></span></div>
-        <div class="pay-row"><label>SP Fuel Card:</label><span id="spFuelCard"></span></div>
-        <div class="pay-row"><label>Bank Card:</label><span id="bankCard"></span></div>
-        <div class="pay-row"><label>Fiche: </label><span id="fiche"></span></div>
-        <div class="pay-row"><label>Total Fiche: </label><span id="totalFiche"></span></div>
-        <div class="pay-row"><label>Bon: </label><span id="bon"></span></div>
-        <div class="pay-row"><label>Total Cash:</label><span id="totalCash"></span></div>
-        <div class="pay-row"><label>Loans:</label><span id="loans"></span></div>
-        <div class="pay-row"><label>Total Loans:</label><span id="totalLoans"></span></div>
-        <div class="pay-row"><label>Total Sales:</label><span id="totalPayments"></span></div>
-        <div class="pay-row"><label>Gain/Loss :</label><span id="gainPayments"></span></div>
+      <div class="pom-sidebar-head">
+        <div class="pom-sidebar-title">Pompiste Report</div>
+        <div class="pom-sidebar-sub">Enter details and fetch</div>
       </div>
-    </section>
-    
-    <div id="pagination" style="margin-top: 20px; display: flex; gap: 10px; align-items: center; justify-content: center;">
-      <button id="prevPage" onclick="goToPreviousPage()">Previous</button>
-      <span id="pageNumber">Page 0 of 0</span>
-      <button id="nextPage" onclick="goToNextPage()">Next</button>
-    </div>
 
-  </main>
-  <footer>
-    <button class="action-btn btn-logout" onclick="this.disabled=true; logout().finally(() => this.disabled=false)">Log Out</button>
-  </footer>
+      <div class="pom-inputs">
+        <div class="pom-input-group">
+          <label for="email">Employee Email</label>
+          <input type="email" id="email" placeholder="employee@email.com" autocomplete="off"/>
+        </div>
+        <div class="pom-input-group">
+          <label for="logDate">Date</label>
+          <input type="date" id="logDate"/>
+        </div>
+        <button class="pom-fetch-btn" id="fetchBtn"
+          onclick="this.disabled=true; displayDetails().finally(() => this.disabled=false)">
+          Fetch Report
+        </button>
+      </div>
+
+      <div class="pom-list-label" id="entryListTitle"></div>
+      <div class="pom-entry-list" id="entryList">
+        <div class="pom-list-empty">No report loaded yet.</div>
+      </div>
+
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="pom-main" id="pomMain">
+
+      <!-- Situation-style sticky bar -->
+      <div class="pom-main-bar">
+        <div class="loaded-date" id="loadedDate">No report loaded</div>
+        <div class="main-bar-actions">
+          <span class="done-pill" id="donePill"></span>
+          <button class="btn-download-main" onclick="download()">&#11015; Download PDF</button>
+        </div>
+      </div>
+
+      <!-- ── SHEET ── -->
+      <div class="sheet" id="reportSheet">
+
+        <section class="indices">
+          <table class="indices-table">
+            <thead>
+              <tr>
+                <th>P</th>
+                <th>POMPE N°</th>
+                <th>Fin journée</th>
+                <th>Début journée</th>
+                <th>Essence (L)</th>
+                <th>Gasoil (L)</th>
+                <th>Kérosène (L)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>P1</td>
+                <td>Pump 1</td>
+                <td><span id="pms2"></span></td>
+                <td><span id="pms1"></span></td>
+                <td><span id="p1_essence"></span></td>
+                <td><span id="p1_gasoil">-</span></td>
+                <td><span id="p1_kero">-</span></td>
+              </tr>
+              <tr>
+                <td>P2</td>
+                <td>Pump 2</td>
+                <td><span id="pms4"></span></td>
+                <td><span id="pms3"></span></td>
+                <td><span id="p2_essence"></span></td>
+                <td><span id="p2_gasoil">-</span></td>
+                <td><span id="p2_kero">-</span></td>
+              </tr>
+              <tr>
+                <td>P3</td>
+                <td>Pump 3</td>
+                <td><span id="ago2"></span></td>
+                <td><span id="ago1"></span></td>
+                <td><span id="p3_essence">-</span></td>
+                <td><span id="p3_gasoil"></span></td>
+                <td><span id="p3_kero">-</span></td>
+              </tr>
+              <tr>
+                <td>P4</td>
+                <td>Pump 4</td>
+                <td><span id="ago4"></span></td>
+                <td><span id="ago3"></span></td>
+                <td><span id="p4_essence">-</span></td>
+                <td><span id="p4_gasoil"></span></td>
+                <td><span id="p4_kero">-</span></td>
+              </tr>
+              <tr>
+                <td></td><td></td><td></td>
+                <td>Total litres Sold (A)</td>
+                <td><span id="venteLitresPms"></span></td>
+                <td><span id="venteLitresAgo"></span></td>
+                <td><span id="venteLitresKerosene">-</span></td>
+              </tr>
+              <tr>
+                <td></td><td></td><td></td>
+                <td>Price (B)</td>
+                <td><span id="pmsPrices"></span></td>
+                <td><span id="agoPrices"></span></td>
+                <td><span id="kerosenePrice">-</span></td>
+              </tr>
+              <tr>
+                <td></td><td></td><td></td>
+                <td>Total Sales in Frws (AxB)</td>
+                <td><span id="totalPms"></span></td>
+                <td><span id="totalAgo"></span></td>
+                <td><span id="totalKerosene">-</span></td>
+              </tr>
+              <tr>
+                <td></td><td></td><td></td>
+                <td>Total Sales (FRW)</td>
+                <td><span id="totalVente"></span></td>
+                <td></td><td></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="totals-and-payments">
+          <div class="payments">
+            <h3>Payments</h3>
+            <div class="pay-row"><label>MoMo:</label><span id="momo"></span></div>
+            <div class="pay-row"><label>MoMo Loss:</label><span id="momoLoss"></span></div>
+            <div class="pay-row"><label>SP Fuel Cards:</label><span id="listSFC"></span></div>
+            <div class="pay-row"><label>Bank Cards:</label><span id="listBC"></span></div>
+            <div class="pay-row"><label>SP Fuel Card:</label><span id="spFuelCard"></span></div>
+            <div class="pay-row"><label>Bank Card:</label><span id="bankCard"></span></div>
+            <div class="pay-row"><label>Fiche:</label><span id="fiche"></span></div>
+            <div class="pay-row"><label>Total Fiche:</label><span id="totalFiche"></span></div>
+            <div class="pay-row"><label>Bon:</label><span id="bon"></span></div>
+            <div class="pay-row"><label>Total Cash:</label><span id="totalCash"></span></div>
+            <div class="pay-row"><label>Loans:</label><span id="loans"></span></div>
+            <div class="pay-row"><label>Total Loans:</label><span id="totalLoans"></span></div>
+            <div class="pay-row"><label>Total Sales:</label><span id="totalPayments"></span></div>
+            <div class="pay-row"><label>Gain/Loss:</label><span id="gainPayments"></span></div>
+          </div>
+        </section>
+
+      </div><!-- /sheet -->
+
+      <footer>
+        <button class="btn-logout"
+          onclick="document.getElementById('confirmLogoutPopup').style.display='flex'">
+          Log Out
+        </button>
+      </footer>
+
+    </main><!-- /pom-main -->
+  </div><!-- /pom-layout -->
+
+  <!-- ── LOGOUT POPUP ── -->
+  <div class="popup" id="confirmLogoutPopup" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title">Log Out?</p>
+      <p class="popup-sub">Any unsaved data will be lost.</p>
+      <button id="confirmLogout"
+        onclick="document.getElementById('confirmLogoutPopup').style.display='none'; logout()">
+        Log Out
+      </button>
+      <button id="cancelLogout"
+        onclick="document.getElementById('confirmLogoutPopup').style.display='none'">
+        Cancel
+      </button>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>

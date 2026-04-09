@@ -27,7 +27,13 @@ body {
   color: var(--text);
   font-size: 13px;
   -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
+
+body p { font-size: 13px; font-weight: normal; }
 
 /* ── SITE HEADER ─────────────────────────────── */
 .site-header {
@@ -39,6 +45,7 @@ body {
   justify-content: space-between;
   gap: 16px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  flex-shrink: 0;
 }
 
 .header-brand {
@@ -50,159 +57,266 @@ body {
 }
 
 .brand-icon {
-  width: 38px;
-  height: 38px;
+  width: 38px; height: 38px;
   background: var(--navy-light);
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  font-size: 15px;
-  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 15px; color: white;
   flex-shrink: 0;
 }
 
 .brand-title {
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  white-space: nowrap;
+  font-size: 16px; font-weight: 800;
+  letter-spacing: 1.5px; text-transform: uppercase; white-space: nowrap;
 }
 
 .brand-sub {
-  font-size: 11px;
-  opacity: 0.65;
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 11px; opacity: 0.65; margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 .fuel-prices {
-  display: flex;
-  gap: 20px;
-  align-items: center;
+  display: flex; gap: 20px; align-items: center;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
-  padding: 7px 14px;
-  flex-shrink: 0;
+  border-radius: 8px; padding: 7px 14px; flex-shrink: 0;
 }
 
 .fuel-prices h2 { display: none; }
-
-.fuel-prices p {
-  font-size: 12px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.75);
-  margin: 0;
-}
-
-.fuel-prices span {
-  font-weight: 700;
-  color: white;
-}
-
-/* ── DATE/FILTER BAR ─────────────────────────── */
-.date-bar {
-  background: var(--card);
-  border-bottom: 2px solid var(--navy);
-  padding: 10px 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.date-bar label {
-  font-weight: 700;
-  color: var(--navy);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+.fuel-prices p  { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.75); margin: 0; }
+.fuel-prices span { font-weight: 700; color: white; }
 
 /* ── NAV ─────────────────────────────────────── */
 nav {
   background: var(--navy-dark);
   padding: 0 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  flex-shrink: 0;
 }
 
-nav ul {
-  list-style: none;
-  display: flex;
-  align-items: stretch;
-  padding: 0;
-  margin: 0;
-}
+nav ul { list-style: none; display: flex; align-items: stretch; padding: 0; margin: 0; }
 
 nav ul li a {
-  display: block;
-  color: rgba(255,255,255,0.65);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 11px 14px;
-  border-bottom: 3px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
-  white-space: nowrap;
+  display: block; color: rgba(255,255,255,0.65);
+  text-decoration: none; font-size: 13px; font-weight: 500;
+  padding: 11px 14px; border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s; white-space: nowrap;
 }
 
-nav ul li a:hover {
-  color: white;
-  border-bottom-color: var(--pms);
-}
+nav ul li a:hover { color: white; border-bottom-color: var(--pms); }
 
 .dropdown { position: relative; }
 
 .dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  list-style: none;
-  padding: 4px 0;
-  min-width: 200px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 1000;
+  display: none; position: absolute; top: 100%; left: 0;
+  background: white; border: 1px solid var(--border);
+  border-radius: 8px; list-style: none; padding: 4px 0;
+  min-width: 200px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000;
 }
 
 .dropdown:hover .dropdown-menu { display: block; }
 
 .dropdown-menu li a {
-  color: var(--text);
-  padding: 9px 14px;
-  border-bottom: none;
-  font-size: 13px;
-  display: block;
-  text-decoration: none;
-  font-weight: 500;
+  color: var(--text); padding: 9px 14px; border-bottom: none;
+  font-size: 13px; display: block; text-decoration: none; font-weight: 500;
 }
 
-.dropdown-menu li a:hover {
+.dropdown-menu li a:hover { background: #f8fafc; color: var(--navy); border-bottom: none; }
+
+/* ── TWO-COLUMN LAYOUT ───────────────────────── */
+.pom-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── SIDEBAR ─────────────────────────────────── */
+.pom-sidebar {
+  width: 268px;
+  flex-shrink: 0;
+  border-right: 2px solid var(--navy);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--card);   /* white — same as situation */
+}
+
+/* Dark navy header at the very top of sidebar */
+.pom-sidebar-head {
+  background: var(--navy);
+  padding: 12px 14px;
+  flex-shrink: 0;
+}
+
+.pom-sidebar-title {
+  font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 1px; color: white;
+}
+
+.pom-sidebar-sub {
+  font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 2px;
+}
+
+/* ── SIDEBAR INPUTS (on white background) ────── */
+.pom-inputs {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--card);
+}
+
+.pom-input-group { margin-bottom: 8px; }
+
+.pom-input-group label {
+  display: block; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--muted); margin-bottom: 3px;
+}
+
+.pom-input-group input {
+  width: 100%; padding: 6px 8px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 5px; background: white;
+  font-size: 12px; font-family: inherit; color: var(--text); outline: none;
+}
+
+.pom-input-group input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,38,59,0.08); }
+
+.pom-fetch-btn {
+  width: 100%; margin-top: 10px;
+  background: var(--navy); color: white;
+  border: none; border-radius: 6px;
+  padding: 8px; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  transition: background 0.2s;
+}
+
+.pom-fetch-btn:hover    { background: var(--navy-light); }
+.pom-fetch-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+/* ── SIDEBAR ENTRY LIST ──────────────────────── */
+/* Section label — matches situation's .recent-label */
+.pom-list-label {
+  padding: 7px 12px 5px;
+  font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--muted);
+  border-bottom: 1px solid var(--border);
   background: #f8fafc;
-  color: var(--navy);
-  border-bottom: none;
+  flex-shrink: 0;
 }
 
-/* ── MAIN SHEET ──────────────────────────────── */
+/* List container — matches situation's .recent-list */
+.pom-entry-list { flex: 1; overflow-y: auto; }
+
+.pom-list-empty {
+  padding: 18px 14px;
+  font-size: 11px; color: var(--muted); text-align: center;
+}
+
+/* Each row — matches situation's .recent-item */
+.pom-entry-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.pom-entry-item:hover { background: #f8fafc; }
+
+.pom-entry-item.pom-active {
+  background: #eef2ff;
+  border-left-color: var(--navy);
+}
+
+/* Dot — coloured circle (matches .recent-dot but larger) */
+.pom-entry-dot {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800;
+}
+
+.pom-entry-dot.gain-dot    { background: var(--pms-bg);  color: var(--pms); }
+.pom-entry-dot.loss-dot    { background: #fee2e2;         color: var(--loss); }
+.pom-entry-dot.neutral-dot { background: #f1f5f9;         color: var(--muted); }
+
+.pom-entry-info { flex: 1; min-width: 0; }
+
+/* Text — dark on white, matches .recent-date / .recent-meta */
+.pom-entry-label {
+  font-size: 11px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.pom-entry-meta { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+.pom-entry-amount { font-size: 11px; font-weight: 700; white-space: nowrap; }
+
+/* ── MAIN CONTENT ────────────────────────────── */
+.pom-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  background: var(--bg);
+  min-width: 0;
+}
+
+.pom-loading { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
+
+/* ── SITUATION-STYLE STICKY BAR ──────────────── */
+.pom-main-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.loaded-date {
+  font-size: 13px; font-weight: 700; color: var(--navy);
+  min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.main-bar-actions {
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+
+.btn-download-main {
+  background: var(--navy); color: white;
+  font-size: 11px; font-weight: 700;
+  padding: 6px 14px; border-radius: 6px;
+  border: none; cursor: pointer; font-family: inherit;
+  white-space: nowrap; transition: background 0.2s;
+}
+
+.btn-download-main:hover { background: var(--navy-light); }
+
+.done-pill {
+  font-size: 10px; font-weight: 800;
+  padding: 3px 10px; border-radius: 20px;
+  text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+}
+
+.pill-gain { background: var(--pms-bg); color: var(--pms); border: 1px solid #bbf7d0; }
+.pill-loss { background: #fee2e2;        color: var(--loss); border: 1px solid #fca5a5; }
+
+/* ── SHEET ───────────────────────────────────── */
 .sheet {
   background: var(--card);
   border-radius: 10px;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
-  max-width: 1100px;
-  margin: 18px auto;
   padding: 18px;
+  /* no overflow: hidden — let content grow naturally */
 }
 
 /* ── INDICES TABLE ───────────────────────────── */
@@ -214,175 +328,71 @@ nav ul li a:hover {
 }
 
 .indices-table thead th {
-  background: var(--navy);
-  color: white;
-  padding: 8px 10px;
-  font-weight: 600;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  text-align: left;
-  border: 1px solid var(--navy-light);
+  background: var(--navy); color: white;
+  padding: 8px 10px; font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  text-align: left; border: 1px solid var(--navy-light);
 }
 
 .indices-table tbody td {
-  border: 1px solid var(--border);
-  padding: 7px 10px;
-  font-size: 12px;
+  border: 1px solid var(--border); padding: 7px 10px; font-size: 12px;
 }
 
-.indices-table tbody tr:nth-child(even) td {
-  background: #f8fafc;
-}
+.indices-table tbody tr:nth-child(even) td { background: #f8fafc; }
 
-/* Pump row color hints */
+/* Pump row colour hints */
 .indices-table tbody tr:nth-child(1) td:first-child,
 .indices-table tbody tr:nth-child(2) td:first-child {
-  background: var(--pms-bg);
-  color: var(--pms);
-  font-weight: 700;
+  background: var(--pms-bg); color: var(--pms); font-weight: 700;
 }
 
 .indices-table tbody tr:nth-child(3) td:first-child,
 .indices-table tbody tr:nth-child(4) td:first-child {
-  background: var(--ago-bg);
-  color: var(--ago);
-  font-weight: 700;
+  background: var(--ago-bg); color: var(--ago); font-weight: 700;
 }
 
 .indices-table tbody tr:nth-last-child(-n+4) td {
-  background: #f8fafc;
-  font-weight: 600;
+  background: #f8fafc; font-weight: 600;
 }
 
 /* ── PAYMENTS SECTION ────────────────────────── */
 .totals-and-payments {
-  display: flex;
-  gap: 14px;
-  margin: 16px 0;
-  flex-wrap: wrap;
+  display: flex; gap: 14px; margin: 16px 0; flex-wrap: wrap;
 }
 
 .payments {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px 16px;
-  flex: 1 1 300px;
-  border-top: 3px solid var(--navy);
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px 16px;
+  flex: 1 1 300px; border-top: 3px solid var(--navy);
 }
 
 .payments h3 {
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--navy);
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--navy);
+  margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
 }
 
 .pay-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-  border-bottom: 1px dashed #f1f5f9;
-  font-size: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 5px 0; border-bottom: 1px dashed #f1f5f9; font-size: 12px;
 }
 
 .pay-row:last-child { border-bottom: none; }
 
 .pay-row label {
-  color: var(--muted);
-  font-weight: 500;
-  font-size: 12px;
-  width: auto;
-  display: inline;
-  margin: 0;
+  color: var(--muted); font-weight: 500; font-size: 12px;
+  width: auto; display: inline; margin: 0;
 }
 
-.pay-row span {
-  font-weight: 700;
-  color: var(--navy);
-}
-
-/* ── PAGINATION ──────────────────────────────── */
-#pagination {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 16px;
-  padding: 12px;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-#pageNumber {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-/* ── BUTTONS ─────────────────────────────────── */
-button, .action-btn {
-  background: var(--navy);
-  color: white;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  font-family: inherit;
-  margin: 8px 6px 0 0;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-}
-
-button:hover, .action-btn:hover {
-  background: var(--navy-light);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(27,38,59,0.2);
-}
-
-.action-btn:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
+.pay-row span { font-weight: 700; color: var(--navy); }
 
 /* ── GAIN / LOSS ─────────────────────────────── */
 .gain { color: var(--gain) !important; font-weight: 700; }
 .loss { color: var(--loss) !important; font-weight: 700; }
 
-/* ── INPUT STYLES ────────────────────────────── */
-input[type="date"],
-input[type="email"] {
-  padding: 5px 8px;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 5px;
-  background: white;
-  font-size: 12px;
-  font-family: inherit;
-  color: var(--text);
-  cursor: pointer;
-}
-
-input[type="date"]:focus,
-input[type="email"]:focus {
-  border-color: var(--navy);
-  box-shadow: 0 0 0 3px rgba(27,38,59,0.1);
-  outline: none;
-}
-
 /* ── FOOTER ──────────────────────────────────── */
 footer {
-  padding: 12px 24px;
-  background: var(--card);
+  padding: 12px 0 0;
   display: flex;
   justify-content: flex-end;
   border-top: 1px solid var(--border);
@@ -390,51 +400,63 @@ footer {
 }
 
 .btn-logout {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  font-size: 12px;
-  padding: 6px 14px;
-  font-weight: 600;
-}
-.btn-logout:hover {
-  background: #fee2e2;
-  color: var(--loss);
-  border-color: #fca5a5;
-  box-shadow: none;
-  transform: none;
+  background: #fee2e2; color: var(--loss);
+  border: 1.5px solid #fca5a5; font-size: 12px;
+  padding: 7px 18px; font-weight: 700;
+  cursor: pointer; font-family: inherit; border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
 }
 
-.btn-secondary {
-  background: transparent;
-  color: var(--navy);
-  border: 1.5px solid var(--navy);
+.btn-logout:hover {
+  background: var(--loss); color: white; border-color: var(--loss);
 }
-.btn-secondary:hover {
-  background: var(--navy);
-  color: white;
-  box-shadow: none;
+
+/* ── POPUP ───────────────────────────────────── */
+.popup {
+  display: none; position: fixed; z-index: 2000; inset: 0;
+  background: rgba(0,0,0,0.45); backdrop-filter: blur(3px);
+  align-items: center; justify-content: center;
 }
+
+.popup-content {
+  background: white; padding: 18px 20px; border-radius: 10px;
+  text-align: center; width: 280px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.popup-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+.popup-sub   { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+.popup-content button {
+  margin: 4px 4px 0; padding: 7px 18px; font-size: 12px;
+  border-radius: 6px; cursor: pointer; font-family: inherit;
+  font-weight: 700; border: none;
+}
+
+#confirmLogout { background: var(--loss); color: white; }
+#confirmLogout:hover { background: #b91c1c; }
+#cancelLogout { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
+#cancelLogout:hover { background: #e2e8f0; }
 
 /* ── RESPONSIVE ──────────────────────────────── */
 @media (max-width: 860px) {
-  .sheet { margin: 12px; padding: 12px; }
+  .pom-layout    { flex-direction: column; overflow: auto; }
+  .pom-sidebar   { width: 100%; max-height: 380px; border-right: none; border-bottom: 2px solid var(--navy); }
+  .pom-main      { padding: 12px; }
+  body           { height: auto; overflow: auto; }
 }
 
 @media (max-width: 600px) {
-  .indices-table th, .indices-table td {
-    font-size: 11px;
-    padding: 5px 6px;
-  }
+  .indices-table th, .indices-table td { font-size: 11px; padding: 5px 6px; }
   .site-header { flex-direction: column; align-items: flex-start; }
   .fuel-prices { display: none; }
+  .loaded-date { font-size: 11px; }
 }
 
 /* ── PRINT ───────────────────────────────────── */
 @media print {
-  nav, .action-btn, button, .fuel-prices, #pagination, .date-bar, footer { display: none !important; }
-  body { background: white; }
-  .sheet { box-shadow: none; border: none; margin: 0; padding: 8px; }
+  nav, .pom-sidebar, footer, .popup, .pom-main-bar { display: none !important; }
+  body { background: white; height: auto; overflow: visible; }
+  .pom-layout { display: block; }
+  .pom-main   { overflow: visible; padding: 0; }
+  .sheet      { box-shadow: none; border: none; padding: 8px; }
 }
-
-body p { font-size: 13px; font-weight: normal; }
