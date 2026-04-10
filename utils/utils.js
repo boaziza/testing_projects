@@ -72,37 +72,27 @@ async function userAccess() {
 }
 
 async function loadFuelPrices() {
+    const pmEl  = document.getElementById("pmsPrice");
+    const agoEl = document.getElementById("agoPrice");
+    if (!pmEl || !agoEl) return;
+
     try {
-        // Use AllOrigins "raw" endpoint
-        const proxy = "https://api.allorigins.win/raw?url=";
-        const url = "https://www.globalpetrolprices.com/Rwanda/";
-        const response = await fetch(proxy + encodeURIComponent(url));
+        const client = new Appwrite.Client()
+            .setEndpoint("https://cloud.appwrite.io/v1")
+            .setProject("68a9b3e90029e6a10ff5");
+        const databases = new Appwrite.Databases(client);
 
-        if (!response.ok) {
-            throw new Error("Network response was not ok: " + response.status);
-        }
+        const doc = await databases.getDocument(
+            "695f766c003a8dc2b3be",
+            "69d3ed400021197ed76e",
+            "69d7db7ed8d5d2b73d66"
+        );
 
-        // Get the HTML directly
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-
-        // Select the table rows
-        const rows = doc.querySelectorAll("table tbody tr");
-
-        if (rows.length >= 2) {
-            const pmsPrice = rows[0].querySelectorAll("td")[1].textContent.trim() + " RWF";
-            const agoPrice = rows[1].querySelectorAll("td")[1].textContent.trim() + " RWF";
-
-            document.getElementById("pmsPrice").textContent = pmsPrice.toLocaleString();
-            document.getElementById("agoPrice").textContent = agoPrice.toLocaleString();
-        } else {
-            console.error("❌ Table rows not found");
-        }
-    } catch (err) {
-        console.error("⚠️ Error fetching fuel prices:", err);
-        document.getElementById("pmsPrice").textContent = "Error";
-        document.getElementById("agoPrice").textContent = "Error";
+        pmEl.textContent  = doc.pmsPrice  != null ? Number(doc.pmsPrice).toLocaleString()  + " RWF" : "—";
+        agoEl.textContent = doc.agoPrice  != null ? Number(doc.agoPrice).toLocaleString()  + " RWF" : "—";
+    } catch {
+        pmEl.textContent  = "—";
+        agoEl.textContent = "—";
     }
 }
 

@@ -13,18 +13,18 @@ const _settingsClient = new Appwrite.Client()
 const _settingsDb = new Appwrite.Databases(_settingsClient);
 const _DB_ID       = "695f766c003a8dc2b3be";
 const _SETTINGS_ID = "69d3ed400021197ed76e";
-const _SETTINGS_DOC = "station-settings";
+const _SETTINGS_DOC = "69d7db7ed8d5d2b73d66";
 
 async function initSettings() {
     try {
         const doc = await _settingsDb.getDocument(_DB_ID, _SETTINGS_ID, _SETTINGS_DOC);
-        pmsPrice       = doc.pmsPrice       ?? 1989;
-        agoPrice       = doc.agoPrice       ?? 1900;
+        pmsPrice       = doc.pmsPrice       ?? 2303;
+        agoPrice       = doc.agoPrice       ?? 2205;
         momoFeePercent = doc.momoFeePercent ?? 0.5;
     } catch {
         // No settings saved yet — use safe defaults
-        pmsPrice       = 1989;
-        agoPrice       = 1900;
+        pmsPrice       = 2303;
+        agoPrice       = 2205;
         momoFeePercent = 0.5;
     }
 }
@@ -40,18 +40,6 @@ async function calculateIndex() {
 
     const databaseId = "695f766c003a8dc2b3be";
     const indexId = "68cd1987002bae34ea4b";
-
-    try {
-        // Use fixed doc ID — always the one row in the settings table
-        const doc = await databases.getDocument(databaseId, _SETTINGS_ID, _SETTINGS_DOC);
-        pmsPrice       = doc.pmsPrice       ?? 1989;
-        agoPrice       = doc.agoPrice       ?? 1900;
-        momoFeePercent = doc.momoFeePercent ?? 0.5;
-    } catch {
-        pmsPrice       = 1989;
-        agoPrice       = 1900;
-        momoFeePercent = 0.5;
-    }
 
     pms1 =Number(document.getElementById("pms1").value);
     pms2 =Number(document.getElementById("pms2").value);
@@ -710,16 +698,14 @@ async function storeLoan() {
         loanData
         );
 
+        clearLoan();
+        loans.push({company, amount});
         alert("Data saved successfully");
 
     } catch (err) {
       console.error("Error:", err.message);
       alert("Error: " + err.message);
     }
-
-    clearLoan();
-
-    loans.push({company, amount});
     
     
 
@@ -801,16 +787,14 @@ async function storeFiche() {
         ficheData
         );
 
+        clearFiche();
+        fiche.push({company, amount});
         alert("Data saved successfully");
 
     } catch (err) {
       console.error("Error:", err.message);
       alert("Error: " + err.message);
     }
-
-    clearFiche();
-
-    fiche.push({company, amount});
     
     
 

@@ -23,13 +23,6 @@
         </div>
     </header>
 
-    <!-- ── NAV ── -->
-    <nav>
-      <ul>
-        <li><a href="index">Rapport</a></li>
-      </ul>
-    </nav>
-
     <!-- ── SHIFT BAR ── -->
     <div class="shift-bar">
         <div class="shift-field">
@@ -202,7 +195,6 @@
                                 </div>
                                 <div class="entry-actions">
                                     <button type="button" class="action-btn" onclick="this.disabled=true; storeFiche().finally(()=>this.disabled=false)">Save Fiche</button>
-                                    <button type="button" class="cancel" onclick="clearFiche()">Cancel</button>
                                 </div>
                             </div>
                             <div class="entry-total">
@@ -229,7 +221,6 @@
                                 </div>
                                 <div class="entry-actions">
                                     <button type="button" class="action-btn" onclick="this.disabled=true; storeLoan().finally(()=>this.disabled=false)">Save Loan</button>
-                                    <button type="button" class="cancel" onclick="clearLoan()">Cancel</button>
                                 </div>
                             </div>
                             <div class="entry-total">
