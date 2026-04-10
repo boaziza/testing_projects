@@ -1,7 +1,34 @@
 let totalVente,pms1,pms2,pms3,pms4,ago1,ago2,ago3,ago4;
 let venteLitresPms, totalPms, venteLitresAgo, totalAgo;
 let pmsPrice, agoPrice, logDate, shift;
-let momoFeePercent = 0.5;
+let momoFeePercent = 0; // loaded from settings on page open
+
+// ── LOAD SETTINGS ON PAGE OPEN ────────────────────────────────
+// Reads pmsPrice, agoPrice, momoFeePercent from the single fixed
+// settings document so MomoLoss() always uses the correct rate,
+// even before the pompiste clicks "Calculate Index".
+const _settingsClient = new Appwrite.Client()
+    .setEndpoint("https://cloud.appwrite.io/v1")
+    .setProject("68a9b3e90029e6a10ff5");
+const _settingsDb = new Appwrite.Databases(_settingsClient);
+const _DB_ID       = "695f766c003a8dc2b3be";
+const _SETTINGS_ID = "69d3ed400021197ed76e";
+const _SETTINGS_DOC = "station-settings";
+
+async function initSettings() {
+    try {
+        const doc = await _settingsDb.getDocument(_DB_ID, _SETTINGS_ID, _SETTINGS_DOC);
+        pmsPrice       = doc.pmsPrice       ?? 1989;
+        agoPrice       = doc.agoPrice       ?? 1900;
+        momoFeePercent = doc.momoFeePercent ?? 0.5;
+    } catch {
+        // No settings saved yet — use safe defaults
+        pmsPrice       = 1989;
+        agoPrice       = 1900;
+        momoFeePercent = 0.5;
+    }
+}
+initSettings();
 
 async function calculateIndex() {
     const client = new Appwrite.Client()
@@ -14,21 +41,15 @@ async function calculateIndex() {
     const databaseId = "695f766c003a8dc2b3be";
     const indexId = "68cd1987002bae34ea4b";
 
-    const settingsId = "69d3ed400021197ed76e"; 
     try {
-        const settingsRes = await databases.listDocuments(databaseId, settingsId);
-        if (settingsRes.documents.length > 0) {
-            pmsPrice       = settingsRes.documents[0].pmsPrice       ?? 1989;
-            agoPrice       = settingsRes.documents[0].agoPrice       ?? 1900;
-            momoFeePercent = settingsRes.documents[0].momoFeePercent ?? 0.5;
-        } else {
-            pmsPrice = 1989;
-            agoPrice = 1900;
-            momoFeePercent = 0.5;
-        }
+        // Use fixed doc ID — always the one row in the settings table
+        const doc = await databases.getDocument(databaseId, _SETTINGS_ID, _SETTINGS_DOC);
+        pmsPrice       = doc.pmsPrice       ?? 1989;
+        agoPrice       = doc.agoPrice       ?? 1900;
+        momoFeePercent = doc.momoFeePercent ?? 0.5;
     } catch {
-        pmsPrice = 1989;
-        agoPrice = 1900;
+        pmsPrice       = 1989;
+        agoPrice       = 1900;
         momoFeePercent = 0.5;
     }
 

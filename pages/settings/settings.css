@@ -335,6 +335,12 @@ footer {
 #cancelRemove { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
 #cancelRemove:hover { background: #e2e8f0; transform: none; box-shadow: none; }
 
+#confirmSave { background: var(--navy); color: white; }
+#confirmSave:hover { background: var(--navy-light); transform: none; box-shadow: none; }
+
+#cancelSave { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
+#cancelSave:hover { background: #e2e8f0; transform: none; box-shadow: none; }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 600px) {
   .settings-wrapper { padding: 0 12px; margin: 16px auto; }

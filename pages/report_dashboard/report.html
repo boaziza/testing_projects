@@ -40,8 +40,10 @@
       <li><a href="../settings/settings">Settings</a></li>
     </ul>
   </nav>
+
   <div class="app">
-    <!-- Sidebar -->
+
+    <!-- ── SIDEBAR ── -->
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-text">
@@ -49,65 +51,65 @@
           <p>Choose a report</p>
         </div>
       </div>
-
       <div class="reports-list" id="reportsList"></div>
-
       <div class="sidebar-footer">
         <small>© 2025 My Dashboard</small>
       </div>
     </aside>
 
-    <!-- Main -->
+    <!-- ── MAIN ── -->
     <main class="main">
+
+      <!-- Metric cards -->
       <section class="metrics">
         <div class="metric"><h3>Gain PMS</h3><p id="gainPms">—</p></div>
         <div class="metric"><h3>Gain AGO</h3><p id="gainAgo">—</p></div>
-        <div class="metric"><h3>Total Gain</h3><p id="gain" >—</p></div>
+        <div class="metric"><h3>Total Gain</h3><p id="gain">—</p></div>
       </section>
 
       <section class="content">
+        <div class="panel table-panel">
 
-        <div class="bottom-left panel table-panel">
-          <h4>Report Table</h4>
-          <div class="table-wrap">
-            <div class="controls">
-                <!-- <label for="timeRange">Range</label><br>
-                <select id="timeRange" class="select">
-                  <option value=""></option>
-                    <option value="30">Last 30 days</option>
-                    <option value="7">Last 7 days</option>
-                    <option value="90">Last 90 days</option>
-                </select> -->
-              <label for="Search">Search By</label><br>
-              <select id="searchWith"></select><br>
-            </div><br>
-            <label for="Search">Search</label>
-            <input id="search" class="table-search" />
-
-            <div id="searchButton"></div>
-
-
-            <main class="sheet">        
-              <section class="indices">            
-                  <table class="indices-table">
-                      <thead>
-                          <tr id="headers"></tr>
-                      </thead>
-                      <tbody id="body"></tbody>
-                  </table>  
-                  <div id="pagination" style="margin-top: 20px; display: none; gap: 10px; align-items: center; justify-content: center;">
-                    <button id="prevPage">Previous</button>
-                    <span id="pageNumber">Page 1</span>
-                    <button id="nextPage">Next</button>
-                  </div>
-
-              </section>
-
-            </main>
+          <!-- Table title + result count -->
+          <div class="table-header-row">
+            <h4 id="tableTitle">Select a report</h4>
+            <span class="result-count" id="resultCount"></span>
           </div>
+
+          <div class="table-wrap">
+
+            <!-- Search controls -->
+            <div class="controls">
+              <div class="control-group">
+                <label for="searchWith">Search By</label>
+                <select id="searchWith"></select>
+              </div>
+              <div class="control-group control-search">
+                <label for="search">Search</label>
+                <div class="search-input-wrap">
+                  <input id="search" class="table-search" placeholder="Type to filter…" autocomplete="off" list="searchSuggestions"/>
+                  <datalist id="searchSuggestions"></datalist>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <table class="indices-table">
+              <thead><tr id="headers"></tr></thead>
+              <tbody id="body"></tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div id="pagination">
+              <button id="prevPage">Previous</button>
+              <span id="pageNumber">Page 1 of 1</span>
+              <button id="nextPage">Next</button>
+            </div>
+
+          </div><!-- /table-wrap -->
         </div>
       </section>
-      
+
     </main>
   </div>
 

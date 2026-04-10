@@ -69,7 +69,7 @@
           <input type="number" id="momoFeeInput" placeholder="e.g. 0.5" step="0.1" min="0" max="100">
         </div>
         <div class="settings-actions">
-          <button class="action-btn btn-store" id="savePricesBtn" onclick="handleSavePrices(this)">Save Prices</button>
+          <button class="action-btn btn-store" onclick="document.getElementById('confirmSavePopup').style.display='flex'">Save Settings</button>
         </div>
         <div id="fuelStatus" class="status-msg"></div>
       </div>
@@ -117,6 +117,22 @@
       </button>
       <button id="cancelLogout"
         onclick="document.getElementById('confirmLogoutPopup').style.display='none'">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <!-- ── SAVE PRICES POPUP ── -->
+  <div class="popup" id="confirmSavePopup" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title">Save Settings?</p>
+      <p class="popup-sub">This will update fuel prices, station name, and MoMo fee for all users.</p>
+      <button id="confirmSave"
+        onclick="document.getElementById('confirmSavePopup').style.display='none'; handleSavePrices(this)">
+        Save
+      </button>
+      <button id="cancelSave"
+        onclick="document.getElementById('confirmSavePopup').style.display='none'">
         Cancel
       </button>
     </div>

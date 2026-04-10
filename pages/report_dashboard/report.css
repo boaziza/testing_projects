@@ -312,19 +312,59 @@ nav ul li a:hover {
   box-shadow: var(--shadow);
 }
 
-.panel h4 {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--navy);
+.table-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 12px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border);
 }
 
+.table-header-row h4 {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0;
+}
+
+.result-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
+.result-count.no-results {
+  color: var(--loss);
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
 /* ── CONTROLS ────────────────────────────────── */
 .controls {
-  margin-bottom: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
 }
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 160px;
+}
+
+.control-search { flex: 1; min-width: 220px; }
+
+.search-input-wrap { display: flex; width: 100%; }
 
 .controls label {
   font-size: 11px;
@@ -332,14 +372,11 @@ nav ul li a:hover {
   text-transform: uppercase;
   letter-spacing: 0.4px;
   color: var(--muted);
-  display: block;
-  margin-bottom: 4px;
 }
 
 .controls select,
 .table-search {
   width: 100%;
-  max-width: 280px;
   padding: 7px 10px;
   border: 1.5px solid var(--border);
   border-radius: 7px;
@@ -355,11 +392,6 @@ nav ul li a:hover {
   border-color: var(--navy);
   box-shadow: 0 0 0 3px rgba(27,38,59,0.1);
   outline: none;
-}
-
-.table-search {
-  max-width: 100%;
-  margin-bottom: 10px;
 }
 
 /* ── TABLE ───────────────────────────────────── */
@@ -401,17 +433,26 @@ nav ul li a:hover {
   white-space: nowrap;
 }
 
-/* Totals row (last row) */
-.indices-table tbody tr:last-child td {
+/* Totals row */
+.indices-table tbody tr.totals-row td {
   background: #f1f5f9;
   font-weight: 700;
   color: var(--navy);
   border-top: 2px solid var(--border);
 }
 
+/* Empty / no-results row */
+.indices-table tbody td.empty-row {
+  text-align: center;
+  padding: 28px 12px;
+  color: var(--muted);
+  font-style: italic;
+  border: 1px solid var(--border);
+}
+
 /* ── PAGINATION ──────────────────────────────── */
 #pagination {
-  display: flex;
+  display: none; /* shown by JS when data is loaded */
   gap: 10px;
   align-items: center;
   justify-content: center;

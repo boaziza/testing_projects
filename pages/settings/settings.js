@@ -72,7 +72,7 @@ async function saveFuelPrices() {
             });
         }
 
-        showStatus(statusEl, "Prices saved successfully.", "success");
+        showStatus(statusEl, "✓ Settings saved successfully.", "success");
     } catch (err) {
         console.error(err);
         showStatus(statusEl, "Error saving prices: " + err.message, "error");
