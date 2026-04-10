@@ -7,17 +7,19 @@ let momoFeePercent = 0; // loaded from settings on page open
 // Reads pmsPrice, agoPrice, momoFeePercent from the single fixed
 // settings document so MomoLoss() always uses the correct rate,
 // even before the pompiste clicks "Calculate Index".
-const _settingsClient = new Appwrite.Client()
+// ── SHARED APPWRITE CLIENT ────────────────────────────────────
+const _client  = new Appwrite.Client()
     .setEndpoint("https://cloud.appwrite.io/v1")
     .setProject("68a9b3e90029e6a10ff5");
-const _settingsDb = new Appwrite.Databases(_settingsClient);
-const _DB_ID       = "695f766c003a8dc2b3be";
-const _SETTINGS_ID = "69d3ed400021197ed76e";
+const _account  = new Appwrite.Account(_client);
+const _db       = new Appwrite.Databases(_client);
+const _DB_ID        = "695f766c003a8dc2b3be";
+const _SETTINGS_ID  = "69d3ed400021197ed76e";
 const _SETTINGS_DOC = "69d7db7ed8d5d2b73d66";
 
 async function initSettings() {
     try {
-        const doc = await _settingsDb.getDocument(_DB_ID, _SETTINGS_ID, _SETTINGS_DOC);
+        const doc = await _db.getDocument(_DB_ID, _SETTINGS_ID, _SETTINGS_DOC);
         pmsPrice       = doc.pmsPrice       ?? 2303;
         agoPrice       = doc.agoPrice       ?? 2205;
         momoFeePercent = doc.momoFeePercent ?? 0.5;
@@ -31,14 +33,6 @@ async function initSettings() {
 initSettings();
 
 async function calculateIndex() {
-    const client = new Appwrite.Client()
-        .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68a9b3e90029e6a10ff5");
-
-    const account = new Appwrite.Account(client);
-    const databases = new Appwrite.Databases(client);
-
-    const databaseId = "695f766c003a8dc2b3be";
     const indexId = "68cd1987002bae34ea4b";
 
     pms1 =Number(document.getElementById("pms1").value);
@@ -85,7 +79,7 @@ async function calculateIndex() {
         let pmsMatch = false;
         let agoMatch = false;
 
-        const response = await databases.listDocuments(databaseId, indexId, [Appwrite.Query.equal("logDate", logDate)]);
+        const response = await _db.listDocuments(_DB_ID, indexId, [Appwrite.Query.equal("logDate", logDate)]);
 
         for (const doc of response.documents) {
             // Check PMS match if values are provided
@@ -120,7 +114,7 @@ async function calculateIndex() {
             pmsMatch = false;
             agoMatch = false;
             
-            const beforeResponse = await databases.listDocuments(databaseId, indexId, [Appwrite.Query.equal("logDate", dateBefore)]);
+            const beforeResponse = await _db.listDocuments(_DB_ID, indexId, [Appwrite.Query.equal("logDate", dateBefore)]);
 
             for (const doc of beforeResponse.documents) {
                 // Check PMS match if values are provided
@@ -191,7 +185,7 @@ async function payments() {
         totalFiche = fiche.reduce((sum, item) => sum + item.amount, 0);
 
         totalCash = (cash5000*5000) + (cash2000*2000) + (cash1000*1000) + (cash500*500);
-        totalPayments = momo+ momoLoss + totalFiche + bon + spFuelCard + bankCard + totalCash + totalLoans ;
+        totalPayments = momo + momoLoss + totalFiche + bon + spFuelCard + bankCard + totalCash + totalLoans;
         gainPayments = totalPayments - totalVente;
 
         
@@ -209,22 +203,16 @@ async function payments() {
 
 let dataSituation; 
 async function situation() {
-    const client = new Appwrite.Client()
-        .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68a9b3e90029e6a10ff5");
-
-    const account = new Appwrite.Account(client);
-    const databases = new Appwrite.Databases(client);
-
-    const databaseId = "695f766c003a8dc2b3be";
     const indexId = "68cd1987002bae34ea4b";
     const paymentsId = "68cd19990006cbb33843";
     const situationId = "68cd6b7f00330a840d96";
 
     try {
-        
-        const user = await account.get();
-        const email = await user.email;          
+        logDate = document.getElementById("logDate").value;
+        shift   = document.getElementById("shift").value;
+
+        const user = await _account.get();
+        const email = await user.email;
         const employee = user.name;
 
         function generateShiftId(employee, logDate) {
@@ -242,7 +230,7 @@ async function situation() {
 
 
         const gainPompisteId = "68dbbb760034fb10a518"
-        const gainDocs = await databases.listDocuments(databaseId, gainPompisteId, [Appwrite.Query.equal("email", email), Appwrite.Query.equal("monthYear", monthYear)]);
+        const gainDocs = await _db.listDocuments(_DB_ID, gainPompisteId, [Appwrite.Query.equal("email", email), Appwrite.Query.equal("monthYear", monthYear)]);
         const doc = gainDocs.documents;     
 
 
@@ -256,8 +244,8 @@ async function situation() {
                monthYear
             };
             
-            await databases.createDocument(
-                databaseId,
+            await _db.createDocument(
+                _DB_ID,
                 gainPompisteId,
                 "unique()",
                 newData
@@ -276,8 +264,8 @@ async function situation() {
                monthYear
             };
 
-            await databases.updateDocument(
-                databaseId,
+            await _db.updateDocument(
+                _DB_ID,
                 gainPompisteId,
                 docId,
                 oldData
@@ -336,7 +324,7 @@ async function situation() {
             totalVente
         };
 
-        const response = await databases.listDocuments(databaseId, situationId, [Appwrite.Query.equal("logDate", logDate)]);
+        const response = await _db.listDocuments(_DB_ID, situationId, [Appwrite.Query.equal("logDate", logDate)]);
 
         if (shift === "Morning") {
             
@@ -367,8 +355,8 @@ async function situation() {
                     logDate,
                 };
 
-                await databases.createDocument(
-                    databaseId,
+                await _db.createDocument(
+                    _DB_ID,
                     situationId,
                     "unique()", // Appwrite generates an ID
                     dataSituation
@@ -412,8 +400,8 @@ async function situation() {
                     totalVente,
                 }
 
-                const updated = await databases.updateDocument(
-                databaseId,
+                const updated = await _db.updateDocument(
+                _DB_ID,
                 situationId,
                 docId,
                 dataSituation)
@@ -458,8 +446,8 @@ async function situation() {
                 totalVente,
             }
 
-            const updated = await databases.updateDocument(
-            databaseId,
+            const updated = await _db.updateDocument(
+            _DB_ID,
             situationId,
             docId,
             dataSituation)
@@ -509,8 +497,8 @@ async function situation() {
                 done,
             }
 
-            const updated = await databases.updateDocument(
-            databaseId,
+            const updated = await _db.updateDocument(
+            _DB_ID,
             situationId,
             docId,
             dataSituation)
@@ -520,15 +508,15 @@ async function situation() {
         
         
 
-        await databases.createDocument(
-            databaseId,
+        await _db.createDocument(
+            _DB_ID,
             indexId,
             "unique()", // Appwrite generates an ID
             dataIndex
         );
 
-        await databases.createDocument(
-            databaseId,
+        await _db.createDocument(
+            _DB_ID,
             paymentsId,
             "unique()", // Appwrite generates an ID
             dataPayments
@@ -653,27 +641,13 @@ function removeBankCard(i) {
 
 let loans = [];
 async function storeLoan() {
-    const client = new Appwrite.Client()
-    .setEndpoint("https://cloud.appwrite.io/v1") 
-    .setProject("68a9b3e90029e6a10ff5");
-    
-    const account = new Appwrite.Account(client);
-    const databases = new Appwrite.Databases(client);
-
-    const databaseId = "695f766c003a8dc2b3be";
     const loansId = "68fbe6f80019b53fb32f";
-    const paymentsId = "68cd19990006cbb33843";
     
-    const user = await account.get();        
-    const employee = user.name;  
-    
-    const today = new Date();
-
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-11
-    const day = String(today.getDate()).padStart(2, '0');        // Days 1-31
-    const year = today.getFullYear();
+    const user = await _account.get();
+    const employee = user.name;
 
     logDate = document.getElementById("logDate").value;
+    const [year, month] = logDate.split("-");
     const monthYear = `${year}-${month}`;
 
     const plate = document.getElementById("loan-plate").value;
@@ -691,8 +665,8 @@ async function storeLoan() {
             amount
         };
 
-        await databases.createDocument(
-        databaseId,
+        await _db.createDocument(
+        _DB_ID,
         loansId,
         "unique()",
         loanData
@@ -706,62 +680,12 @@ async function storeLoan() {
       console.error("Error:", err.message);
       alert("Error: " + err.message);
     }
-    
-    
-
-    // try {
-    //     // 1. Find the document by attribute
-    //     const docs = await databases.listDocuments(
-    //         databaseId,
-    //         paymentsId,
-    //         [ Appwrite.Query.equal("logDate", logDate) ] // filter by your known attribute
-    //     );
-
-    //     if (docs.total === 0) {
-    //         console.log("No document found!");
-    //         return;
-    //     }
-
-    //     const docId = docs.documents[0].$id; // get the first match
-
-    //     // 2. Update the null fields
-    //     const updated = await databases.updateDocument(
-    //         databaseId,
-    //         situationId,
-    //         docId,
-    //         {
-    //             initialAgo: initialAgo,
-    //             receivedAgo: receivedAgo,
-    //             physicalStockAgo: physicalStockAgo,
-    //             theoryStockAgo: theoryStockAgo,
-    //             gainFuelAgo: gainFuelAgo,
-    //             initialPms: initialPms,
-    //             receivedPms: receivedPms,
-    //             physicalStockPms: physicalStockPms,
-    //             theoryStockPms: theoryStockPms,
-    //             gainFuelPms: gainFuelPms,
-    //         }
-    //     );
-
-    //     alert("Data saved successfully");
-
-    // } catch (error) {
-    //     alert("Error updating:", error);
-    // }
 }
 let fiche = [];
 async function storeFiche() {
-    const client = new Appwrite.Client()
-    .setEndpoint("https://cloud.appwrite.io/v1") 
-    .setProject("68a9b3e90029e6a10ff5");
-    
-    const account = new Appwrite.Account(client);
-    const databases = new Appwrite.Databases(client);
-
-    const databaseId = "695f766c003a8dc2b3be";
     const ficheId = "69007206001aed40d6f4";
 
-    const user = await account.get();        
+    const user = await _account.get();        
     const employee = user.name;  
 
     logDate = document.getElementById("logDate").value;
@@ -780,8 +704,8 @@ async function storeFiche() {
             amount
         };
 
-        await databases.createDocument(
-        databaseId,
+        await _db.createDocument(
+        _DB_ID,
         ficheId,
         "unique()",
         ficheData
@@ -798,45 +722,6 @@ async function storeFiche() {
     
     
 
-    // try {
-    //     // 1. Find the document by attribute
-    //     const docs = await databases.listDocuments(
-    //         databaseId,
-    //         paymentsId,
-    //         [ Appwrite.Query.equal("logDate", logDate) ] // filter by your known attribute
-    //     );
-
-    //     if (docs.total === 0) {
-    //         console.log("No document found!");
-    //         return;
-    //     }
-
-    //     const docId = docs.documents[0].$id; // get the first match
-
-    //     // 2. Update the null fields
-    //     const updated = await databases.updateDocument(
-    //         databaseId,
-    //         situationId,
-    //         docId,
-    //         {
-    //             initialAgo: initialAgo,
-    //             receivedAgo: receivedAgo,
-    //             physicalStockAgo: physicalStockAgo,
-    //             theoryStockAgo: theoryStockAgo,
-    //             gainFuelAgo: gainFuelAgo,
-    //             initialPms: initialPms,
-    //             receivedPms: receivedPms,
-    //             physicalStockPms: physicalStockPms,
-    //             theoryStockPms: theoryStockPms,
-    //             gainFuelPms: gainFuelPms,
-    //         }
-    //     );
-
-    //     alert("Data saved successfully");
-
-    // } catch (error) {
-    //     alert("Error updating:", error);
-    // }
 }
 
 async function MomoLoss() {
