@@ -119,7 +119,7 @@
                 <div class="payment-rows">
                     <div class="pay-input-row">
                         <label for="momo">MoMo</label>
-                        <input type="number" name="momo" id="momo" oninput="MomoLoss()">
+                        <input type="number" name="momo" id="momo" min="0" oninput="MomoLoss()">
                         <span class="momo-loss-inline">
                             <span class="momo-loss-label">Loss</span>
                             <input type="number" name="momoLoss" id="momoLoss" readonly tabindex="-1">
@@ -128,19 +128,19 @@
                     <div class="pay-input-row chip-row">
                         <label>SP Fuel Card</label>
                         <div class="chip-input-group">
-                            <input type="number" id="spFuelCardInput" placeholder="Amount" onkeydown="if(event.key==='Enter'){event.preventDefault();addSpCard();}">
+                            <input type="number" id="spFuelCardInput" placeholder="Amount" min="1" onkeydown="if(event.key==='Enter'){event.preventDefault();addSpCard();}">
                             <button type="button" class="btn-secondary" onclick="addSpCard()">Add</button>
                         </div>
                         <div id="spFuelCardChips" class="chips-row"></div>
                     </div>
                     <div class="pay-input-row">
                         <label for="bon">Bon</label>
-                        <input type="number" name="bon" id="bon">
+                        <input type="number" name="bon" id="bon" min="0">
                     </div>
                     <div class="pay-input-row chip-row">
                         <label>Bank Card</label>
                         <div class="chip-input-group">
-                            <input type="number" id="bankCardInput" placeholder="Amount" onkeydown="if(event.key==='Enter'){event.preventDefault();addBankCard();}">
+                            <input type="number" id="bankCardInput" placeholder="Amount" min="1" onkeydown="if(event.key==='Enter'){event.preventDefault();addBankCard();}">
                             <button type="button" class="btn-secondary" onclick="addBankCard()">Add</button>
                         </div>
                         <div id="bankCardChips" class="chips-row"></div>
@@ -153,19 +153,19 @@
                     <div class="cash-grid">
                         <div class="cash-denom">
                             <label>5,000 &times;</label>
-                            <input type="number" name="cash5000" id="5000">
+                            <input type="number" name="cash5000" id="5000" min="0">
                         </div>
                         <div class="cash-denom">
                             <label>2,000 &times;</label>
-                            <input type="number" name="cash2000" id="2000">
+                            <input type="number" name="cash2000" id="2000" min="0">
                         </div>
                         <div class="cash-denom">
                             <label>1,000 &times;</label>
-                            <input type="number" name="cash1000" id="1000">
+                            <input type="number" name="cash1000" id="1000" min="0">
                         </div>
                         <div class="cash-denom">
                             <label>500 &times;</label>
-                            <input type="number" name="cash500" id="500">
+                            <input type="number" name="cash500" id="500" min="0">
                         </div>
                     </div>
                     <div class="cash-total">
@@ -184,7 +184,7 @@
                                 <div class="entry-card-title">Fiche</div>
                                 <div class="entry-field">
                                     <label for="fiche-plate">Plate</label>
-                                    <input class="loan" type="text" id="fiche-plate" placeholder="e.g. RAB 123A" oninput="this.value=this.value.toUpperCase()">
+                                    <input class="loan" type="text" id="fiche-plate" placeholder="e.g. RAB 123A" pattern="R[A-Z]{2}\s?\d{3}\s?[A-Z]" title="Format: RAB 123 A (R + 2 letters + 3 digits + 1 letter)" oninput="this.value=this.value.toUpperCase()">
                                 </div>
                                 <div class="entry-field">
                                     <label for="fiche-company">Company</label>
@@ -192,12 +192,13 @@
                                 </div>
                                 <div class="entry-field">
                                     <label for="fiche-amount">Amount</label>
-                                    <input class="loan" type="number" id="fiche-amount" placeholder="e.g. 50000">
+                                    <input class="loan" type="number" id="fiche-amount" placeholder="e.g. 50000" min="1" onkeydown="if(event.key==='Enter'){event.preventDefault();addFiche();}">
                                 </div>
                                 <div class="entry-actions">
-                                    <button type="button" class="action-btn" onclick="this.disabled=true; storeFiche().finally(()=>this.disabled=false)">Save Fiche</button>
+                                    <button type="button" class="action-btn" onclick="addFiche()">Add Fiche</button>
                                 </div>
                             </div>
+                            <div id="ficheChips" class="chips-row"></div>
                             <div class="entry-total">
                                 <span class="entry-total-label">Total Fiche</span>
                                 <span class="entry-total-value output" id="totalFiche">—</span>
@@ -210,7 +211,7 @@
                                 <div class="entry-card-title">Loan</div>
                                 <div class="entry-field">
                                     <label for="loan-plate">Plate</label>
-                                    <input class="loan" type="text" id="loan-plate" placeholder="e.g. RAB 123A" oninput="this.value=this.value.toUpperCase()">
+                                    <input class="loan" type="text" id="loan-plate" placeholder="e.g. RAB 123A" pattern="R[A-Z]{2}\s?\d{3}\s?[A-Z]" title="Format: RAB 123 A (R + 2 letters + 3 digits + 1 letter)" oninput="this.value=this.value.toUpperCase()">
                                 </div>
                                 <div class="entry-field">
                                     <label for="loan-company">Company</label>
@@ -218,12 +219,13 @@
                                 </div>
                                 <div class="entry-field">
                                     <label for="loan-amount">Amount</label>
-                                    <input class="loan" type="number" id="loan-amount" placeholder="e.g. 50000">
+                                    <input class="loan" type="number" id="loan-amount" placeholder="e.g. 50000" min="1" onkeydown="if(event.key==='Enter'){event.preventDefault();addLoan();}">
                                 </div>
                                 <div class="entry-actions">
-                                    <button type="button" class="action-btn" onclick="this.disabled=true; storeLoan().finally(()=>this.disabled=false)">Save Loan</button>
+                                    <button type="button" class="action-btn" onclick="addLoan()">Add Loan</button>
                                 </div>
                             </div>
+                            <div id="loanChips" class="chips-row"></div>
                             <div class="entry-total">
                                 <span class="entry-total-label">Total Loans</span>
                                 <span class="entry-total-value output" id="totalLoans">—</span>

@@ -39,6 +39,11 @@ async function calculateIndex() {
     logDate= document.getElementById("logDate").value;
     shift = document.getElementById("shift").value;
 
+    if (pms1 && pms2 && pms2 < pms1) { toast("P1: End value must be ≥ Start value", "warning"); return; }
+    if (pms3 && pms4 && pms4 < pms3) { toast("P2: End value must be ≥ Start value", "warning"); return; }
+    if (ago1 && ago2 && ago2 < ago1) { toast("P3: End value must be ≥ Start value", "warning"); return; }
+    if (ago3 && ago4 && ago4 < ago3) { toast("P4: End value must be ≥ Start value", "warning"); return; }
+
     venteLitresPms = (pms2 - pms1) + (pms4 - pms3);
     totalPms = parseInt(venteLitresPms*pmsPrice, 10);
 
@@ -392,7 +397,7 @@ async function situation() {
                     totalVente,
                 }
 
-                const updated = await _AW.db.updateDocument(
+                await _AW.db.updateDocument(
                 _AW.DB_ID,
                 situationId,
                 docId,
@@ -438,12 +443,12 @@ async function situation() {
                 totalVente,
             }
 
-            const updated = await _AW.db.updateDocument(
+            await _AW.db.updateDocument(
             _AW.DB_ID,
             situationId,
             docId,
             dataSituation)
-            
+
         } else if(shift === "Night" && response.documents.length !== 0 ){
             const doc = response.documents[0];
 
@@ -489,12 +494,13 @@ async function situation() {
                 done,
             }
 
-            const updated = await _AW.db.updateDocument(
+            await _AW.db.updateDocument(
             _AW.DB_ID,
             situationId,
             docId,
             dataSituation)
-            
+
+
         }
         
         
@@ -503,21 +509,45 @@ async function situation() {
         await _AW.db.createDocument(
             _AW.DB_ID,
             indexId,
-            "unique()", // Appwrite generates an ID
+            "unique()",
             dataIndex
         );
 
         await _AW.db.createDocument(
             _AW.DB_ID,
             paymentsId,
-            "unique()", // Appwrite generates an ID
+            "unique()",
             dataPayments
         );
+
+        // Bulk-write each fiche entry to its own collection document
+        const ficheId = "69007206001aed40d6f4";
+        await Promise.all(fiche.map(item =>
+            _AW.db.createDocument(_AW.DB_ID, ficheId, "unique()", {
+                plate:    item.plate,
+                company:  item.company,
+                amount:   item.amount,
+                logDate,
+                employee,
+            })
+        ));
+
+        // Bulk-write each loan entry to its own collection document
+        const loansId = "68fbe6f80019b53fb32f";
+        await Promise.all(loans.map(item =>
+            _AW.db.createDocument(_AW.DB_ID, loansId, "unique()", {
+                plate:     item.plate,
+                company:   item.company,
+                amount:    item.amount,
+                logDate,
+                monthYear,
+                employee,
+            })
+        ));
 
         toast("Report saved successfully", "success");
 
         function clearOutputs() {
-
             const outputs = document.querySelectorAll(".output");
             outputs.forEach(el => { el.textContent = "0"; });
 
@@ -525,10 +555,12 @@ async function situation() {
             clearFiche();
             clearLoan();
 
-            loans = [];
             fiche = [];
+            loans = [];
             spFuelCardList = [];
             bankCardList = [];
+            document.getElementById("ficheChips").innerHTML = "";
+            document.getElementById("loanChips").innerHTML = "";
             document.getElementById("spFuelCardChips").innerHTML = "";
             document.getElementById("bankCardChips").innerHTML = "";
         }
@@ -627,87 +659,112 @@ function removeBankCard(i) {
     renderChips("bankCardChips", bankCardList, removeBankCard);
 }
 
-let loans = [];
-async function storeLoan() {
-    const loansId = "68fbe6f80019b53fb32f";
-    
-    const user = await _AW.account.get();
-    const employee = user.name;
-
-    logDate = document.getElementById("logDate").value;
-    const [year, month] = logDate.split("-");
-    const monthYear = `${year}-${month}`;
-
-    const plate = document.getElementById("loan-plate").value;
-    const amount = parseInt(document.getElementById("loan-amount").value);
-    const company = document.getElementById("loan-company").value;
-
-    try {
-
-        const loanData = {
-            plate,
-            company,
-            logDate,
-            monthYear,
-            employee,
-            amount
-        };
-
-        await _AW.db.createDocument(
-        _AW.DB_ID,
-        loansId,
-        "unique()",
-        loanData
-        );
-
-        clearLoan();
-        loans.push({company, amount});
-        toast("Loan saved", "success");
-
-    } catch (err) {
-        toast("Error: " + err.message, "error");
-    }
-}
 let fiche = [];
-async function storeFiche() {
-    const ficheId = "69007206001aed40d6f4";
 
-    const user = await _AW.account.get();        
-    const employee = user.name;  
+function renderFicheChips() {
+    const container = document.getElementById("ficheChips");
+    container.innerHTML = "";
+    fiche.forEach((item, i) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        const label = [item.plate, item.company].filter(Boolean).join(" · ") + ` · ${item.amount.toLocaleString()} RWF`;
+        chip.textContent = label;
+        chip.style.cursor = "pointer";
+        chip.title = "Click to edit";
+        chip.onclick = () => editFiche(i);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip-remove";
+        btn.textContent = "×";
+        btn.onclick = (e) => { e.stopPropagation(); removeFiche(i); };
+        chip.appendChild(btn);
+        container.appendChild(chip);
+    });
+}
 
-    logDate = document.getElementById("logDate").value;
+const _plateRegex = /^R[A-Z]{2}\s?\d{3}\s?[A-Z]$/;
+function _normalizePlate(p) {
+    const m = p.match(/^(R[A-Z]{2})\s?(\d{3})\s?([A-Z])$/);
+    return m ? `${m[1]} ${m[2]} ${m[3]}` : p;
+}
 
-    const plate = document.getElementById("fiche-plate").value;
-    const amount = parseInt(document.getElementById("fiche-amount").value);
-    const company = document.getElementById("fiche-company").value;
+function addFiche() {
+    const plate   = document.getElementById("fiche-plate").value.trim();
+    const company = document.getElementById("fiche-company").value.trim();
+    const amount  = parseInt(document.getElementById("fiche-amount").value);
+    if (!plate && !company) { toast("Enter a plate or company", "warning"); return; }
+    if (plate && !_plateRegex.test(plate)) { toast("Plate format must be: RAB 123A", "warning"); return; }
+    if (!amount || amount <= 0) { toast("Enter a valid amount", "warning"); return; }
+    fiche.push({ plate: plate ? _normalizePlate(plate) : "", company, amount });
+    renderFicheChips();
+    clearFiche();
+    document.getElementById("fiche-amount").focus();
+}
 
-    try {
+function editFiche(i) {
+    const item = fiche[i];
+    document.getElementById("fiche-plate").value   = item.plate;
+    document.getElementById("fiche-company").value = item.company;
+    document.getElementById("fiche-amount").value  = item.amount;
+    fiche.splice(i, 1);
+    renderFicheChips();
+    document.getElementById("fiche-amount").focus();
+}
 
-        const ficheData = {
-            plate,
-            company,
-            logDate,
-            employee,
-            amount
-        };
+function removeFiche(i) {
+    fiche.splice(i, 1);
+    renderFicheChips();
+}
 
-        await _AW.db.createDocument(
-        _AW.DB_ID,
-        ficheId,
-        "unique()",
-        ficheData
-        );
+let loans = [];
 
-        clearFiche();
-        fiche.push({company, amount});
-        toast("Fiche saved", "success");
+function renderLoanChips() {
+    const container = document.getElementById("loanChips");
+    container.innerHTML = "";
+    loans.forEach((item, i) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        const label = [item.plate, item.company].filter(Boolean).join(" · ") + ` · ${item.amount.toLocaleString()} RWF`;
+        chip.textContent = label;
+        chip.style.cursor = "pointer";
+        chip.title = "Click to edit";
+        chip.onclick = () => editLoan(i);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip-remove";
+        btn.textContent = "×";
+        btn.onclick = (e) => { e.stopPropagation(); removeLoan(i); };
+        chip.appendChild(btn);
+        container.appendChild(chip);
+    });
+}
 
-    } catch (err) {
-        toast("Error: " + err.message, "error");
-    }
-    
-    
+function addLoan() {
+    const plate   = document.getElementById("loan-plate").value.trim();
+    const company = document.getElementById("loan-company").value.trim();
+    const amount  = parseInt(document.getElementById("loan-amount").value);
+    if (!plate && !company) { toast("Enter a plate or company", "warning"); return; }
+    if (plate && !_plateRegex.test(plate)) { toast("Plate format must be: RAB 123A", "warning"); return; }
+    if (!amount || amount <= 0) { toast("Enter a valid amount", "warning"); return; }
+    loans.push({ plate: plate ? _normalizePlate(plate) : "", company, amount });
+    renderLoanChips();
+    clearLoan();
+    document.getElementById("loan-amount").focus();
+}
 
+function editLoan(i) {
+    const item = loans[i];
+    document.getElementById("loan-plate").value   = item.plate;
+    document.getElementById("loan-company").value = item.company;
+    document.getElementById("loan-amount").value  = item.amount;
+    loans.splice(i, 1);
+    renderLoanChips();
+    document.getElementById("loan-amount").focus();
+}
+
+function removeLoan(i) {
+    loans.splice(i, 1);
+    renderLoanChips();
 }
 
 async function MomoLoss() {
