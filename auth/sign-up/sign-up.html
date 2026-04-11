@@ -28,7 +28,7 @@
           </div>
           <div class="input-group">
             <label for="email">Email</label>
-            <input type="text" id="email" name="email" required>
+            <input type="email" id="email" name="email" required>
           </div>
           <div class="input-group">
             <label for="password">Password</label>
@@ -56,39 +56,34 @@
 
     // Handle Sign Up
     document.getElementById("signupForm").addEventListener("submit", async function(e) {
-      e.preventDefault(); // stop form from refreshing page
+      e.preventDefault();
+      const btn = this.querySelector('button[type="submit"]');
+      btn.disabled = true;
 
-      const name = document.getElementById("name").value;
+      const name      = document.getElementById("name").value;
       const employeeId = document.getElementById("employeeId").value;
-      const email = document.getElementById("email").value; // using email for login
-      const password = document.getElementById("password").value;
+      const email     = document.getElementById("email").value;
+      const password  = document.getElementById("password").value;
 
       try {
-        // Create user in Appwrite
         await account.create("unique()", email, password, name);
-
-        // Step 1: Login
         await account.createEmailSession(email, password);
 
-        // Step 2: Save employee data immediately
         const data = {
-          employeeId: parseInt(document.getElementById("employeeId").value),
-          emailAddress: document.getElementById("email").value,
-          logDate: new Date().toISOString(), 
+          employeeId: parseInt(employeeId),
+          emailAddress: email,
+          logDate: new Date().toISOString(),
         };
 
-        await databases.createDocument(
-          databaseId,
-          collectionId,
-          "unique()", // Appwrite generates an ID
-          data
-        );
-        
-        // You could also redirect automatically:
-        window.location.href= "../../index";
-        
+        await databases.createDocument(databaseId, collectionId, "unique()", data);
+
+        window.location.href = "../../index";
+
       } catch (error) {
-        console.log("Error",error);
+        console.error("Sign-up error:", error);
+        alert(error.message || "Sign up failed. Please try again.");
+      } finally {
+        btn.disabled = false;
       }
     });
   </script>

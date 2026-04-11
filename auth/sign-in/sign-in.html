@@ -46,6 +46,9 @@
 
     document.getElementById("loginForm").addEventListener("submit", async function(e) {
       e.preventDefault();
+      const btn = this.querySelector('button[type="submit"]');
+      btn.disabled = true;
+
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
@@ -58,44 +61,36 @@
         "kayinamuradavi@gmail.com": "5",
         "emmanuelnayituriki77@gmail.com": "6",
       }
-  
-      // } else {
 
       try {
-        // Step 1: Login
         await account.createEmailSession(email, password);
 
-        // Step 2: Save employee data immediately
         const data = {
           employeeId: parseInt(id[email]),
-          emailAddress: document.getElementById("email").value,
-          logDate: new Date().toISOString(), 
+          emailAddress: email,
+          logDate: new Date().toISOString(),
         };
 
-        await databases.createDocument(
-          databaseId,
-          collectionId,
-          "unique()", // Appwrite generates an ID
-          data
-        );
+        await databases.createDocument(databaseId, collectionId, "unique()", data);
 
-        // Step 3: Check role and redirect
         const adminCollectionId = "68d95af4003245ef87a7";
         const adminCheck = await databases.listDocuments(databaseId, adminCollectionId, [
           Appwrite.Query.equal("email", email)
         ]);
 
         if (adminCheck.documents.length > 0) {
-          window.location.replace("../../pages/report_dashboard/report");
+          window.location.replace("../../pages/situation/situation");
         } else {
           localStorage.setItem("pompisteLoginTime", Date.now());
           window.location.replace("../../index");
         }
 
       } catch (err) {
-        console.error("Error:", err.message);
-        alert("Error: " + err.message);
-      }      
+        console.error("Sign-in error:", err);
+        alert("Invalid email or password. Please try again.");
+      } finally {
+        btn.disabled = false;
+      }
     });
   </script>
 </body>

@@ -80,7 +80,7 @@
         <div class="loaded-date" id="loadedDate">No report loaded</div>
         <div class="main-bar-actions">
           <span class="done-pill" id="donePill"></span>
-          <button class="btn-download-main" onclick="download()">&#11015; Download PDF</button>
+          <button class="btn-download-main" onclick="this.disabled=true; download().finally(()=>this.disabled=false)">&#11015; Download PDF</button>
         </div>
       </div>
 
@@ -206,7 +206,7 @@
       <p class="popup-title">Log Out?</p>
       <p class="popup-sub">Any unsaved data will be lost.</p>
       <button id="confirmLogout"
-        onclick="document.getElementById('confirmLogoutPopup').style.display='none'; logout()">
+        onclick="document.getElementById('confirmLogoutPopup').style.display='none'; this.disabled=true; logout().finally(()=>this.disabled=false)">
         Log Out
       </button>
       <button id="cancelLogout"

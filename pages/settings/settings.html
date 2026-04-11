@@ -111,7 +111,7 @@
       <p class="popup-title">Log Out?</p>
       <p class="popup-sub">Any unsaved changes will be lost.</p>
       <button id="confirmLogout"
-        onclick="document.getElementById('confirmLogoutPopup').style.display='none'; logout()">
+        onclick="document.getElementById('confirmLogoutPopup').style.display='none'; this.disabled=true; logout().finally(()=>this.disabled=false)">
         Log Out
       </button>
       <button id="cancelLogout"
@@ -142,7 +142,7 @@
     <div class="popup-content">
       <p class="popup-title">Remove Access?</p>
       <p class="popup-sub" id="removePopupSub">This admin will lose access immediately.</p>
-      <button id="confirmRemove" onclick="confirmRemoveAdmin()">Remove</button>
+      <button id="confirmRemove" onclick="this.disabled=true; confirmRemoveAdmin().finally(()=>this.disabled=false)">Remove</button>
       <button id="cancelRemove"
         onclick="document.getElementById('confirmRemovePopup').style.display='none'">
         Cancel

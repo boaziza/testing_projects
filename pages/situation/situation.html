@@ -53,9 +53,9 @@
       <!-- Mini Calendar -->
       <div class="cal-section">
         <div class="cal-nav">
-          <button onclick="changeCalMonth(-1)">‹</button>
+          <button onclick="this.disabled=true; changeCalMonth(-1).finally(()=>this.disabled=false)">‹</button>
           <span id="calMonthLabel">—</span>
-          <button onclick="changeCalMonth(1)">›</button>
+          <button onclick="this.disabled=true; changeCalMonth(1).finally(()=>this.disabled=false)">›</button>
         </div>
         <div class="cal-grid" id="calGrid"></div>
         <div class="cal-legend">
@@ -80,7 +80,7 @@
         <div class="loaded-date" id="loadedDate">Loading most recent…</div>
         <div class="main-bar-actions">
           <span class="done-pill" id="donePill"></span>
-          <button class="action-btn btn-download-main" onclick="download()">⬇ Download PDF</button>
+          <button class="action-btn btn-download-main" onclick="this.disabled=true; download().finally(()=>this.disabled=false)">⬇ Download PDF</button>
         </div>
       </div>
 
@@ -229,7 +229,7 @@
     <div class="popup-content">
       <p class="popup-title">Log Out?</p>
       <p class="popup-sub">Any unsaved data will be lost.</p>
-      <button id="confirmLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'; logout()">Log Out</button>
+      <button id="confirmLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'; this.disabled=true; logout().finally(()=>this.disabled=false)">Log Out</button>
       <button id="cancelLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'">Cancel</button>
     </div>
   </div>

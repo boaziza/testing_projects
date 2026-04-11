@@ -132,7 +132,7 @@
         <div class="popup-content">
             <p class="popup-title">Log Out?</p>
             <p class="popup-sub">Any unsaved data will be lost.</p>
-            <button id="confirmLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'; logout()">Log Out</button>
+            <button id="confirmLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'; this.disabled=true; logout().finally(()=>this.disabled=false)">Log Out</button>
             <button id="cancelLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'">Cancel</button>
         </div>
     </div>
