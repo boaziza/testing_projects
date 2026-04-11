@@ -62,7 +62,7 @@ async function calculateIndex() {
         
         async function getDayBefore(logDate) {
 
-            if (!logDate) return alert("Select a date!");
+            if (!logDate) { toast("Select a date!", "warning"); return; }
 
             const selectedDate = new Date(logDate);
             selectedDate.setDate(selectedDate.getDate() - 1);
@@ -145,14 +145,13 @@ async function calculateIndex() {
         }
 
         if (match) {
-            alert("All index match");
+            toast("All indices match", "success");
         } else {
-            alert("Check Index they do not match");
+            toast("Check index — values do not match", "error");
         }
 
     } catch (error) {
-        console.log("The error is ", error);
-        
+        toast("Error checking index: " + error.message, "error");
     }
 }
 
@@ -197,7 +196,7 @@ async function payments() {
         gainEl.className = `output result-value ${gainPayments >= 0 ? 'gain' : 'loss'}`;
         document.getElementById("totalCash").textContent = `${totalCash.toLocaleString()} RWF`;
     } catch (error) {
-        console.log(error)  
+        toast("Error calculating payments: " + error.message, "error");
     }
 }
 
@@ -522,7 +521,7 @@ async function situation() {
             dataPayments
         );
 
-        alert("Data saved successfully"); 
+        toast("Report saved successfully", "success");
 
         function clearOutputs() {
 
@@ -547,16 +546,12 @@ async function situation() {
         document.getElementById("paymentsForm").reset();
 
     } catch (err) {
-        console.error("Error:", err.message);
-
-        // If user is not logged in, redirect them to login
         if (err.message.includes("Unauthorized")) {
-            alert("You must log in first!");
-            // window.location.href = "/sign-in/sign-in";
+            toast("You must be logged in.", "error");
         } else {
-            alert("Error: " + err.message);
+            toast("Error: " + err.message, "error");
         }
-    } 
+    }
 }
 
 function clearFiche() {
@@ -674,11 +669,10 @@ async function storeLoan() {
 
         clearLoan();
         loans.push({company, amount});
-        alert("Data saved successfully");
+        toast("Loan saved", "success");
 
     } catch (err) {
-      console.error("Error:", err.message);
-      alert("Error: " + err.message);
+        toast("Error: " + err.message, "error");
     }
 }
 let fiche = [];
@@ -713,11 +707,10 @@ async function storeFiche() {
 
         clearFiche();
         fiche.push({company, amount});
-        alert("Data saved successfully");
+        toast("Fiche saved", "success");
 
     } catch (err) {
-      console.error("Error:", err.message);
-      alert("Error: " + err.message);
+        toast("Error: " + err.message, "error");
     }
     
     

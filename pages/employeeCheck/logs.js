@@ -30,7 +30,7 @@ async function displayDetails() {
   email   = document.getElementById("email").value;
 
   if (!logDate || !email) {
-    alert("Please choose both a date and an employee email.");
+    toast("Please choose both a date and an employee email.", "warning");
     return;
   }
 
@@ -53,7 +53,7 @@ async function displayDetails() {
     ]);
 
     if (responseIndex.documents.length === 0) {
-      alert("No records found for this date and employee.");
+      toast("No records found for this date and employee.", "warning");
       setMainBar("No report loaded", null);
       setSidebarList([], false);
       return;
@@ -71,7 +71,7 @@ async function displayDetails() {
 
   } catch (err) {
     console.error("Fetch error:", err);
-    alert("Error fetching report: " + (err?.message || err));
+    toast("Error fetching report: " + (err?.message || err), "error");
     setMainBar("Error loading report", null);
     setSidebarList([], false);
   }
@@ -253,7 +253,7 @@ function clearSheetOutputs() {
 
 // ── DOWNLOAD ──────────────────────────────────────────────────
 async function download() {
-  if (!allDocuments.length) { alert("Fetch a report before downloading."); return; }
+  if (!allDocuments.length) { toast("Fetch a report before downloading.", "warning"); return; }
 
   try {
     const element = document.getElementById("reportSheet");
@@ -269,7 +269,7 @@ async function download() {
     await html2pdf().set(opt).from(element).save();
   } catch (err) {
     console.error("Download error:", err);
-    alert("Download failed: " + (err?.message || err));
+    toast("Download failed: " + (err?.message || err), "error");
   }
 }
 

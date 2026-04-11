@@ -111,6 +111,7 @@ async function loadTableList() {
     });
   } catch (err) {
     console.error("Could not load table list:", err);
+    toast("Could not load table list", "error");
   }
 }
 
@@ -140,6 +141,7 @@ async function loadMetrics() {
     document.getElementById("gain").textContent = `${totalGain.toLocaleString()} RWF`;
   } catch (err) {
     console.error("Could not load metrics:", err);
+    toast("Could not load metrics", "error");
   }
 }
 
@@ -170,6 +172,7 @@ async function display(tableName) {
 
   } catch (err) {
     console.error("Display error:", err);
+    toast("Could not load table data", "error");
   }
 }
 

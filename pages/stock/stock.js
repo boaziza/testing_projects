@@ -26,21 +26,21 @@ async function stock() {
     logDate = document.getElementById("logDate").value;
      
     if (!logDate) {
-        alert("Enter a date to continue");
+        toast("Enter a date to continue", "warning");
         return;
     }
 
-    const user = await account.get();    
+    const user = await account.get();
     const response = await databases.listDocuments(databaseId, situationId,[ Appwrite.Query.equal("logDate", logDate) ]);
 
     if (response.documents.length > 0) {
-      const doc = response.documents[0]; 
+      const doc = response.documents[0];
 
       venteLitresAgo = parseInt(doc.venteLitresAgo, 10);
       venteLitresPms = parseInt(doc.venteLitresPms, 10);
     }
   } catch (err) {
-    console.error("Error fetching:", err);
+    toast("Error fetching sales data: " + err.message, "error");
   }
 
     initialPms = parseInt(document.getElementById("initialPms").value);
@@ -66,8 +66,8 @@ async function stock() {
 }
 
 async function storeStock() {
-    if (!logDate) { alert("Select a date and calculate stock first."); return; }
-    if (isNaN(theoryStockPms) || isNaN(theoryStockAgo)) { alert("Calculate stock before storing."); return; }
+    if (!logDate) { toast("Select a date and calculate stock first.", "warning"); return; }
+    if (isNaN(theoryStockPms) || isNaN(theoryStockAgo)) { toast("Calculate stock before storing.", "warning"); return; }
 
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1")
@@ -191,13 +191,12 @@ async function storeStock() {
         dataPms
         );
 
-        alert("Data saved successfully");
-        
+        toast("Stock saved", "success");
+
         document.getElementById("stockForm").reset();
 
     } catch (err) {
-      console.error("Error:", err.message);
-      alert("Error: " + err.message);
+        toast("Error: " + err.message, "error");
     }
 
 
@@ -210,7 +209,6 @@ async function storeStock() {
         );
 
         if (docs.total === 0) {
-            console.log("No document found!");
             return;
         }
 
@@ -235,7 +233,7 @@ async function storeStock() {
             }
         );
         
-        alert("Data saved successfully");
+        toast("Situation updated", "success");
 
         function clearOutputs() {
 
@@ -248,14 +246,14 @@ async function storeStock() {
         clearOutputs();
 
     } catch (error) {
-        alert("Error updating:", error);
+        toast("Error updating situation", "error");
     }
 }
 
 function download() {
     try {
         const date = document.getElementById("logDate").value;
-        if (!date) { alert("Select a date before downloading."); return; }
+        if (!date) { toast("Select a date before downloading.", "warning"); return; }
 
         const element = document.getElementById("stockForm");
 
@@ -270,7 +268,7 @@ function download() {
         html2pdf().set(opt).from(element).save();
 
     } catch (error) {
-        console.log("Download error:", error);
+        toast("Download failed: " + error.message, "error");
     }
 }
 

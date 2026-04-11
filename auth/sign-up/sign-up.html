@@ -43,6 +43,28 @@
   </div>
     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script>
+    (function () {
+      const s = document.createElement("style");
+      s.textContent =
+        "#toast-container{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:9999;pointer-events:none}" +
+        ".toast{min-width:220px;max-width:360px;padding:12px 16px;border-radius:8px;font-size:13px;font-weight:500;color:#fff;" +
+        "box-shadow:0 4px 16px rgba(0,0,0,.18);opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;pointer-events:auto}" +
+        ".toast.show{opacity:1;transform:translateY(0)}" +
+        ".toast-error{background:#dc2626}.toast-info{background:#2563eb}";
+      document.head.appendChild(s);
+    })();
+    function toast(message, type = "info") {
+      let c = document.getElementById("toast-container");
+      if (!c) { c = document.createElement("div"); c.id = "toast-container"; document.body.appendChild(c); }
+      const el = document.createElement("div");
+      el.className = `toast toast-${type}`;
+      el.textContent = message;
+      c.appendChild(el);
+      requestAnimationFrame(() => el.classList.add("show"));
+      setTimeout(() => { el.classList.remove("show"); setTimeout(() => el.remove(), 300); }, 3500);
+    }
+  </script>
+  <script>
     // Connect to Appwrite
     const client = new Appwrite.Client()
       .setEndpoint("https://cloud.appwrite.io/v1") // or your self-hosted endpoint
@@ -81,7 +103,7 @@
 
       } catch (error) {
         console.error("Sign-up error:", error);
-        alert(error.message || "Sign up failed. Please try again.");
+        toast(error.message || "Sign up failed. Please try again.", "error");
       } finally {
         btn.disabled = false;
       }

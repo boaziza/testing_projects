@@ -1,3 +1,27 @@
+// ── TOAST NOTIFICATIONS ───────────────────────────────────────
+(function () {
+  const style = document.createElement("style");
+  style.textContent =
+    "#toast-container{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:9999;pointer-events:none}" +
+    ".toast{min-width:220px;max-width:360px;padding:12px 16px;border-radius:8px;font-size:13px;font-weight:500;color:#fff;" +
+    "box-shadow:0 4px 16px rgba(0,0,0,.18);opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;pointer-events:auto}" +
+    ".toast.show{opacity:1;transform:translateY(0)}" +
+    ".toast-success{background:#16a34a}.toast-error{background:#dc2626}" +
+    ".toast-warning{background:#d97706}.toast-info{background:#2563eb}";
+  document.head.appendChild(style);
+})();
+
+window.toast = function toast(message, type = "info") {
+  let c = document.getElementById("toast-container");
+  if (!c) { c = document.createElement("div"); c.id = "toast-container"; document.body.appendChild(c); }
+  const el = document.createElement("div");
+  el.className = `toast toast-${type}`;
+  el.textContent = message;
+  c.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("show"));
+  setTimeout(() => { el.classList.remove("show"); setTimeout(() => el.remove(), 300); }, 3500);
+};
+
 function welcomeMessage() {
     const client = new Appwrite.Client()
         .setEndpoint("https://cloud.appwrite.io/v1") 
@@ -60,13 +84,11 @@ async function userAccess() {
         const admin = await databases.listDocuments(databaseId, adminId, [Appwrite.Query.equal("email", email)])
         
         if ( admin.documents.length === 0) {
-            window.location.replace("/testing_projects/index");    
-        } else {        
-            console.log("access granted");    
+            window.location.replace("/testing_projects/index");
         }
 
     } catch (error) {
-        console.log("error for page access",error);
+        // silent — redirect failures should not expose internals
     }
     
 }
@@ -109,11 +131,11 @@ window.logout = async function logout() {
     
     await account.deleteSession("current");
     localStorage.removeItem("pompisteLoginTime");
-    alert("Logged out successfully");
+    toast("Logged out successfully", "success");
     window.location.href= "/testing_projects/auth/sign-in/sign-in";
-    
+
   } catch (error) {
-    console.log("Error",error);
+    toast("Logout failed. Please try again.", "error");
   }
 }
 
@@ -135,7 +157,7 @@ function checkPompisteSession() {
     }
 
     setTimeout(() => {
-        alert("Your session has expired. You will be logged out.");
+        toast("Your session has expired. You will be logged out.", "warning");
         logout();
     }, remaining);
 }

@@ -334,7 +334,7 @@ async function loadSituation(date) {
 
   } catch (err) {
     console.error("Load situation error:", err);
-    alert("Error loading situation: " + (err?.message || err));
+    toast("Error loading situation: " + (err?.message || err), "error");
   } finally {
     mainEl.classList.remove("sit-loading");
   }
@@ -342,7 +342,7 @@ async function loadSituation(date) {
 
 // ── DOWNLOAD ──────────────────────────────────────────────────
 async function download() {
-  if (!activeDate) { alert("No situation loaded."); return; }
+  if (!activeDate) { toast("No situation loaded.", "warning"); return; }
   try {
     const element = document.querySelector(".sheet");
     const opt = {
@@ -356,7 +356,7 @@ async function download() {
     await html2pdf().set(opt).from(element).save();
   } catch (err) {
     console.error("Download error:", err);
-    alert("Download failed: " + (err?.message || err));
+    toast("Download failed: " + (err?.message || err), "error");
   }
 }
 
