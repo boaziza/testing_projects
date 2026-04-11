@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="situation.css">
 </head>
 <body>
+<a href="#sitMain" class="skip-nav">Skip to main content</a>
 
   <!-- ── HEADER ── -->
   <header class="site-header">
@@ -26,10 +27,10 @@
   <!-- ── NAV ── -->
   <nav>
     <ul>
-      <li><a href="situation" class="active">Situation</a></li>
+      <li><a href="situation" class="active" aria-current="page">Situation</a></li>
       <li><a href="../stock/stock">Stock</a></li>
       <li class="dropdown">
-        <a href="#">Employees</a>
+        <a href="#" aria-haspopup="true" aria-expanded="false">Employees</a>
         <ul class="dropdown-menu">
           <li><a href="../employeeCheck/logsDetail">Employee Reports</a></li>
         </ul>
@@ -53,9 +54,9 @@
       <!-- Mini Calendar -->
       <div class="cal-section">
         <div class="cal-nav">
-          <button onclick="this.disabled=true; changeCalMonth(-1).finally(()=>this.disabled=false)">‹</button>
-          <span id="calMonthLabel">—</span>
-          <button onclick="this.disabled=true; changeCalMonth(1).finally(()=>this.disabled=false)">›</button>
+          <button aria-label="Previous month" onclick="this.disabled=true; changeCalMonth(-1).finally(()=>this.disabled=false)">‹</button>
+          <span id="calMonthLabel" aria-live="polite">—</span>
+          <button aria-label="Next month" onclick="this.disabled=true; changeCalMonth(1).finally(()=>this.disabled=false)">›</button>
         </div>
         <div class="cal-grid" id="calGrid"></div>
         <div class="cal-legend">
@@ -221,20 +222,21 @@
 
   <!-- ── FOOTER ── -->
   <footer>
-    <button class="action-btn btn-logout" onclick="document.getElementById('confirmLogoutPopup').style.display='flex'">Log Out</button>
+    <button class="action-btn btn-logout" onclick="openDialog('confirmLogoutPopup')">Log Out</button>
   </footer>
 
   <!-- ── LOGOUT POPUP ── -->
-  <div class="popup" id="confirmLogoutPopup" style="display:none;">
+  <div class="popup" id="confirmLogoutPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-logout-title" aria-hidden="true" style="display:none;">
     <div class="popup-content">
-      <p class="popup-title">Log Out?</p>
+      <p class="popup-title" id="dlg-logout-title">Log Out?</p>
       <p class="popup-sub">Any unsaved data will be lost.</p>
-      <button id="confirmLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'; this.disabled=true; logout().finally(()=>this.disabled=false)">Log Out</button>
-      <button id="cancelLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'">Cancel</button>
+      <button id="confirmLogout" onclick="closeDialog('confirmLogoutPopup'); this.disabled=true; logout().finally(()=>this.disabled=false)">Log Out</button>
+      <button id="cancelLogout" onclick="closeDialog('confirmLogoutPopup')">Cancel</button>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <script src="../../utils/config.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="situation.js"></script>
   <script type="module" src="../../utils/utils.js"></script>

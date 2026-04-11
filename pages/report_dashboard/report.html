@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
 </head>
 <body>
+<a href="#main-content" class="skip-nav">Skip to main content</a>
 
   <!-- ── HEADER ── -->
   <header class="site-header">
@@ -30,12 +31,12 @@
       <li><a href="../situation/situation">Situation</a></li>
       <li><a href="../stock/stock">Stock</a></li>
       <li class="dropdown">
-        <a href="#">Employees</a>
+        <a href="#" aria-haspopup="true" aria-expanded="false">Employees</a>
         <ul class="dropdown-menu">
           <li><a href="../employeeCheck/logsDetail">Employee Reports</a></li>
         </ul>
       </li>
-      <li><a href="report" class="active">Dashboard</a></li>
+      <li><a href="report" class="active" aria-current="page">Dashboard</a></li>
       <li><a href="../settings/settings">Settings</a></li>
     </ul>
   </nav>
@@ -57,7 +58,7 @@
     </aside>
 
     <!-- ── MAIN ── -->
-    <main class="main">
+    <main class="main" id="main-content">
 
       <!-- Metric cards -->
       <section class="metrics">

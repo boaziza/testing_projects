@@ -9,29 +9,18 @@ let totalVenteLitresAgo, totalVenteLitresPms;
 
 
 async function stock() {
-    const client = new Appwrite.Client()
-        .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68a9b3e90029e6a10ff5");
-
-    const account = new Appwrite.Account(client);
-    const databases = new Appwrite.Databases(client);
-
-    const databaseId = "695f766c003a8dc2b3be";
-    const indexId = "68cd1987002bae34ea4b";
+    const indexId     = "68cd1987002bae34ea4b";
     const situationId = "68cd6b7f00330a840d96";
 
   try {
-
-    
     logDate = document.getElementById("logDate").value;
-     
+
     if (!logDate) {
         toast("Enter a date to continue", "warning");
         return;
     }
 
-    const user = await account.get();
-    const response = await databases.listDocuments(databaseId, situationId,[ Appwrite.Query.equal("logDate", logDate) ]);
+    const response = await _AW.db.listDocuments(_AW.DB_ID, situationId, [Appwrite.Query.equal("logDate", logDate)]);
 
     if (response.documents.length > 0) {
       const doc = response.documents[0];
@@ -69,18 +58,10 @@ async function storeStock() {
     if (!logDate) { toast("Select a date and calculate stock first.", "warning"); return; }
     if (isNaN(theoryStockPms) || isNaN(theoryStockAgo)) { toast("Calculate stock before storing.", "warning"); return; }
 
-    const client = new Appwrite.Client()
-        .setEndpoint("https://cloud.appwrite.io/v1")
-        .setProject("68a9b3e90029e6a10ff5");
-
-    const account = new Appwrite.Account(client);
-    const databases = new Appwrite.Databases(client);
-
-    const databaseId = "695f766c003a8dc2b3be";
-    const stockAgoId = "68cbf2bb0017a7b210b1";
-    const stockPmsId = "68cd197e002096e31ed8";
+    const stockAgoId  = "68cbf2bb0017a7b210b1";
+    const stockPmsId  = "68cd197e002096e31ed8";
     const situationId = "68cd6b7f00330a840d96";
-    const stockId = "6908ab260012e0412ca8";
+    const stockId     = "6908ab260012e0412ca8";
 
     const selectedDate = new Date(logDate);
     
@@ -91,7 +72,7 @@ async function storeStock() {
     
     try {
         
-        const user = await account.get();
+        const user  = await _AW.account.get();
         const email = user.email;
 
         const dataAgo = {
@@ -116,7 +97,7 @@ async function storeStock() {
             logDate,  
         };
 
-        const response = await databases.listDocuments(databaseId, stockId,[ Appwrite.Query.equal("monthYear", monthYear) ]);
+        const response = await _AW.db.listDocuments(_AW.DB_ID, stockId,[ Appwrite.Query.equal("monthYear", monthYear) ]);
 
         
         totalGainFuelPms = gainFuelPms; 
@@ -147,8 +128,8 @@ async function storeStock() {
                 totalVenteLitresAgo                     
             }
 
-            await databases.updateDocument(
-                databaseId,
+            await _AW.db.updateDocument(
+                _AW.DB_ID,
                 stockId,
                 docId,
                 stockData
@@ -166,8 +147,8 @@ async function storeStock() {
                 monthYear                    
             }
 
-            await databases.createDocument(
-                databaseId,
+            await _AW.db.createDocument(
+                _AW.DB_ID,
                 stockId,
                 "unique()",
                 stockData
@@ -175,17 +156,15 @@ async function storeStock() {
 
         }
 
-        const res = await databases.listDocuments(databaseId,stockAgoId);
-        
-        await databases.createDocument(
-        databaseId,
+        await _AW.db.createDocument(
+        _AW.DB_ID,
         stockAgoId,
         "unique()", // Appwrite generates an ID
         dataAgo
         );
 
-        await databases.createDocument(
-        databaseId,
+        await _AW.db.createDocument(
+        _AW.DB_ID,
         stockPmsId,
         "unique()", // Appwrite generates an ID
         dataPms
@@ -202,8 +181,8 @@ async function storeStock() {
 
     try {
         // 1. Find the document by attribute
-        const docs = await databases.listDocuments(
-            databaseId,
+        const docs = await _AW.db.listDocuments(
+            _AW.DB_ID,
             situationId,
             [ Appwrite.Query.equal("logDate", logDate) ] // filter by your known attribute
         );
@@ -215,8 +194,8 @@ async function storeStock() {
         const docId = docs.documents[0].$id; // get the first match
 
         // 2. Update the null fields
-        const updated = await databases.updateDocument(
-            databaseId,
+        const updated = await _AW.db.updateDocument(
+            _AW.DB_ID,
             situationId,
             docId,
             {
@@ -272,10 +251,3 @@ function download() {
     }
 }
 
-async function saveData(collection, data) {
-  return fetch(`https://testing-projects-4ttw.onrender.com/api/create/${collection}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  }).then(r => r.json());
-}

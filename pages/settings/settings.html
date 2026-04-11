@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="settings.css">
 </head>
 <body>
+<a href="#main-content" class="skip-nav">Skip to main content</a>
 
   <!-- ── HEADER ── -->
   <header class="site-header">
@@ -29,18 +30,18 @@
       <li><a href="../situation/situation">Situation</a></li>
       <li><a href="../stock/stock">Stock</a></li>
       <li class="dropdown">
-        <a href="#">Employees</a>
+        <a href="#" aria-haspopup="true" aria-expanded="false">Employees</a>
         <ul class="dropdown-menu">
           <li><a href="../employeeCheck/logsDetail">Employee Reports</a></li>
         </ul>
       </li>
       <li><a href="../report_dashboard/report">Dashboard</a></li>
-      <li><a href="settings" class="active">Settings</a></li>
+      <li><a href="settings" class="active" aria-current="page">Settings</a></li>
     </ul>
   </nav>
 
   <!-- ── SETTINGS WRAPPER ── -->
-  <div class="settings-wrapper">
+  <div class="settings-wrapper" id="main-content">
 
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('fuel', this)">Fuel Prices</button>
@@ -68,9 +69,9 @@
           <input type="number" id="momoFeeInput" placeholder="e.g. 0.5" step="0.1" min="0" max="100">
         </div>
         <div class="settings-actions">
-          <button class="action-btn btn-store" onclick="document.getElementById('confirmSavePopup').style.display='flex'">Save Settings</button>
+          <button class="action-btn btn-store" onclick="openDialog('confirmSavePopup')">Save Settings</button>
         </div>
-        <div id="fuelStatus" class="status-msg"></div>
+        <div id="fuelStatus" class="status-msg" aria-live="polite"></div>
       </div>
     </div>
 
@@ -92,65 +93,50 @@
           </select>
           <button class="action-btn" id="addAdminBtn" onclick="handleAddAdmin(this)">Add</button>
         </div>
-        <div id="staffStatus" class="status-msg"></div>
+        <div id="staffStatus" class="status-msg" aria-live="polite"></div>
       </div>
     </div>
 
   </div><!-- /settings-wrapper -->
 
   <footer>
-    <button class="btn-logout"
-      onclick="document.getElementById('confirmLogoutPopup').style.display='flex'">
+    <button class="btn-logout" onclick="openDialog('confirmLogoutPopup')">
       Log Out
     </button>
   </footer>
 
   <!-- ── LOGOUT POPUP ── -->
-  <div class="popup" id="confirmLogoutPopup" style="display:none;">
+  <div class="popup" id="confirmLogoutPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-logout-title" aria-hidden="true" style="display:none;">
     <div class="popup-content">
-      <p class="popup-title">Log Out?</p>
+      <p class="popup-title" id="dlg-logout-title">Log Out?</p>
       <p class="popup-sub">Any unsaved changes will be lost.</p>
-      <button id="confirmLogout"
-        onclick="document.getElementById('confirmLogoutPopup').style.display='none'; this.disabled=true; logout().finally(()=>this.disabled=false)">
-        Log Out
-      </button>
-      <button id="cancelLogout"
-        onclick="document.getElementById('confirmLogoutPopup').style.display='none'">
-        Cancel
-      </button>
+      <button id="confirmLogout" onclick="closeDialog('confirmLogoutPopup'); this.disabled=true; logout().finally(()=>this.disabled=false)">Log Out</button>
+      <button id="cancelLogout" onclick="closeDialog('confirmLogoutPopup')">Cancel</button>
     </div>
   </div>
 
   <!-- ── SAVE PRICES POPUP ── -->
-  <div class="popup" id="confirmSavePopup" style="display:none;">
+  <div class="popup" id="confirmSavePopup" role="dialog" aria-modal="true" aria-labelledby="dlg-save-title" aria-hidden="true" style="display:none;">
     <div class="popup-content">
-      <p class="popup-title">Save Settings?</p>
+      <p class="popup-title" id="dlg-save-title">Save Settings?</p>
       <p class="popup-sub">This will update fuel prices, station name, and MoMo fee for all users.</p>
-      <button id="confirmSave"
-        onclick="document.getElementById('confirmSavePopup').style.display='none'; handleSavePrices(this)">
-        Save
-      </button>
-      <button id="cancelSave"
-        onclick="document.getElementById('confirmSavePopup').style.display='none'">
-        Cancel
-      </button>
+      <button id="confirmSave" onclick="closeDialog('confirmSavePopup'); handleSavePrices(this)">Save</button>
+      <button id="cancelSave" onclick="closeDialog('confirmSavePopup')">Cancel</button>
     </div>
   </div>
 
   <!-- ── REMOVE ADMIN POPUP ── -->
-  <div class="popup" id="confirmRemovePopup" style="display:none;">
+  <div class="popup" id="confirmRemovePopup" role="dialog" aria-modal="true" aria-labelledby="dlg-remove-title" aria-hidden="true" style="display:none;">
     <div class="popup-content">
-      <p class="popup-title">Remove Access?</p>
+      <p class="popup-title" id="dlg-remove-title">Remove Access?</p>
       <p class="popup-sub" id="removePopupSub">This admin will lose access immediately.</p>
       <button id="confirmRemove" onclick="this.disabled=true; confirmRemoveAdmin().finally(()=>this.disabled=false)">Remove</button>
-      <button id="cancelRemove"
-        onclick="document.getElementById('confirmRemovePopup').style.display='none'">
-        Cancel
-      </button>
+      <button id="cancelRemove" onclick="closeDialog('confirmRemovePopup')">Cancel</button>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <script src="../../utils/config.js"></script>
   <script src="settings.js"></script>
   <script type="module" src="../../utils/utils.js"></script>
 </body>

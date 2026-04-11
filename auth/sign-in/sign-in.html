@@ -33,6 +33,7 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <script src="../../utils/config.js"></script>
   <script>
     (function () {
       const s = document.createElement("style");
@@ -56,47 +57,37 @@
     }
   </script>
   <script>
-      const client = new Appwrite.Client()
-        .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68a9b3e90029e6a10ff5");
+    const _collectionId     = "68c82cf90024f35d491a";
+    const _adminCollectionId = "68d95af4003245ef87a7";
 
-    const account = new Appwrite.Account(client);
-    const databases = new Appwrite.Databases(client);
-
-    const databaseId = "695f766c003a8dc2b3be";
-    const collectionId = "68c82cf90024f35d491a";
+    const _employeeIdMap = {
+      "izaprinceboaz@gmail.com": "12345",
+      "janviern707@gmail.com": "1",
+      "nsengumuremyicelestin6@gmail.com": "2",
+      "uwimanaabel01@gmail.com": "3",
+      "niyitegekaetienne69@gmail.com": "4",
+      "kayinamuradavi@gmail.com": "5",
+      "emmanuelnayituriki77@gmail.com": "6",
+    };
 
     document.getElementById("loginForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const btn = this.querySelector('button[type="submit"]');
       btn.disabled = true;
 
-      const email = document.getElementById("email").value;
+      const email    = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      const id = {
-        "izaprinceboaz@gmail.com": "12345",
-        "janviern707@gmail.com": "1",
-        "nsengumuremyicelestin6@gmail.com": "2",
-        "uwimanaabel01@gmail.com": "3",
-        "niyitegekaetienne69@gmail.com": "4",
-        "kayinamuradavi@gmail.com": "5",
-        "emmanuelnayituriki77@gmail.com": "6",
-      }
-
       try {
-        await account.createEmailSession(email, password);
+        await _AW.account.createEmailSession(email, password);
 
-        const data = {
-          employeeId: parseInt(id[email]),
+        await _AW.db.createDocument(_AW.DB_ID, _collectionId, "unique()", {
+          employeeId:   parseInt(_employeeIdMap[email]),
           emailAddress: email,
-          logDate: new Date().toISOString(),
-        };
+          logDate:      new Date().toISOString(),
+        });
 
-        await databases.createDocument(databaseId, collectionId, "unique()", data);
-
-        const adminCollectionId = "68d95af4003245ef87a7";
-        const adminCheck = await databases.listDocuments(databaseId, adminCollectionId, [
+        const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, _adminCollectionId, [
           Appwrite.Query.equal("email", email)
         ]);
 

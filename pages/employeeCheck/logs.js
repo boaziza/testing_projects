@@ -16,15 +16,8 @@ function setField(id, value) {
 
 // ── FETCH REPORT ──────────────────────────────────────────────
 async function displayDetails() {
-  const client = new Appwrite.Client()
-    .setEndpoint("https://cloud.appwrite.io/v1")
-    .setProject("68a9b3e90029e6a10ff5");
-
-  const databases = new Appwrite.Databases(client);
-
-  const databaseId  = "695f766c003a8dc2b3be";
-  const indexId     = "68cd1987002bae34ea4b";
-  const paymentsId  = "68cd19990006cbb33843";
+  const indexId    = "68cd1987002bae34ea4b";
+  const paymentsId = "68cd19990006cbb33843";
 
   logDate = document.getElementById("logDate").value;
   email   = document.getElementById("email").value;
@@ -42,11 +35,11 @@ async function displayDetails() {
     setSidebarList([], true);
 
     const [responseIndex, responsePayments] = await Promise.all([
-      databases.listDocuments(databaseId, indexId, [
+      _AW.db.listDocuments(_AW.DB_ID, indexId, [
         Appwrite.Query.equal("logDate", logDate),
         Appwrite.Query.equal("email",   email),
       ]),
-      databases.listDocuments(databaseId, paymentsId, [
+      _AW.db.listDocuments(_AW.DB_ID, paymentsId, [
         Appwrite.Query.equal("logDate", logDate),
         Appwrite.Query.equal("email",   email),
       ]),

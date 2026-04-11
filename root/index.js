@@ -7,19 +7,12 @@ let momoFeePercent = 0; // loaded from settings on page open
 // Reads pmsPrice, agoPrice, momoFeePercent from the single fixed
 // settings document so MomoLoss() always uses the correct rate,
 // even before the pompiste clicks "Calculate Index".
-// ── SHARED APPWRITE CLIENT ────────────────────────────────────
-const _client  = new Appwrite.Client()
-    .setEndpoint("https://cloud.appwrite.io/v1")
-    .setProject("68a9b3e90029e6a10ff5");
-const _account  = new Appwrite.Account(_client);
-const _db       = new Appwrite.Databases(_client);
-const _DB_ID        = "695f766c003a8dc2b3be";
 const _SETTINGS_ID  = "69d3ed400021197ed76e";
 const _SETTINGS_DOC = "69d7db7ed8d5d2b73d66";
 
 async function initSettings() {
     try {
-        const doc = await _db.getDocument(_DB_ID, _SETTINGS_ID, _SETTINGS_DOC);
+        const doc = await _AW.db.getDocument(_AW.DB_ID, _SETTINGS_ID, _SETTINGS_DOC);
         pmsPrice       = doc.pmsPrice       ?? 2303;
         agoPrice       = doc.agoPrice       ?? 2205;
         momoFeePercent = doc.momoFeePercent ?? 0.5;
@@ -79,7 +72,7 @@ async function calculateIndex() {
         let pmsMatch = false;
         let agoMatch = false;
 
-        const response = await _db.listDocuments(_DB_ID, indexId, [Appwrite.Query.equal("logDate", logDate)]);
+        const response = await _AW.db.listDocuments(_AW.DB_ID, indexId, [Appwrite.Query.equal("logDate", logDate)]);
 
         for (const doc of response.documents) {
             // Check PMS match if values are provided
@@ -114,7 +107,7 @@ async function calculateIndex() {
             pmsMatch = false;
             agoMatch = false;
             
-            const beforeResponse = await _db.listDocuments(_DB_ID, indexId, [Appwrite.Query.equal("logDate", dateBefore)]);
+            const beforeResponse = await _AW.db.listDocuments(_AW.DB_ID, indexId, [Appwrite.Query.equal("logDate", dateBefore)]);
 
             for (const doc of beforeResponse.documents) {
                 // Check PMS match if values are provided
@@ -210,7 +203,7 @@ async function situation() {
         logDate = document.getElementById("logDate").value;
         shift   = document.getElementById("shift").value;
 
-        const user = await _account.get();
+        const user = await _AW.account.get();
         const email = await user.email;
         const employee = user.name;
 
@@ -229,7 +222,7 @@ async function situation() {
 
 
         const gainPompisteId = "68dbbb760034fb10a518"
-        const gainDocs = await _db.listDocuments(_DB_ID, gainPompisteId, [Appwrite.Query.equal("email", email), Appwrite.Query.equal("monthYear", monthYear)]);
+        const gainDocs = await _AW.db.listDocuments(_AW.DB_ID, gainPompisteId, [Appwrite.Query.equal("email", email), Appwrite.Query.equal("monthYear", monthYear)]);
         const doc = gainDocs.documents;     
 
 
@@ -243,8 +236,8 @@ async function situation() {
                monthYear
             };
             
-            await _db.createDocument(
-                _DB_ID,
+            await _AW.db.createDocument(
+                _AW.DB_ID,
                 gainPompisteId,
                 "unique()",
                 newData
@@ -263,8 +256,8 @@ async function situation() {
                monthYear
             };
 
-            await _db.updateDocument(
-                _DB_ID,
+            await _AW.db.updateDocument(
+                _AW.DB_ID,
                 gainPompisteId,
                 docId,
                 oldData
@@ -323,7 +316,7 @@ async function situation() {
             totalVente
         };
 
-        const response = await _db.listDocuments(_DB_ID, situationId, [Appwrite.Query.equal("logDate", logDate)]);
+        const response = await _AW.db.listDocuments(_AW.DB_ID, situationId, [Appwrite.Query.equal("logDate", logDate)]);
 
         if (shift === "Morning") {
             
@@ -354,8 +347,8 @@ async function situation() {
                     logDate,
                 };
 
-                await _db.createDocument(
-                    _DB_ID,
+                await _AW.db.createDocument(
+                    _AW.DB_ID,
                     situationId,
                     "unique()", // Appwrite generates an ID
                     dataSituation
@@ -399,8 +392,8 @@ async function situation() {
                     totalVente,
                 }
 
-                const updated = await _db.updateDocument(
-                _DB_ID,
+                const updated = await _AW.db.updateDocument(
+                _AW.DB_ID,
                 situationId,
                 docId,
                 dataSituation)
@@ -445,8 +438,8 @@ async function situation() {
                 totalVente,
             }
 
-            const updated = await _db.updateDocument(
-            _DB_ID,
+            const updated = await _AW.db.updateDocument(
+            _AW.DB_ID,
             situationId,
             docId,
             dataSituation)
@@ -496,8 +489,8 @@ async function situation() {
                 done,
             }
 
-            const updated = await _db.updateDocument(
-            _DB_ID,
+            const updated = await _AW.db.updateDocument(
+            _AW.DB_ID,
             situationId,
             docId,
             dataSituation)
@@ -507,15 +500,15 @@ async function situation() {
         
         
 
-        await _db.createDocument(
-            _DB_ID,
+        await _AW.db.createDocument(
+            _AW.DB_ID,
             indexId,
             "unique()", // Appwrite generates an ID
             dataIndex
         );
 
-        await _db.createDocument(
-            _DB_ID,
+        await _AW.db.createDocument(
+            _AW.DB_ID,
             paymentsId,
             "unique()", // Appwrite generates an ID
             dataPayments
@@ -638,7 +631,7 @@ let loans = [];
 async function storeLoan() {
     const loansId = "68fbe6f80019b53fb32f";
     
-    const user = await _account.get();
+    const user = await _AW.account.get();
     const employee = user.name;
 
     logDate = document.getElementById("logDate").value;
@@ -660,8 +653,8 @@ async function storeLoan() {
             amount
         };
 
-        await _db.createDocument(
-        _DB_ID,
+        await _AW.db.createDocument(
+        _AW.DB_ID,
         loansId,
         "unique()",
         loanData
@@ -679,7 +672,7 @@ let fiche = [];
 async function storeFiche() {
     const ficheId = "69007206001aed40d6f4";
 
-    const user = await _account.get();        
+    const user = await _AW.account.get();        
     const employee = user.name;  
 
     logDate = document.getElementById("logDate").value;
@@ -698,8 +691,8 @@ async function storeFiche() {
             amount
         };
 
-        await _db.createDocument(
-        _DB_ID,
+        await _AW.db.createDocument(
+        _AW.DB_ID,
         ficheId,
         "unique()",
         ficheData

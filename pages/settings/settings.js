@@ -1,10 +1,3 @@
-const client = new Appwrite.Client()
-    .setEndpoint("https://cloud.appwrite.io/v1")
-    .setProject("68a9b3e90029e6a10ff5");
-
-const databases = new Appwrite.Databases(client);
-
-const databaseId = "695f766c003a8dc2b3be";
 const adminId    = "68d95af4003245ef87a7";
 const settingsId = "69d3ed400021197ed76e";
 
@@ -19,7 +12,7 @@ function switchTab(tab, btn) {
 // ── FUEL PRICES ───────────────────────────────────────────────
 async function loadFuelSettings() {
     try {
-        const res = await databases.listDocuments(databaseId, settingsId);
+        const res = await _AW.db.listDocuments(_AW.DB_ID, settingsId);
         if (res.documents.length > 0) {
             const doc = res.documents[0];
             document.getElementById("pmsPriceInput").value = doc.pmsPrice       ?? "";
@@ -60,14 +53,14 @@ async function saveFuelPrices() {
     }
 
     try {
-        const res = await databases.listDocuments(databaseId, settingsId);
+        const res = await _AW.db.listDocuments(_AW.DB_ID, settingsId);
 
         if (res.documents.length === 0) {
-            await databases.createDocument(databaseId, settingsId, "unique()", {
+            await _AW.db.createDocument(_AW.DB_ID, settingsId, "unique()", {
                 pmsPrice, agoPrice, stationName, momoFeePercent
             });
         } else {
-            await databases.updateDocument(databaseId, settingsId, res.documents[0].$id, {
+            await _AW.db.updateDocument(_AW.DB_ID, settingsId, res.documents[0].$id, {
                 pmsPrice, agoPrice, stationName, momoFeePercent
             });
         }
@@ -83,7 +76,7 @@ async function saveFuelPrices() {
 async function loadAdmins() {
     const listEl = document.getElementById("adminList");
     try {
-        const res = await databases.listDocuments(databaseId, adminId);
+        const res = await _AW.db.listDocuments(_AW.DB_ID, adminId);
 
         if (res.documents.length === 0) {
             listEl.innerHTML = `<div class="loading">No admins found.</div>`;
@@ -125,7 +118,7 @@ async function addAdmin() {
     }
 
     try {
-        await databases.createDocument(databaseId, adminId, "unique()", { email, role });
+        await _AW.db.createDocument(_AW.DB_ID, adminId, "unique()", { email, role });
         document.getElementById("newAdminEmail").value = "";
         showStatus(statusEl, `${email} added as ${role}.`, "success");
         loadAdmins();
@@ -142,11 +135,11 @@ function promptRemoveAdmin(docId, email) {
     _pendingRemoveId = docId;
     document.getElementById("removePopupSub").textContent =
         `${email} will lose admin access immediately.`;
-    document.getElementById("confirmRemovePopup").style.display = "flex";
+    openDialog("confirmRemovePopup");
 }
 
 async function confirmRemoveAdmin() {
-    document.getElementById("confirmRemovePopup").style.display = "none";
+    closeDialog("confirmRemovePopup");
     if (!_pendingRemoveId) return;
 
     const docId    = _pendingRemoveId;
@@ -154,7 +147,7 @@ async function confirmRemoveAdmin() {
     const statusEl = document.getElementById("staffStatus");
 
     try {
-        await databases.deleteDocument(databaseId, adminId, docId);
+        await _AW.db.deleteDocument(_AW.DB_ID, adminId, docId);
         document.getElementById("row-" + docId)?.remove();
         showStatus(statusEl, "Access removed.", "success");
     } catch (err) {

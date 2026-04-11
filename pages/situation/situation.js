@@ -1,12 +1,5 @@
-// ── APPWRITE CONFIG ───────────────────────────────────────────
-const _client = new Appwrite.Client()
-  .setEndpoint("https://cloud.appwrite.io/v1")
-  .setProject("68a9b3e90029e6a10ff5");
-
-const _db       = new Appwrite.Databases(_client);
-const DB_ID     = "695f766c003a8dc2b3be";
-const SIT_ID    = "68cd6b7f00330a840d96";
-const STOCK_ID  = "6908ab260012e0412ca8";
+const SIT_ID   = "68cd6b7f00330a840d96";
+const STOCK_ID = "6908ab260012e0412ca8";
 
 // ── STATE ─────────────────────────────────────────────────────
 let calMonth    = { year: new Date().getFullYear(), month: new Date().getMonth() + 1 };
@@ -40,7 +33,7 @@ function monthLabel(y, m) {
 // the most recent entry — no manual date selection needed.
 async function initSituation() {
   try {
-    const recent = await _db.listDocuments(DB_ID, SIT_ID, [
+    const recent = await _AW.db.listDocuments(_AW.DB_ID, SIT_ID, [
       Appwrite.Query.orderDesc("logDate"),
       Appwrite.Query.limit(7),
     ]);
@@ -97,7 +90,7 @@ async function fetchMonthDates(year, month) {
   const start = `${year}-${mm}-01`;
   const end   = `${year}-${mm}-31`;
 
-  const res = await _db.listDocuments(DB_ID, SIT_ID, [
+  const res = await _AW.db.listDocuments(_AW.DB_ID, SIT_ID, [
     Appwrite.Query.greaterThanEqual("logDate", start),
     Appwrite.Query.lessThanEqual("logDate", end),
     Appwrite.Query.limit(31),
@@ -233,8 +226,8 @@ async function loadSituation(date) {
     const monthYear = `${y}-${m}`;
 
     const [sitRes, stockRes] = await Promise.all([
-      _db.listDocuments(DB_ID, SIT_ID,   [Appwrite.Query.equal("logDate", date)]),
-      _db.listDocuments(DB_ID, STOCK_ID, [Appwrite.Query.equal("monthYear", monthYear)]),
+      _AW.db.listDocuments(_AW.DB_ID, SIT_ID,   [Appwrite.Query.equal("logDate", date)]),
+      _AW.db.listDocuments(_AW.DB_ID, STOCK_ID, [Appwrite.Query.equal("monthYear", monthYear)]),
     ]);
 
     if (sitRes.documents.length === 0) {

@@ -7,6 +7,7 @@
     <title>Rapport Pompiste</title>
 </head>
 <body>
+<a href="#main-content" class="skip-nav">Skip to main content</a>
 
     <!-- ── HEADER ── -->
     <header class="site-header">
@@ -43,7 +44,7 @@
     </div>
 
     <!-- ── MAIN FORMS ── -->
-    <div class="forms-container">
+    <div class="forms-container" id="main-content">
 
         <!-- LEFT: PUMP INDEX -->
         <div class="form-side">
@@ -254,34 +255,35 @@
 
     <!-- ── STORE REPORT ── -->
     <div class="store-bar">
-        <button class="action-btn btn-store" onclick="document.getElementById('confirmStorePopup').style.display='flex'">Store Report</button>
+        <button class="action-btn btn-store" onclick="openDialog('confirmStorePopup')">Store Report</button>
     </div>
 
     <footer>
-        <button class="action-btn btn-logout" onclick="document.getElementById('confirmLogoutPopup').style.display='flex'">Log Out</button>
+        <button class="action-btn btn-logout" onclick="openDialog('confirmLogoutPopup')">Log Out</button>
     </footer>
 
     <!-- ── LOGOUT CONFIRMATION POPUP ── -->
-    <div class="popup" id="confirmLogoutPopup" style="display:none;">
+    <div class="popup" id="confirmLogoutPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-logout-title" aria-hidden="true" style="display:none;">
         <div class="popup-content">
-            <p style="font-size:14px; font-weight:700; margin-bottom:4px;">Log Out?</p>
+            <p id="dlg-logout-title" style="font-size:14px; font-weight:700; margin-bottom:4px;">Log Out?</p>
             <p style="color:var(--muted); font-size:11px; margin-bottom:12px;">Any unsaved data will be lost.</p>
-            <button id="confirmLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'; this.disabled=true; logout().finally(()=>this.disabled=false)">Log Out</button>
-            <button id="cancelLogout" onclick="document.getElementById('confirmLogoutPopup').style.display='none'">Cancel</button>
+            <button id="confirmLogout" onclick="closeDialog('confirmLogoutPopup'); this.disabled=true; logout().finally(()=>this.disabled=false)">Log Out</button>
+            <button id="cancelLogout" onclick="closeDialog('confirmLogoutPopup')">Cancel</button>
         </div>
     </div>
 
     <!-- ── STORE REPORT CONFIRMATION POPUP ── -->
-    <div class="popup" id="confirmStorePopup" style="display:none;">
+    <div class="popup" id="confirmStorePopup" role="dialog" aria-modal="true" aria-labelledby="dlg-store-title" aria-hidden="true" style="display:none;">
         <div class="popup-content">
-            <p style="font-size:14px; font-weight:700; margin-bottom:4px;">Store Report?</p>
+            <p id="dlg-store-title" style="font-size:14px; font-weight:700; margin-bottom:4px;">Store Report?</p>
             <p style="color:var(--muted); font-size:11px; margin-bottom:12px;">Make sure all data is correct before saving.</p>
-            <button id="confirmStore" onclick="document.getElementById('confirmStorePopup').style.display='none'; this.disabled=true; situation().finally(()=>this.disabled=false)">Confirm</button>
-            <button id="cancelStore" onclick="document.getElementById('confirmStorePopup').style.display='none'">Cancel</button>
+            <button id="confirmStore" onclick="closeDialog('confirmStorePopup'); this.disabled=true; situation().finally(()=>this.disabled=false)">Confirm</button>
+            <button id="cancelStore" onclick="closeDialog('confirmStorePopup')">Cancel</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="utils/config.js"></script>
     <script src="root/index.js"></script>
     <script type="module" src="utils/utils.js"></script>
 </body>

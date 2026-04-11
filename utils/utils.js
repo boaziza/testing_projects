@@ -7,7 +7,10 @@
     "box-shadow:0 4px 16px rgba(0,0,0,.18);opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;pointer-events:auto}" +
     ".toast.show{opacity:1;transform:translateY(0)}" +
     ".toast-success{background:#16a34a}.toast-error{background:#dc2626}" +
-    ".toast-warning{background:#d97706}.toast-info{background:#2563eb}";
+    ".toast-warning{background:#d97706}.toast-info{background:#2563eb}" +
+    ":focus-visible{outline:2px solid #2563eb;outline-offset:2px;border-radius:2px}" +
+    ".skip-nav{position:absolute;left:-9999px;top:4px;padding:8px 16px;background:#1e293b;color:#fff;border-radius:4px;font-size:13px;font-weight:600;z-index:10000;text-decoration:none}" +
+    ".skip-nav:focus{left:4px}";
   document.head.appendChild(style);
 })();
 
@@ -16,43 +19,61 @@ window.toast = function toast(message, type = "info") {
   if (!c) { c = document.createElement("div"); c.id = "toast-container"; document.body.appendChild(c); }
   const el = document.createElement("div");
   el.className = `toast toast-${type}`;
+  el.setAttribute("role", "alert");
   el.textContent = message;
   c.appendChild(el);
   requestAnimationFrame(() => el.classList.add("show"));
   setTimeout(() => { el.classList.remove("show"); setTimeout(() => el.remove(), 300); }, 3500);
 };
 
+// ── DIALOG FOCUS MANAGEMENT ───────────────────────────────────
+// openDialog(id) — shows popup, traps Tab, closes on Escape.
+// closeDialog(id) — hides popup, returns focus to trigger element.
+const _dialogFocusStack = [];
+
+window.openDialog = function openDialog(id) {
+  const dlg = document.getElementById(id);
+  if (!dlg) return;
+  _dialogFocusStack.push(document.activeElement);
+  dlg.style.display = "flex";
+  dlg.setAttribute("aria-hidden", "false");
+  const getFocusable = () => [...dlg.querySelectorAll(
+    'button:not([disabled]),[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'
+  )];
+  const els = getFocusable();
+  if (els.length) els[0].focus();
+  dlg._keyHandler = (e) => {
+    if (e.key === "Escape") { closeDialog(id); return; }
+    if (e.key !== "Tab") return;
+    const list = getFocusable();
+    if (list.length < 2) return;
+    const first = list[0], last = list[list.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
+  document.addEventListener("keydown", dlg._keyHandler);
+};
+
+window.closeDialog = function closeDialog(id) {
+  const dlg = document.getElementById(id);
+  if (!dlg) return;
+  dlg.style.display = "none";
+  dlg.setAttribute("aria-hidden", "true");
+  if (dlg._keyHandler) { document.removeEventListener("keydown", dlg._keyHandler); delete dlg._keyHandler; }
+  const prev = _dialogFocusStack.pop();
+  if (prev?.focus) prev.focus();
+};
+
 function welcomeMessage() {
-    const client = new Appwrite.Client()
-        .setEndpoint("https://cloud.appwrite.io/v1") 
-        .setProject("68a9b3e90029e6a10ff5");
-
-    const account = new Appwrite.Account(client);
-
-    // ✅ Check if user is logged in
-    account.get()
-    .then(user => {
-        // console.log("User is logged in:", user);
-    })
-    .catch(err => {
-        console.warn("Not logged in, redirecting...");
-
-        window.location.href= "/testing_projects/auth/sign-in/sign-in"; // 👈 change to your login page path
-    });
-
     async function showUser() {
         try {
-            const user = await account.get();
+            const user = await _AW.account.get();
             const username = user.name || user.email;
-
             if (document.getElementById("welcomeMessage")) {
-                // Insert into the HTML
                 document.getElementById("welcomeMessage").textContent = "Welcome back, " + username;
             }
-            
         } catch {
-            // If not logged in, send back to sign in
-            window.location.href= "/testing_projects/auth/sign-in/sign-in";
+            window.location.href = "/testing_projects/auth/sign-in/sign-in";
         }
     }
     showUser();
@@ -68,26 +89,13 @@ async function userAccess() {
     } 
 
     try {
-        const client = new Appwrite.Client()
-            .setEndpoint("https://cloud.appwrite.io/v1") 
-            .setProject("68a9b3e90029e6a10ff5");
-
-        const account = new Appwrite.Account(client);
-        const databases = new Appwrite.Databases(client);
-
-        const databaseId = "695f766c003a8dc2b3be";
         const adminId = "68d95af4003245ef87a7";
-        
-        const user = await account.get();
-        const email = user.email;         
-
-        const admin = await databases.listDocuments(databaseId, adminId, [Appwrite.Query.equal("email", email)])
-        
-        if ( admin.documents.length === 0) {
+        const user  = await _AW.account.get();
+        const admin = await _AW.db.listDocuments(_AW.DB_ID, adminId, [Appwrite.Query.equal("email", user.email)]);
+        if (admin.documents.length === 0) {
             window.location.replace("/testing_projects/index");
         }
-
-    } catch (error) {
+    } catch {
         // silent — redirect failures should not expose internals
     }
     
@@ -99,17 +107,7 @@ async function loadFuelPrices() {
     if (!pmEl || !agoEl) return;
 
     try {
-        const client = new Appwrite.Client()
-            .setEndpoint("https://cloud.appwrite.io/v1")
-            .setProject("68a9b3e90029e6a10ff5");
-        const databases = new Appwrite.Databases(client);
-
-        const doc = await databases.getDocument(
-            "695f766c003a8dc2b3be",
-            "69d3ed400021197ed76e",
-            "69d7db7ed8d5d2b73d66"
-        );
-
+        const doc = await _AW.db.getDocument(_AW.DB_ID, "69d3ed400021197ed76e", "69d7db7ed8d5d2b73d66");
         pmEl.textContent  = doc.pmsPrice  != null ? Number(doc.pmsPrice).toLocaleString()  + " RWF" : "—";
         agoEl.textContent = doc.agoPrice  != null ? Number(doc.agoPrice).toLocaleString()  + " RWF" : "—";
     } catch {
@@ -122,14 +120,7 @@ async function loadFuelPrices() {
 window.logout = async function logout() {
 
   try {
-    const client = new Appwrite.Client()
-      .setEndpoint("https://cloud.appwrite.io/v1") 
-      .setProject("68a9b3e90029e6a10ff5")
-    ;
-
-    const account = new Appwrite.Account(client);
-    
-    await account.deleteSession("current");
+    await _AW.account.deleteSession("current");
     localStorage.removeItem("pompisteLoginTime");
     toast("Logged out successfully", "success");
     window.location.href= "/testing_projects/auth/sign-in/sign-in";
