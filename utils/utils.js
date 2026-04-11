@@ -10,7 +10,8 @@
     ".toast-warning{background:#d97706}.toast-info{background:#2563eb}" +
     ":focus-visible{outline:2px solid #2563eb;outline-offset:2px;border-radius:2px}" +
     ".skip-nav{position:absolute;left:-9999px;top:4px;padding:8px 16px;background:#1e293b;color:#fff;border-radius:4px;font-size:13px;font-weight:600;z-index:10000;text-decoration:none}" +
-    ".skip-nav:focus{left:4px}";
+    ".skip-nav:focus{left:4px}" +
+    ".dropdown.open .dropdown-menu{display:block}";
   document.head.appendChild(style);
 })();
 
@@ -96,9 +97,9 @@ async function userAccess() {
             window.location.replace("/testing_projects/index");
         }
     } catch {
-        // silent — redirect failures should not expose internals
+        window.location.replace("/testing_projects/auth/sign-in/sign-in");
     }
-    
+
 }
 
 async function loadFuelPrices() {
@@ -153,10 +154,43 @@ function checkPompisteSession() {
     }, remaining);
 }
 
+function initNavDropdowns() {
+    document.querySelectorAll(".dropdown > a").forEach(trigger => {
+        trigger.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                const li = trigger.closest(".dropdown");
+                const isOpen = li.classList.contains("open");
+                document.querySelectorAll(".dropdown.open").forEach(d => {
+                    d.classList.remove("open");
+                    d.querySelector("a").setAttribute("aria-expanded", "false");
+                });
+                if (!isOpen) {
+                    li.classList.add("open");
+                    trigger.setAttribute("aria-expanded", "true");
+                }
+            } else if (e.key === "Escape") {
+                const li = trigger.closest(".dropdown");
+                li.classList.remove("open");
+                trigger.setAttribute("aria-expanded", "false");
+            }
+        });
+    });
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest(".dropdown")) {
+            document.querySelectorAll(".dropdown.open").forEach(d => {
+                d.classList.remove("open");
+                d.querySelector("a").setAttribute("aria-expanded", "false");
+            });
+        }
+    });
+}
+
 loadFuelPrices();
 userAccess();
 welcomeMessage();
 checkPompisteSession();
+initNavDropdowns();
 
 // async function checkAccess() {
 //     try {
