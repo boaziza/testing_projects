@@ -301,8 +301,7 @@ async function loadSituation(date) {
     document.getElementById("bankCard").textContent      = fmt(doc.bankCard);
     document.getElementById("totalFiche").textContent    = fmt(doc.totalFiche);
     document.getElementById("bon").textContent           = fmt(doc.bon);
-    document.getElementById("totalCash").textContent     =
-      ((Number(doc.totalCash)||0) + (Number(doc.totalLoans)||0) + Math.abs(Number(doc.gainPayments)||0)).toLocaleString();
+    document.getElementById("totalCash").textContent     = fmt(doc.totalCash);
 
     // ── Stocks de cuves ───────────────────────────────────────
     document.getElementById("initialPms").textContent      = fmt(doc.initialPms);

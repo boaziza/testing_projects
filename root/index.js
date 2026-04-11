@@ -1,7 +1,10 @@
-let totalVente,pms1,pms2,pms3,pms4,ago1,ago2,ago3,ago4;
+// ── INDEX STATE (set by calculateIndex) ───────────────────────
+let totalVente, pms1, pms2, pms3, pms4, ago1, ago2, ago3, ago4;
 let venteLitresPms, totalPms, venteLitresAgo, totalAgo;
 let pmsPrice, agoPrice, logDate, shift;
-let momoFeePercent = 0; // loaded from settings on page open
+
+// ── SETTINGS STATE (set by initSettings on load) ──────────────
+let momoFeePercent = 0;
 
 // ── LOAD SETTINGS ON PAGE OPEN ────────────────────────────────
 // Reads pmsPrice, agoPrice, momoFeePercent from the single fixed
@@ -153,6 +156,7 @@ async function calculateIndex() {
     }
 }
 
+// ── PAYMENT STATE (set by payments) ───────────────────────────
 let momo, momoLoss, totalFiche, bon, spFuelCard, bankCard;
 let cash5000, cash2000, cash1000, cash500;
 let totalCash, totalPayments, gainPayments, listBC, listSFC, totalLoans;
@@ -203,6 +207,11 @@ async function situation() {
     const indexId = "68cd1987002bae34ea4b";
     const paymentsId = "68cd19990006cbb33843";
     const situationId = "68cd6b7f00330a840d96";
+
+    if (totalVente === undefined || totalPayments === undefined) {
+        toast("Run Calculate Index and Calculate Payments first.", "warning");
+        return;
+    }
 
     try {
         logDate = document.getElementById("logDate").value;
@@ -592,25 +601,6 @@ function clearLoan() {
 }
 
 
-function mapTypeToInput(appwriteType) {
-  switch (appwriteType) {
-    case "integer":
-      return "number";
-    case "float":
-      return "number";
-    case "boolean":
-      return "checkbox";
-    case "email":
-      return "email";
-    case "url":
-      return "url";
-    case "datetime":
-      return "date";
-    default:
-      return "text"; // for string, enum, etc.
-  }
-}
-
 let spFuelCardList = [];
 let bankCardList = [];
 
@@ -772,6 +762,3 @@ async function MomoLoss() {
     document.getElementById("momoLoss").value = parseInt((momo / 100) * momoFeePercent) || 0;
 }
 
-function cancel(id) {
-    document.getElementById(id).innerHTML = "";
-}

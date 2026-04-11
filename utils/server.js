@@ -93,14 +93,6 @@ app.get("/api/documents/:collection", async (req, res) => {
   }
 });
 
-app.get("/api/tables", (req, res) => {
-  // You can return both the collection names and their IDs
-  res.json({
-    databaseId,
-    availableTables: collections,
-  });
-});
-
 // Universal write route
 app.post("/api/create/:collection", async (req, res) => {
   try {
@@ -145,18 +137,6 @@ app.patch("/api/update-by-field/:collection", async (req, res) => {
       return res.status(404).json({ error: "Document not found" });
     }
 
-    // const key = Object.keys(updateData)[0];
-    // const value = parseInt(updateData[key]);
-
-    // const doc = findResult.documents[0];
-    // const initialValue = doc[key];
-  
-    // if (initialValue !== null) {
-    //   const newValue = value + initialValue;
-    //   updateData = { [key]: newValue }
-
-    // }
-
     const documentId = findResult.documents[0].$id;
 
     const updateResult = await databases.updateDocument(
@@ -185,8 +165,7 @@ app.listen(port, () => {
 });
 
 async function fetchAllDocuments(collectionId) {
-  const databaseId = process.env.APPWRITE_DATABASE_ID;
-  const limit = 100;  
+  const limit = 100;
 
   let all = [];
   let cursor = null;

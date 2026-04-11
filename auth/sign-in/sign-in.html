@@ -81,11 +81,14 @@
       try {
         await _AW.account.createEmailSession(email, password);
 
-        await _AW.db.createDocument(_AW.DB_ID, _collectionId, "unique()", {
-          employeeId:   parseInt(_employeeIdMap[email]),
-          emailAddress: email,
-          logDate:      new Date().toISOString(),
-        });
+        const _mappedId = _employeeIdMap[email];
+        if (_mappedId !== undefined) {
+          await _AW.db.createDocument(_AW.DB_ID, _collectionId, "unique()", {
+            employeeId:   parseInt(_mappedId),
+            emailAddress: email,
+            logDate:      new Date().toISOString(),
+          });
+        }
 
         const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, _adminCollectionId, [
           Appwrite.Query.equal("email", email)
