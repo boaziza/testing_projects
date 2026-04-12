@@ -13,7 +13,7 @@
   --card:       #ffffff;
   --border:     #e2e8f0;
   --text:       #0f172a;
-  --muted:      #64748b;
+  --muted:      #475569;
   --shadow:     0 2px 8px rgba(0,0,0,0.07);
 }
 
@@ -260,6 +260,7 @@ nav ul li a:hover {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-width: 0; /* prevents grid column expanding beyond 1fr when table content is wide */
 }
 
 /* ── METRIC CARDS ────────────────────────────── */

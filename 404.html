@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found — Rapport Pompiste</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231b263b'/><text x='16' y='23' text-anchor='middle' font-family='Arial' font-weight='900' font-size='16' fill='white'>RP</text></svg>">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #0f172a;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: #1b263b;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      color: white;
+      letter-spacing: -1px;
+    }
+    .brand-name {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #1b263b;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 48px 40px;
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    }
+    .code {
+      font-size: 72px;
+      font-weight: 900;
+      color: #1b263b;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .sub {
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .btn {
+      display: inline-block;
+      background: #1b263b;
+      color: white;
+      text-decoration: none;
+      padding: 11px 28px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.2px;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #415a77; }
+    @media (max-width: 480px) {
+      .card { padding: 36px 24px; }
+      .code { font-size: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="brand">
+    <div class="brand-icon">RP</div>
+    <div class="brand-name">Rapport Pompiste</div>
+  </div>
+  <div class="card">
+    <div class="code">404</div>
+    <div class="title">Page not found</div>
+    <p class="sub">The page you're looking for doesn't exist or has been moved.</p>
+    <a href="/testing_projects/index" class="btn">Go to Home</a>
+  </div>
+</body>
+</html>
