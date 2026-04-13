@@ -175,12 +175,65 @@ function showStatus(el, msg, type) {
     _statusTimers.set(el, t);
 }
 
+// ── EMPLOYEE CREATION ─────────────────────────────────────────
+// Uses the Express server's /api/create-employee endpoint, which
+// calls the Appwrite Users API (server-side only). This is the
+// only way to create accounts for other users — the browser SDK
+// cannot do it.
+
+async function handleCreateEmployee(btn) {
+    btn.disabled = true;
+    try {
+        await createEmployee();
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function createEmployee() {
+    const name      = document.getElementById("empName").value.trim();
+    const email     = document.getElementById("empEmail").value.trim();
+    const password  = document.getElementById("empPassword").value;
+    const statusEl  = document.getElementById("empStatus");
+
+    if (!name || !email || !password) {
+        showStatus(statusEl, "Name, email, and password are all required.", "error");
+        return;
+    }
+    if (password.length < 8) {
+        showStatus(statusEl, "Password must be at least 8 characters.", "error");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${_AW.SERVER_URL}/create-employee`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-API-Key": _AW.SERVER_KEY,
+            },
+            body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to create employee");
+
+        document.getElementById("empName").value     = "";
+        document.getElementById("empEmail").value    = "";
+        document.getElementById("empPassword").value = "";
+        showStatus(statusEl, `✓ Account created for ${name} (${email}).`, "success");
+    } catch (err) {
+        showStatus(statusEl, "Error: " + err.message, "error");
+    }
+}
+
 // ── INIT ──────────────────────────────────────────────────────
 loadFuelSettings();
 loadAdmins();
 
-window.switchTab         = switchTab;
-window.handleSavePrices  = handleSavePrices;
-window.handleAddAdmin    = handleAddAdmin;
-window.promptRemoveAdmin = promptRemoveAdmin;
-window.confirmRemoveAdmin = confirmRemoveAdmin;
+window.switchTab              = switchTab;
+window.handleSavePrices       = handleSavePrices;
+window.handleAddAdmin         = handleAddAdmin;
+window.promptRemoveAdmin      = promptRemoveAdmin;
+window.confirmRemoveAdmin     = confirmRemoveAdmin;
+window.handleCreateEmployee   = handleCreateEmployee;

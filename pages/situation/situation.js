@@ -28,37 +28,50 @@ function monthLabel(y, m) {
 }
 
 // ── INIT ──────────────────────────────────────────────────────
-// Called on page load. Fetches the 10 most recent situation docs,
-// builds the recent list, highlights the calendar, and auto-loads
-// the most recent entry — no manual date selection needed.
+// Loads the current month's records (up to 31) so the sidebar list
+// and calendar show the same data without an extra round-trip.
+// Falls back to the most recent month if the current month is empty
+// (e.g. at the very start of a new month).
 async function initSituation() {
   try {
-    const recent = await _AW.db.listDocuments(_AW.DB_ID, SIT_ID, [
-      Appwrite.Query.orderDesc("logDate"),
-      Appwrite.Query.limit(7),
-    ]);
+    const now  = new Date();
+    const y    = now.getFullYear();
+    const m    = now.getMonth() + 1;
+    const mm   = String(m).padStart(2, "0");
 
-    if (recent.documents.length === 0) {
-      document.getElementById("loadedDate").textContent = "No records found.";
-      await buildCalendar(calMonth.year, calMonth.month);
-      document.getElementById("recentList").innerHTML =
-        '<div class="list-empty">No records yet.</div>';
+    calMonth = { year: y, month: m };
+
+    const docs = await _fetchMonthFull(y, m);
+
+    if (docs.length > 0) {
+      cacheFromDocs(docs);
+      await buildCalendar(y, m);
+      buildRecentList(docs);
+      await selectDate(safeDate(docs[0].logDate));
       return;
     }
 
-    // Cache month data from what we already fetched (avoids extra query)
-    cacheFromDocs(recent.documents);
+    // Current month is empty — fall back to the most recent record's month
+    const fallbackRes = await _AW.db.listDocuments(_AW.DB_ID, SIT_ID, [
+      Appwrite.Query.orderDesc("logDate"),
+      Appwrite.Query.limit(1),
+    ]);
 
-    // Build the sidebar list
-    buildRecentList(recent.documents);
+    if (fallbackRes.documents.length === 0) {
+      document.getElementById("loadedDate").textContent = "No records found.";
+      document.getElementById("recentList").innerHTML =
+        '<div class="list-empty">No records yet.</div>';
+      await buildCalendar(y, m);
+      return;
+    }
 
-    // Set calendar to the most recent doc's month and build it
-    const latest = safeDate(recent.documents[0].logDate);
-    const [y, m] = latest.split("-").map(Number);
-    calMonth = { year: y, month: m };
-    await buildCalendar(y, m);
-
-    // Auto-load the most recent situation
+    const latest      = safeDate(fallbackRes.documents[0].logDate);
+    const [fy, fm]    = latest.split("-").map(Number);
+    calMonth          = { year: fy, month: fm };
+    const fallbackDocs = await _fetchMonthFull(fy, fm);
+    cacheFromDocs(fallbackDocs);
+    await buildCalendar(fy, fm);
+    buildRecentList(fallbackDocs);
     await selectDate(latest);
 
   } catch (err) {
@@ -67,6 +80,21 @@ async function initSituation() {
     document.getElementById("recentList").innerHTML =
       '<div class="list-empty">Error loading records.</div>';
   }
+}
+
+// Fetch full documents for a month (ordered newest first, max 31).
+// Separate from fetchMonthDates which only returns {logDate, done} for the cache.
+async function _fetchMonthFull(year, month) {
+  const mm    = String(month).padStart(2, "0");
+  const start = `${year}-${mm}-01`;
+  const end   = `${year}-${mm}-31`;
+  const res   = await _AW.db.listDocuments(_AW.DB_ID, SIT_ID, [
+    Appwrite.Query.greaterThanEqual("logDate", start),
+    Appwrite.Query.lessThanEqual("logDate",    end),
+    Appwrite.Query.orderDesc("logDate"),
+    Appwrite.Query.limit(31),
+  ]);
+  return res.documents;
 }
 
 // ── MONTH CACHE ───────────────────────────────────────────────

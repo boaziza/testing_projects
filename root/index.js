@@ -60,14 +60,14 @@ async function calculateIndex() {
     document.getElementById("result").textContent = `${totalVente.toLocaleString()} RWF`;
 
     try {
-        
+
         async function getDayBefore(logDate) {
 
             if (!logDate) { toast("Select a date!", "warning"); return; }
 
             const selectedDate = new Date(logDate);
             selectedDate.setDate(selectedDate.getDate() - 1);
-            
+
             const mm = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
             const dd = String(selectedDate.getDate()).padStart(2, '0');
             const yyyy = selectedDate.getFullYear();
@@ -92,7 +92,7 @@ async function calculateIndex() {
                 // If PMS not provided, consider it as found
                 pmsMatch = true;
             }
-            
+
             // Check AGO match if values are provided
             if (ago1 && ago3) {
                 if (ago1 === doc.ago2 && ago3 === doc.ago4) {
@@ -102,7 +102,7 @@ async function calculateIndex() {
                 // If AGO not provided, consider it as found
                 agoMatch = true;
             }
-            
+
             // If both are found, we can break early
             if (pmsMatch && agoMatch) {
                 break;
@@ -114,7 +114,7 @@ async function calculateIndex() {
         if (!match) {
             pmsMatch = false;
             agoMatch = false;
-            
+
             const beforeResponse = await _AW.db.listDocuments(_AW.DB_ID, indexId, [Appwrite.Query.equal("logDate", dateBefore)]);
 
             for (const doc of beforeResponse.documents) {
@@ -126,7 +126,7 @@ async function calculateIndex() {
                 } else {
                     pmsMatch = true;
                 }
-                
+
                 // Check AGO match if values are provided
                 if (ago1 && ago3) {
                     if (ago1 === doc.ago2 && ago3 === doc.ago4 && doc.shift === "Night") {
@@ -135,13 +135,13 @@ async function calculateIndex() {
                 } else {
                     agoMatch = true;
                 }
-                
+
                 // If both are found, we can break early
                 if (pmsMatch && agoMatch) {
                     break;
                 }
             }
-            
+
             match = pmsMatch && agoMatch;
         }
 
@@ -163,9 +163,13 @@ let totalCash, totalPayments, gainPayments, listBC, listSFC, totalLoans;
 
 async function payments() {
 
+    // I-12: Must run calculateIndex first so totalVente is defined
+    if (totalVente === undefined) {
+        toast("Run Calculate Index first.", "warning");
+        return;
+    }
+
     try {
-        
-    
         momo = Number(document.getElementById("momo").value);
         momoLoss = Number(document.getElementById("momoLoss").value);
         bon = Number(document.getElementById("bon").value);
@@ -189,7 +193,7 @@ async function payments() {
         totalPayments = momo + momoLoss + totalFiche + bon + spFuelCard + bankCard + totalCash + totalLoans;
         gainPayments = totalPayments - totalVente;
 
-        
+
         document.getElementById("totalLoans").textContent = `${totalLoans.toLocaleString()} RWF`;
         document.getElementById("totalFiche").textContent = `${totalFiche.toLocaleString()} RWF`;
         document.getElementById("totalPayments").textContent = `${totalPayments.toLocaleString()} RWF`;
@@ -202,7 +206,7 @@ async function payments() {
     }
 }
 
-let dataSituation; 
+let dataSituation;
 async function situation() {
     const indexId = "68cd1987002bae34ea4b";
     const paymentsId = "68cd19990006cbb33843";
@@ -217,23 +221,29 @@ async function situation() {
         logDate = document.getElementById("logDate").value;
         shift   = document.getElementById("shift").value;
 
+        // I-2: Require date and shift before writing anything
+        if (!logDate) { toast("Select a date before storing.", "warning"); return; }
+        if (!shift)   { toast("Select a shift before storing.", "warning"); return; }
+
         const user = await _AW.account.get();
-        const email = await user.email;
+        const email = user.email;
         const employee = user.name;
 
-        function generateShiftId(employee, logDate) {
-            return `${employee}_${logDate}_${crypto.randomUUID()}`;
-        }
-
-        const id = generateShiftId(employee,logDate);
-
         const selectedDate = new Date(logDate);
-        
-        const mm = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const mm   = String(selectedDate.getMonth() + 1).padStart(2, '0');
         const yyyy = selectedDate.getFullYear();
-
         const monthYear = `${yyyy}-${mm}`;
 
+        // I-4: Check for duplicate submission before writing anything
+        const dupCheck = await _AW.db.listDocuments(_AW.DB_ID, indexId, [
+            Appwrite.Query.equal("logDate", logDate),
+            Appwrite.Query.equal("email",   email),
+            Appwrite.Query.equal("shift",   shift),
+        ]);
+        if (dupCheck.documents.length > 0) {
+            toast("You already submitted this shift. Contact admin if a resubmission is needed.", "warning");
+            return;
+        }
 
         const gainRes = await fetch(`${_AW.SERVER_URL}/upsert-gain`, {
             method: "POST",
@@ -244,12 +254,14 @@ async function situation() {
             body: JSON.stringify({ email, employee, gainPayments, logDate, monthYear }),
         });
         if (!gainRes.ok) throw new Error("Failed to save gain: " + (await gainRes.text()));
-        
+
+        // Shared reference ID stored on both index and payments records
+        const id = `${employee}_${logDate}_${shift}`;
 
         const dataIndex = {
-            venteLitresPms, 
-            totalPms, 
-            venteLitresAgo, 
+            venteLitresPms,
+            totalPms,
+            venteLitresAgo,
             totalAgo,
             totalVente,
             pms1,
@@ -270,20 +282,20 @@ async function situation() {
         };
 
         const dataPayments = {
-            momo, 
-            momoLoss, 
+            momo,
+            momoLoss,
             totalFiche,
-            bon, 
+            bon,
             listBC,
             listSFC,
             bankCard,
             spFuelCard,
-            cash5000, 
-            cash2000, 
-            cash1000, 
+            cash5000,
+            cash2000,
+            cash1000,
             cash500,
-            totalCash, 
-            totalPayments, 
+            totalCash,
+            totalPayments,
             gainPayments,
             email,
             logDate,
@@ -298,24 +310,28 @@ async function situation() {
 
         const response = await _AW.db.listDocuments(_AW.DB_ID, situationId, [Appwrite.Query.equal("logDate", logDate)]);
 
+        // C-3: Track whether a situation document was written.
+        // Index and payments must NOT be written if situation was skipped.
+        let situationWritten = false;
+
         if (shift === "Morning") {
-            
-            if ( response.documents.length === 0 ) {
-                
+
+            if (response.documents.length === 0) {
+
                 dataSituation = {
-                    momo, 
-                    momoLoss, 
-                    totalFiche, 
+                    momo,
+                    momoLoss,
+                    totalFiche,
                     bon,
                     spFuelCard,
                     bankCard,
-                    totalCash, 
+                    totalCash,
                     totalLoans,
-                    totalPayments, 
+                    totalPayments,
                     gainPayments,
-                    venteLitresPms, 
-                    totalPms, 
-                    venteLitresAgo, 
+                    venteLitresPms,
+                    totalPms,
+                    venteLitresAgo,
                     totalAgo,
                     totalVente,
                     pms1,
@@ -330,170 +346,128 @@ async function situation() {
                 await _AW.db.createDocument(
                     _AW.DB_ID,
                     situationId,
-                    "unique()", // Appwrite generates an ID
+                    "unique()",
                     dataSituation
-                ) 
-            } else {
-                const doc = response.documents[0];
+                );
 
+            } else {
+                const doc   = response.documents[0];
                 const docId = doc.$id;
 
-                momo += doc.momo;
-                momoLoss += doc.momoLoss;
-                totalFiche += doc.totalFiche;
-                bon += doc.bon;
-                spFuelCard += doc.spFuelCard;
-                bankCard += doc.bankCard;
-                totalCash += doc.totalCash;
-                totalLoans += doc.totalLoans;
-                totalPayments += doc.totalPayments;
-                gainPayments += doc.gainPayments;
-                venteLitresPms += doc.venteLitresPms;
-                totalPms += doc.totalPms;
-                venteLitresAgo += doc.venteLitresAgo;
-                totalAgo += doc.totalAgo;
-                totalVente += doc.totalVente;
-                
+                // I-8: Build accumulated totals without mutating module-level variables
                 dataSituation = {
-                    momo, 
-                    momoLoss,
-                    totalFiche,
-                    bon,
-                    spFuelCard,
-                    bankCard,
-                    totalCash, 
-                    totalLoans,
-                    totalPayments, 
-                    gainPayments,
-                    venteLitresPms, 
-                    totalPms, 
-                    venteLitresAgo, 
-                    totalAgo,
-                    totalVente,
-                }
+                    momo:           momo           + (doc.momo           || 0),
+                    momoLoss:       momoLoss       + (doc.momoLoss       || 0),
+                    totalFiche:     totalFiche     + (doc.totalFiche     || 0),
+                    bon:            bon            + (doc.bon            || 0),
+                    spFuelCard:     spFuelCard     + (doc.spFuelCard     || 0),
+                    bankCard:       bankCard       + (doc.bankCard       || 0),
+                    totalCash:      totalCash      + (doc.totalCash      || 0),
+                    totalLoans:     totalLoans     + (doc.totalLoans     || 0),
+                    totalPayments:  totalPayments  + (doc.totalPayments  || 0),
+                    gainPayments:   gainPayments   + (doc.gainPayments   || 0),
+                    venteLitresPms: venteLitresPms + (doc.venteLitresPms || 0),
+                    totalPms:       totalPms       + (doc.totalPms       || 0),
+                    venteLitresAgo: venteLitresAgo + (doc.venteLitresAgo || 0),
+                    totalAgo:       totalAgo       + (doc.totalAgo       || 0),
+                    totalVente:     totalVente     + (doc.totalVente     || 0),
+                };
 
-                await _AW.db.updateDocument(
-                _AW.DB_ID,
-                situationId,
-                docId,
-                dataSituation)
+                await _AW.db.updateDocument(_AW.DB_ID, situationId, docId, dataSituation);
             }
 
-        } else if ( (shift === "Afternoon" || shift === "Evening") && response.documents.length !== 0) {
-            const doc = response.documents[0];
+            situationWritten = true;
 
+        } else if ((shift === "Afternoon" || shift === "Evening") && response.documents.length !== 0) {
+            const doc   = response.documents[0];
             const docId = doc.$id;
 
-            momo += doc.momo;
-            momoLoss += doc.momoLoss;
-            totalFiche += doc.totalFiche;
-            bon += doc.bon;
-            spFuelCard += doc.spFuelCard;
-            bankCard += doc.bankCard;
-            totalCash += doc.totalCash;
-            totalLoans += doc.totalLoans;
-            totalPayments += doc.totalPayments;
-            gainPayments += doc.gainPayments;
-            venteLitresPms += doc.venteLitresPms;
-            totalPms += doc.totalPms;
-            venteLitresAgo += doc.venteLitresAgo;
-            totalAgo += doc.totalAgo;
-            totalVente += doc.totalVente;
-            
+            // I-8: Accumulate without mutating module-level variables
             dataSituation = {
-                momo, 
-                momoLoss,
-                totalFiche,
-                bon,
-                spFuelCard,
-                bankCard,
-                totalCash, 
-                totalLoans,
-                totalPayments, 
-                gainPayments,
-                venteLitresPms, 
-                totalPms, 
-                venteLitresAgo, 
-                totalAgo,
-                totalVente,
-            }
+                momo:           momo           + (doc.momo           || 0),
+                momoLoss:       momoLoss       + (doc.momoLoss       || 0),
+                totalFiche:     totalFiche     + (doc.totalFiche     || 0),
+                bon:            bon            + (doc.bon            || 0),
+                spFuelCard:     spFuelCard     + (doc.spFuelCard     || 0),
+                bankCard:       bankCard       + (doc.bankCard       || 0),
+                totalCash:      totalCash      + (doc.totalCash      || 0),
+                totalLoans:     totalLoans     + (doc.totalLoans     || 0),
+                totalPayments:  totalPayments  + (doc.totalPayments  || 0),
+                gainPayments:   gainPayments   + (doc.gainPayments   || 0),
+                venteLitresPms: venteLitresPms + (doc.venteLitresPms || 0),
+                totalPms:       totalPms       + (doc.totalPms       || 0),
+                venteLitresAgo: venteLitresAgo + (doc.venteLitresAgo || 0),
+                totalAgo:       totalAgo       + (doc.totalAgo       || 0),
+                totalVente:     totalVente     + (doc.totalVente     || 0),
+            };
 
-            await _AW.db.updateDocument(
-            _AW.DB_ID,
-            situationId,
-            docId,
-            dataSituation)
+            await _AW.db.updateDocument(_AW.DB_ID, situationId, docId, dataSituation);
+            situationWritten = true;
 
-        } else if(shift === "Night" && response.documents.length !== 0 ){
-            const doc = response.documents[0];
-
+        } else if (shift === "Night" && response.documents.length !== 0) {
+            const doc   = response.documents[0];
             const docId = doc.$id;
-            const done = true;
 
-            momo += doc.momo;
-            momoLoss += doc.momoLoss;
-            totalFiche += doc.totalFiche;
-            bon += doc.bon;
-            spFuelCard += doc.spFuelCard;
-            bankCard += doc.bankCard;
-            totalCash += doc.totalCash;
-            totalLoans += doc.totalLoans;
-            totalPayments += doc.totalPayments;
-            gainPayments += doc.gainPayments;
-            venteLitresPms += doc.venteLitresPms;
-            totalPms += doc.totalPms;
-            venteLitresAgo += doc.venteLitresAgo;
-            totalAgo += doc.totalAgo;
-            totalVente += doc.totalVente;
-            
+            // I-8: Accumulate without mutating module-level variables
             dataSituation = {
-                momo, 
-                momoLoss, 
-                totalFiche,
-                bon, 
-                spFuelCard,
-                bankCard,
-                totalCash, 
-                totalLoans,
-                totalPayments, 
-                gainPayments,
-                venteLitresPms, 
-                totalPms, 
-                venteLitresAgo, 
-                totalAgo,
-                totalVente,
+                momo:           momo           + (doc.momo           || 0),
+                momoLoss:       momoLoss       + (doc.momoLoss       || 0),
+                totalFiche:     totalFiche     + (doc.totalFiche     || 0),
+                bon:            bon            + (doc.bon            || 0),
+                spFuelCard:     spFuelCard     + (doc.spFuelCard     || 0),
+                bankCard:       bankCard       + (doc.bankCard       || 0),
+                totalCash:      totalCash      + (doc.totalCash      || 0),
+                totalLoans:     totalLoans     + (doc.totalLoans     || 0),
+                totalPayments:  totalPayments  + (doc.totalPayments  || 0),
+                gainPayments:   gainPayments   + (doc.gainPayments   || 0),
+                venteLitresPms: venteLitresPms + (doc.venteLitresPms || 0),
+                totalPms:       totalPms       + (doc.totalPms       || 0),
+                venteLitresAgo: venteLitresAgo + (doc.venteLitresAgo || 0),
+                totalAgo:       totalAgo       + (doc.totalAgo       || 0),
+                totalVente:     totalVente     + (doc.totalVente     || 0),
                 pms2,
                 pms4,
                 ago2,
                 ago4,
-                done,
-            }
+                done: true,
+            };
 
-            await _AW.db.updateDocument(
-            _AW.DB_ID,
-            situationId,
-            docId,
-            dataSituation)
-
-
+            await _AW.db.updateDocument(_AW.DB_ID, situationId, docId, dataSituation);
+            situationWritten = true;
         }
-        
-        
-        
 
-        await _AW.db.createDocument(
-            _AW.DB_ID,
-            indexId,
-            "unique()",
-            dataIndex
-        );
+        // C-3: If no situation was written (Afternoon/Evening/Night with no Morning),
+        // abort here — do not write orphaned index or payments records.
+        if (!situationWritten) {
+            toast(`No situation record found for ${logDate}. Submit Morning shift first.`, "error");
+            return;
+        }
 
-        await _AW.db.createDocument(
-            _AW.DB_ID,
-            paymentsId,
-            "unique()",
-            dataPayments
-        );
+        // C-4: Write index first, then payments. If payments fails, roll back
+        // the index write so the database stays consistent and the user can retry.
+        let indexDocId = null;
+        try {
+            const indexDoc = await _AW.db.createDocument(
+                _AW.DB_ID,
+                indexId,
+                "unique()",
+                dataIndex
+            );
+            indexDocId = indexDoc.$id;
+
+            await _AW.db.createDocument(
+                _AW.DB_ID,
+                paymentsId,
+                "unique()",
+                dataPayments
+            );
+        } catch (writeErr) {
+            if (indexDocId) {
+                // Compensate: undo the index write so the state stays clean for a retry
+                try { await _AW.db.deleteDocument(_AW.DB_ID, indexId, indexDocId); } catch {}
+            }
+            throw writeErr;
+        }
 
         // Bulk-write each fiche entry to its own collection document
         const ficheId = "69007206001aed40d6f4";
@@ -541,7 +515,7 @@ async function situation() {
         }
 
         clearOutputs();
-        
+
         document.getElementById("rapportForm").reset();
         document.getElementById("paymentsForm").reset();
 
@@ -727,4 +701,3 @@ async function MomoLoss() {
     const momo = Number(document.getElementById("momo").value);
     document.getElementById("momoLoss").value = parseInt((momo / 100) * momoFeePercent) || 0;
 }
-

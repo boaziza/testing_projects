@@ -5,3 +5,4 @@ pages/customers
 .claude
 test
 CLAUDE.md
+database_setup.js

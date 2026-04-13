@@ -65,6 +65,14 @@ window.closeDialog = function closeDialog(id) {
   if (prev?.focus) prev.focus();
 };
 
+// I-9: Derive the current page name safely, handling both
+//   /testing_projects/index  (explicit) and
+//   /testing_projects/       (trailing slash — GitHub Pages root)
+function _currentPageName() {
+    const raw = window.location.pathname.split("/").pop();
+    return raw.replace(/\.html?$/, "") || "index";
+}
+
 function welcomeMessage() {
     async function showUser() {
         try {
@@ -81,13 +89,13 @@ function welcomeMessage() {
 }
 
 
-async function userAccess() {    
+async function userAccess() {
 
-    const currentPage = window.location.pathname.split("/").pop();
+    const currentPage = _currentPageName();
 
-    if ( currentPage === "index") {     
+    if (currentPage === "index") {
         return;
-    } 
+    }
 
     try {
         const adminId = "68d95af4003245ef87a7";
@@ -133,7 +141,7 @@ window.logout = async function logout() {
 
 
 function checkPompisteSession() {
-    const currentPage = window.location.pathname.split("/").pop();
+    const currentPage = _currentPageName();
     if (currentPage !== "index") return;
 
     const loginTime = parseInt(sessionStorage.getItem("pompisteLoginTime"));
@@ -200,22 +208,3 @@ userAccess();
 welcomeMessage();
 checkPompisteSession();
 initNavDropdowns();
-
-// async function checkAccess() {
-//     try {
-//     const res = await fetch("https://api64.ipify.org?format=json");
-//     const data = await res.json();
-//     const ip = data.ip;
-
-//         //List of allowed IPs/networks
-//     const allowed = ["41.216.105.56", "41.186.132.111"];
-
-//     if (!allowed.includes(ip)) {
-//         document.body.innerHTML = "<h1>🚫 Access Denied</h1>";        
-//     }
-//     } catch (err) {
-//     console.error("Failed to check access", err);
-//     }
-// }
-
-// checkAccess();

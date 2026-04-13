@@ -47,6 +47,7 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('fuel', this)">Fuel Prices</button>
       <button class="tab-btn"        onclick="switchTab('staff', this)">Admin Access</button>
+      <button class="tab-btn"        onclick="switchTab('employees', this)">Employees</button>
     </div>
 
     <!-- TAB 1: FUEL PRICES -->
@@ -95,6 +96,30 @@
           <button class="action-btn" id="addAdminBtn" onclick="handleAddAdmin(this)">Add</button>
         </div>
         <div id="staffStatus" class="status-msg" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <!-- TAB 3: EMPLOYEES -->
+    <div id="tab-employees" class="tab-content" style="display:none;">
+      <div class="settings-card">
+        <div class="settings-card-title">Create Employee Account</div>
+        <p class="settings-hint">Create a new pompiste account. The employee can sign in immediately using these credentials.</p>
+        <div class="settings-field">
+          <label for="empName">Full Name</label>
+          <input type="text" id="empName" placeholder="e.g. Jean Claude">
+        </div>
+        <div class="settings-field">
+          <label for="empEmail">Email</label>
+          <input type="email" id="empEmail" placeholder="employee@example.com">
+        </div>
+        <div class="settings-field">
+          <label for="empPassword">Password</label>
+          <input type="password" id="empPassword" placeholder="Min. 8 characters" minlength="8">
+        </div>
+        <div class="settings-actions">
+          <button class="action-btn" id="createEmpBtn" onclick="handleCreateEmployee(this)">Create Account</button>
+        </div>
+        <div id="empStatus" class="status-msg" aria-live="polite"></div>
       </div>
     </div>
 

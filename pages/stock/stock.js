@@ -11,25 +11,32 @@ let totalVenteLitresAgo, totalVenteLitresPms;
 async function stock() {
     const situationId = "68cd6b7f00330a840d96";
 
-  try {
-    logDate = document.getElementById("logDate").value;
+    try {
+        logDate = document.getElementById("logDate").value;
 
-    if (!logDate) {
-        toast("Enter a date to continue", "warning");
+        if (!logDate) {
+            toast("Enter a date to continue", "warning");
+            return;
+        }
+
+        const response = await _AW.db.listDocuments(_AW.DB_ID, situationId, [Appwrite.Query.equal("logDate", logDate)]);
+
+        if (response.documents.length > 0) {
+            const doc = response.documents[0];
+            venteLitresAgo = parseInt(doc.venteLitresAgo, 10);
+            venteLitresPms = parseInt(doc.venteLitresPms, 10);
+        }
+    } catch (err) {
+        toast("Error fetching sales data: " + err.message, "error");
         return;
     }
 
-    const response = await _AW.db.listDocuments(_AW.DB_ID, situationId, [Appwrite.Query.equal("logDate", logDate)]);
-
-    if (response.documents.length > 0) {
-      const doc = response.documents[0];
-
-      venteLitresAgo = parseInt(doc.venteLitresAgo, 10);
-      venteLitresPms = parseInt(doc.venteLitresPms, 10);
+    // I-5: Situation data is required to calculate theory stock.
+    // If the day's situation hasn't been submitted yet, sales figures are undefined.
+    if (venteLitresPms === undefined || venteLitresAgo === undefined) {
+        toast("No sales data found for this date. Submit the day's situation first.", "warning");
+        return;
     }
-  } catch (err) {
-    toast("Error fetching sales data: " + err.message, "error");
-  }
 
     initialPms = parseInt(document.getElementById("initialPms").value);
     initialAgo = parseInt(document.getElementById("initialAgo").value);
@@ -38,11 +45,11 @@ async function stock() {
     physicalStockPms = parseInt(document.getElementById("physicalStockPms").value);
     physicalStockAgo = parseInt(document.getElementById("physicalStockAgo").value);
 
-    theoryStockPms = initialPms + receivedPms - venteLitresPms ;
-    theoryStockAgo = initialAgo + receivedAgo - venteLitresAgo ;
+    theoryStockPms = initialPms + receivedPms - venteLitresPms;
+    theoryStockAgo = initialAgo + receivedAgo - venteLitresAgo;
 
-    gainFuelPms = physicalStockPms - theoryStockPms ;
-    gainFuelAgo = physicalStockAgo - theoryStockAgo ;
+    gainFuelPms = physicalStockPms - theoryStockPms;
+    gainFuelAgo = physicalStockAgo - theoryStockAgo;
 
     document.getElementById("theoryStockPms").textContent = theoryStockPms.toLocaleString();
     document.getElementById("theoryStockAgo").textContent = theoryStockAgo.toLocaleString();
@@ -50,7 +57,6 @@ async function stock() {
     document.getElementById("gainFuelAgo").textContent = gainFuelAgo.toLocaleString();
     document.getElementById("venteLitresPms").textContent = venteLitresPms.toLocaleString();
     document.getElementById("venteLitresAgo").textContent = venteLitresAgo.toLocaleString();
-    
 }
 
 async function storeStock() {
@@ -63,14 +69,13 @@ async function storeStock() {
     const stockId     = "6908ab260012e0412ca8";
 
     const selectedDate = new Date(logDate);
-    
-    const mm = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const mm   = String(selectedDate.getMonth() + 1).padStart(2, '0');
     const yyyy = selectedDate.getFullYear();
-
     const monthYear = `${yyyy}-${mm}`;
-    
+
+    // C-7: Single try/catch covering all writes — only toast success after everything
+    // succeeds, so the user never sees conflicting success + error messages.
     try {
-        
         const user  = await _AW.account.get();
         const email = user.email;
 
@@ -82,7 +87,7 @@ async function storeStock() {
             theoryStockAgo,
             gainFuelAgo,
             email,
-            logDate, 
+            logDate,
         };
 
         const dataPms = {
@@ -93,142 +98,86 @@ async function storeStock() {
             theoryStockPms,
             gainFuelPms,
             email,
-            logDate,  
+            logDate,
         };
 
-        const response = await _AW.db.listDocuments(_AW.DB_ID, stockId,[ Appwrite.Query.equal("monthYear", monthYear) ]);
+        const response = await _AW.db.listDocuments(_AW.DB_ID, stockId, [Appwrite.Query.equal("monthYear", monthYear)]);
 
-        
-        totalGainFuelPms = gainFuelPms; 
-        totalGainFuelAgo = gainFuelAgo;
-        totalReceivedPms = receivedPms;
-        totalReceivedAgo = receivedAgo;
+        totalGainFuelPms    = gainFuelPms;
+        totalGainFuelAgo    = gainFuelAgo;
+        totalReceivedPms    = receivedPms;
+        totalReceivedAgo    = receivedAgo;
         totalVenteLitresPms = venteLitresPms;
-        totalVenteLitresAgo = venteLitresAgo;       
+        totalVenteLitresAgo = venteLitresAgo;
 
         if (response.documents.length > 0) {
-            const stockDoc = response.documents[0];       
+            const stockDoc = response.documents[0];
+            const docId    = stockDoc.$id;
 
-            const docId = stockDoc.$id;
-
-            totalGainFuelPms += stockDoc.totalGainFuelPms;
-            totalGainFuelAgo += stockDoc.totalGainFuelAgo;
-            totalReceivedPms += stockDoc.totalReceivedPms;
-            totalReceivedAgo += stockDoc.totalReceivedAgo;
+            totalGainFuelPms    += stockDoc.totalGainFuelPms;
+            totalGainFuelAgo    += stockDoc.totalGainFuelAgo;
+            totalReceivedPms    += stockDoc.totalReceivedPms;
+            totalReceivedAgo    += stockDoc.totalReceivedAgo;
             totalVenteLitresPms += stockDoc.totalVenteLitresPms;
             totalVenteLitresAgo += stockDoc.totalVenteLitresAgo;
 
-            const stockData = {
-                totalGainFuelPms, 
-                totalGainFuelAgo,
-                totalReceivedPms,
-                totalReceivedAgo,
-                totalVenteLitresPms,
-                totalVenteLitresAgo                     
-            }
-
-            await _AW.db.updateDocument(
-                _AW.DB_ID,
-                stockId,
-                docId,
-                stockData
-            );
-    
-        } else {
-
-            const stockData = {
-                totalGainFuelPms, 
+            await _AW.db.updateDocument(_AW.DB_ID, stockId, docId, {
+                totalGainFuelPms,
                 totalGainFuelAgo,
                 totalReceivedPms,
                 totalReceivedAgo,
                 totalVenteLitresPms,
                 totalVenteLitresAgo,
-                monthYear                    
-            }
-
-            await _AW.db.createDocument(
-                _AW.DB_ID,
-                stockId,
-                "unique()",
-                stockData
-            );
-
-        }
-
-        await _AW.db.createDocument(
-        _AW.DB_ID,
-        stockAgoId,
-        "unique()", // Appwrite generates an ID
-        dataAgo
-        );
-
-        await _AW.db.createDocument(
-        _AW.DB_ID,
-        stockPmsId,
-        "unique()", // Appwrite generates an ID
-        dataPms
-        );
-
-        toast("Stock saved", "success");
-
-        document.getElementById("stockForm").reset();
-
-    } catch (err) {
-        toast("Error: " + err.message, "error");
-    }
-
-
-    try {
-        // 1. Find the document by attribute
-        const docs = await _AW.db.listDocuments(
-            _AW.DB_ID,
-            situationId,
-            [ Appwrite.Query.equal("logDate", logDate) ] // filter by your known attribute
-        );
-
-        if (docs.total === 0) {
-            return;
-        }
-
-        const docId = docs.documents[0].$id; // get the first match
-
-        // 2. Update the null fields
-        await _AW.db.updateDocument(
-            _AW.DB_ID,
-            situationId,
-            docId,
-            {
-                initialAgo: initialAgo,
-                receivedAgo: receivedAgo,
-                physicalStockAgo: physicalStockAgo,
-                theoryStockAgo: theoryStockAgo,
-                gainFuelAgo: gainFuelAgo,
-                initialPms: initialPms,
-                receivedPms: receivedPms,
-                physicalStockPms: physicalStockPms,
-                theoryStockPms: theoryStockPms,
-                gainFuelPms: gainFuelPms,
-            }
-        );
-        
-        toast("Situation updated", "success");
-
-        function clearOutputs() {
-
-            const outputs = document.querySelectorAll(".output");
-            outputs.forEach(el => {
-                el.textContent = "0";
+            });
+        } else {
+            await _AW.db.createDocument(_AW.DB_ID, stockId, "unique()", {
+                totalGainFuelPms,
+                totalGainFuelAgo,
+                totalReceivedPms,
+                totalReceivedAgo,
+                totalVenteLitresPms,
+                totalVenteLitresAgo,
+                monthYear,
             });
         }
 
-        clearOutputs();
+        await _AW.db.createDocument(_AW.DB_ID, stockAgoId, "unique()", dataAgo);
+        await _AW.db.createDocument(_AW.DB_ID, stockPmsId, "unique()", dataPms);
 
-    } catch (error) {
-        toast("Error updating situation: " + error.message, "error");
+        // Update the situation document with the stock fields
+        const sitDocs = await _AW.db.listDocuments(
+            _AW.DB_ID,
+            situationId,
+            [Appwrite.Query.equal("logDate", logDate)]
+        );
+
+        if (sitDocs.total > 0) {
+            await _AW.db.updateDocument(_AW.DB_ID, situationId, sitDocs.documents[0].$id, {
+                initialAgo,
+                receivedAgo,
+                physicalStockAgo,
+                theoryStockAgo,
+                gainFuelAgo,
+                initialPms,
+                receivedPms,
+                physicalStockPms,
+                theoryStockPms,
+                gainFuelPms,
+            });
+        }
+
+        toast("Stock saved successfully", "success");
+
+        document.querySelectorAll(".output").forEach(el => { el.textContent = "0"; });
+        document.getElementById("stockForm").reset();
+
+    } catch (err) {
+        toast("Error saving stock: " + err.message, "error");
     }
 }
 
-function download() {
+// I-1: async so the caller can use .finally() to re-enable the button
+async function download() {
     try {
         const date = document.getElementById("logDate").value;
         if (!date) { toast("Select a date before downloading.", "warning"); return; }
@@ -243,10 +192,9 @@ function download() {
             jsPDF:       { unit: "mm", format: "a4", orientation: "portrait" },
         };
 
-        html2pdf().set(opt).from(element).save();
+        await html2pdf().set(opt).from(element).save();
 
     } catch (error) {
         toast("Download failed: " + error.message, "error");
     }
 }
-
