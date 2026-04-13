@@ -9,7 +9,6 @@ let totalVenteLitresAgo, totalVenteLitresPms;
 
 
 async function stock() {
-    const indexId     = "68cd1987002bae34ea4b";
     const situationId = "68cd6b7f00330a840d96";
 
   try {
@@ -194,7 +193,7 @@ async function storeStock() {
         const docId = docs.documents[0].$id; // get the first match
 
         // 2. Update the null fields
-        const updated = await _AW.db.updateDocument(
+        await _AW.db.updateDocument(
             _AW.DB_ID,
             situationId,
             docId,
@@ -225,7 +224,7 @@ async function storeStock() {
         clearOutputs();
 
     } catch (error) {
-        toast("Error updating situation", "error");
+        toast("Error updating situation: " + error.message, "error");
     }
 }
 

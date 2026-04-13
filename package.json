@@ -4,7 +4,8 @@
   "type": "module",
   "main": "utils/server.js",
   "scripts": {
-    "start": "node utils/server.js"
+    "start": "node utils/server.js",
+    "lint":  "eslint ."
   },
   "dependencies": {
     "appwrite": "^21.5.0",
@@ -29,5 +30,9 @@
   "bugs": {
     "url": "https://github.com/boaziza/myWebApp/issues"
   },
-  "homepage": "https://github.com/boaziza/myWebApp#readme"
+  "homepage": "https://github.com/boaziza/myWebApp#readme",
+  "devDependencies": {
+    "eslint": "^10.2.0",
+    "globals": "^17.5.0"
+  }
 }

@@ -3,7 +3,6 @@ let allRows       = [];   // pre-processed documents for the active table
 let filtered      = null; // non-null only when a search filter is active
 let currentPage   = 1;
 let lastAttributes = [];  // column definitions for the active table
-let activeTable   = null; // name of the currently loaded table
 
 const PAGE_SIZE = 20;
 const API = _AW.SERVER_URL;
@@ -150,7 +149,6 @@ async function loadMetrics() {
 // ── MAIN DISPLAY ───────────────────────────────────────────────
 async function display(tableName) {
   try {
-    activeTable = tableName;
     document.getElementById("tableTitle").textContent = `${tableName.toUpperCase()} Table`;
 
     // Mark sidebar active item
