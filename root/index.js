@@ -249,7 +249,6 @@ async function situation() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-API-Key": _AW.SERVER_KEY,
             },
             body: JSON.stringify({ email, employee, gainPayments, logDate, monthYear }),
         });

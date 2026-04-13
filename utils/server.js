@@ -14,14 +14,9 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
   : [];
 
-const apiSecret = process.env.API_SECRET;
-
 // Startup validation — fail fast so Render logs show the real cause
 if (allowedOrigins.length === 0) {
   throw new Error("ALLOWED_ORIGINS env var is missing or empty — server cannot start safely.");
-}
-if (!apiSecret) {
-  throw new Error("API_SECRET env var is missing — server cannot start safely.");
 }
 
 const corsOptions = {
@@ -38,15 +33,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// API key guard — all /api/* routes require X-API-Key header
-function requireApiKey(req, res, next) {
-  if (req.headers["x-api-key"] !== apiSecret) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  next();
-}
-app.use("/api", requireApiKey);
 
 // ✅ Appwrite client setup
 const client = new sdk.Client()

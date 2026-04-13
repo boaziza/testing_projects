@@ -9,9 +9,7 @@ const API = _AW.SERVER_URL;
 
 // ── HELPERS ────────────────────────────────────────────────────
 async function fetchJSON(url) {
-  const res = await fetch(url, {
-    headers: { "X-API-Key": _AW.SERVER_KEY },
-  });
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch ${url}`);
   return res.json();
 }
@@ -124,22 +122,21 @@ async function loadMetrics() {
       fetchJSON(`${API}/documents/stock`),
     ]);
 
-    // Use a local variable — never touches the shared allRows
-    const stockAttrs = rearrangeAndRename(attrData.attributes);
-    const stockRows  = preprocessRows(docData.documents);
+    const stockRows = preprocessRows(docData.documents);
 
-    let totalGain = 0;
+    let totalGain    = 0;
+    let totalGainAgo = 0;
+    let totalGainPms = 0;
 
     stockRows.forEach(row => {
-      stockAttrs.forEach(attr => {
-        const v = Number(row[attr.key]) || 0;
-        if (attr.key === "gainPayments")     totalGain += v;
-        if (attr.key === "totalGainFuelAgo") document.getElementById("gainAgo").textContent = `${v.toLocaleString()} L`;
-        if (attr.key === "totalGainFuelPms") document.getElementById("gainPms").textContent = `${v.toLocaleString()} L`;
-      });
+      totalGain    += Number(row.gainPayments)     || 0;
+      totalGainAgo += Number(row.totalGainFuelAgo) || 0;
+      totalGainPms += Number(row.totalGainFuelPms) || 0;
     });
 
-    document.getElementById("gain").textContent = `${totalGain.toLocaleString()} RWF`;
+    document.getElementById("gain").textContent    = `${totalGain.toLocaleString()} RWF`;
+    document.getElementById("gainAgo").textContent = `${totalGainAgo.toLocaleString()} L`;
+    document.getElementById("gainPms").textContent = `${totalGainPms.toLocaleString()} L`;
   } catch (err) {
     console.error("Could not load metrics:", err);
     toast("Could not load metrics", "error");

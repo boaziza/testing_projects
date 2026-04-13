@@ -210,7 +210,6 @@ async function createEmployee() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-API-Key": _AW.SERVER_KEY,
             },
             body: JSON.stringify({ name, email, password }),
         });

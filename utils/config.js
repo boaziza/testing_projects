@@ -13,6 +13,5 @@
     db:         new Appwrite.Databases(client),
     DB_ID:      "695f766c003a8dc2b3be",
     SERVER_URL: "https://testing-projects-4ttw.onrender.com/api",
-    SERVER_KEY: "rihyafpfxxpbrdzymakrplptejqniftresbcxqlkuewqzgequoolcxmsssgyyklukbuotsyagticmvguhnwxofxhzchdblsuimjdltmigygtbnbzsafjnezrbvuuntyiaccgzbexsobvqhqrttjtwyhqhxoqvroi", // must match API_SECRET env var on Render
   };
 })();
