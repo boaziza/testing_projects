@@ -126,7 +126,7 @@ window.logout = async function logout() {
     toast("Logged out successfully", "success");
     window.location.href= "/testing_projects/auth/sign-in/sign-in";
 
-  } catch (error) {
+  } catch {
     toast("Logout failed. Please try again.", "error");
   }
 }
