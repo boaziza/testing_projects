@@ -6,11 +6,13 @@ let lastAttributes = [];  // column definitions for the active table
 let activeTable   = null; // name of the currently loaded table
 
 const PAGE_SIZE = 20;
-const API = "https://testing-projects-4ttw.onrender.com/api";
+const API = _AW.SERVER_URL;
 
 // ── HELPERS ────────────────────────────────────────────────────
 async function fetchJSON(url) {
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    headers: { "X-API-Key": _AW.SERVER_KEY },
+  });
   if (!res.ok) throw new Error(`Failed to fetch ${url}`);
   return res.json();
 }

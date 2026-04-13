@@ -235,49 +235,15 @@ async function situation() {
         const monthYear = `${yyyy}-${mm}`;
 
 
-        const gainPompisteId = "68dbbb760034fb10a518"
-        const gainDocs = await _AW.db.listDocuments(_AW.DB_ID, gainPompisteId, [Appwrite.Query.equal("email", email), Appwrite.Query.equal("monthYear", monthYear)]);
-        const doc = gainDocs.documents;     
-
-
-        if ( doc.length === 0) {
-
-            const newData = {
-               employee,
-               email,
-               gainPayments,
-               logDate,
-               monthYear
-            };
-            
-            await _AW.db.createDocument(
-                _AW.DB_ID,
-                gainPompisteId,
-                "unique()",
-                newData
-            );
-
-        } else {
-
-            const docId = doc[0].$id;
-            const newGain = gainPayments + doc[0].gainPayments;
-            
-            const oldData = {
-               employee,
-               email,
-               gainPayments: newGain,
-               logDate,
-               monthYear
-            };
-
-            await _AW.db.updateDocument(
-                _AW.DB_ID,
-                gainPompisteId,
-                docId,
-                oldData
-            );
-            
-        }
+        const gainRes = await fetch(`${_AW.SERVER_URL}/upsert-gain`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-API-Key": _AW.SERVER_KEY,
+            },
+            body: JSON.stringify({ email, employee, gainPayments, logDate, monthYear }),
+        });
+        if (!gainRes.ok) throw new Error("Failed to save gain: " + (await gainRes.text()));
         
 
         const dataIndex = {

@@ -14,6 +14,15 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
   : [];
 
+const apiSecret = process.env.API_SECRET;
+
+// Startup validation — fail fast so Render logs show the real cause
+if (allowedOrigins.length === 0) {
+  throw new Error("ALLOWED_ORIGINS env var is missing or empty — server cannot start safely.");
+}
+if (!apiSecret) {
+  throw new Error("API_SECRET env var is missing — server cannot start safely.");
+}
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -34,6 +43,15 @@ const corsOptions = {
 // Use before your routes
 app.use(cors(corsOptions));
 
+// API key guard — all /api/* routes require X-API-Key header
+function requireApiKey(req, res, next) {
+  if (req.headers["x-api-key"] !== apiSecret) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+}
+app.use("/api", requireApiKey);
+
 // ✅ Appwrite client setup
 const client = new sdk.Client()
   .setEndpoint(process.env.APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1")
@@ -46,12 +64,13 @@ const databases = new sdk.Databases(client);
 const databaseId = process.env.APPWRITE_DATABASE_ID;
 const collections = {
   // customers: process.env.APPWRITE_CUSTOMERS_ID,
-  loans: process.env.APPWRITE_LOANS_ID,
-  fiche: process.env.APPWRITE_FICHE_ID,
-  gain: process.env.APPWRITE_GAIN_ID,
-  payments: process.env.APPWRITE_PAYMENTS_ID,
-  stock: process.env.APPWRITE_STOCK_ID,
-  gainTesting: process.env.APPWRITE_GAINTESTING_ID,
+  loans:        process.env.APPWRITE_LOANS_ID,
+  fiche:        process.env.APPWRITE_FICHE_ID,
+  gain:         process.env.APPWRITE_GAIN_ID,
+  payments:     process.env.APPWRITE_PAYMENTS_ID,
+  stock:        process.env.APPWRITE_STOCK_ID,
+  gainTesting:  process.env.APPWRITE_GAINTESTING_ID,
+  gainPompiste: process.env.APPWRITE_GAINPOMPISTE_ID,
   // sample: process.env.APPWRITE_SAMPLE_ID
 };
 
@@ -150,6 +169,41 @@ app.patch("/api/update-by-field/:collection", async (req, res) => {
   } catch (error) {
     console.error("Update by field error:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Atomic gain upsert — avoids race condition from client-side read-modify-write
+app.post("/api/upsert-gain", async (req, res) => {
+  try {
+    const { email, employee, gainPayments, logDate, monthYear } = req.body;
+    const gainPompisteId = collections.gainPompiste;
+
+    if (!gainPompisteId) {
+      return res.status(500).json({ error: "APPWRITE_GAINPOMPISTE_ID env var not set" });
+    }
+
+    const existing = await databases.listDocuments(databaseId, gainPompisteId, [
+      Query.equal("email", email),
+      Query.equal("monthYear", monthYear),
+    ]);
+
+    if (existing.documents.length === 0) {
+      await databases.createDocument(databaseId, gainPompisteId, ID.unique(), {
+        employee, email, gainPayments, logDate, monthYear,
+      });
+    } else {
+      const doc = existing.documents[0];
+      await databases.updateDocument(databaseId, gainPompisteId, doc.$id, {
+        employee, email,
+        gainPayments: gainPayments + doc.gainPayments,
+        logDate, monthYear,
+      });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Upsert gain error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
