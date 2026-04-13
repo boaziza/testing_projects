@@ -1,6 +1,7 @@
 // utils/server.js
 import express from "express";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { Query, ID } from "node-appwrite";
 import * as sdk from "node-appwrite";
 import dotenv from "dotenv";
@@ -33,6 +34,26 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// ── RATE LIMITING ───────────────────────────────────────────────
+// Read endpoints: generous — dashboard and reports poll these frequently.
+const readLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests — please try again later." },
+});
+
+// Write endpoints: tight — each submit is one action, 30 is plenty for
+// a team of ~6 over 15 minutes.
+const writeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many write requests — please try again later." },
+});
 
 // ✅ Appwrite client setup
 const client = new sdk.Client()
@@ -80,7 +101,7 @@ const QUERY_FIELD_ALLOWLIST = {
 // ── ROUTES ─────────────────────────────────────────────────────
 
 // List available tables (used by the report dashboard sidebar)
-app.get("/api/tables", (_, res) => {
+app.get("/api/tables", readLimiter, (_, res) => {
   const available = Object.fromEntries(
     Object.entries(collections).filter(([, v]) => v)
   );
@@ -88,7 +109,7 @@ app.get("/api/tables", (_, res) => {
 });
 
 // Get attributes (fields) for one collection
-app.get("/api/attributes/:collection", async (req, res) => {
+app.get("/api/attributes/:collection", readLimiter, async (req, res) => {
   const { collection } = req.params;
   const collectionId = collections[collection];
 
@@ -106,7 +127,7 @@ app.get("/api/attributes/:collection", async (req, res) => {
 });
 
 // GET documents from a collection
-app.get("/api/documents/:collection", async (req, res) => {
+app.get("/api/documents/:collection", readLimiter, async (req, res) => {
   const { collection } = req.params;
   const collectionId = collections[collection];
 
@@ -124,7 +145,7 @@ app.get("/api/documents/:collection", async (req, res) => {
 });
 
 // Universal write route
-app.post("/api/create/:collection", async (req, res) => {
+app.post("/api/create/:collection", writeLimiter, async (req, res) => {
   try {
     const tableKey = req.params.collection;
     const tableId  = collections[tableKey];
@@ -149,7 +170,7 @@ app.post("/api/create/:collection", async (req, res) => {
   }
 });
 
-app.patch("/api/update-by-field/:collection", async (req, res) => {
+app.patch("/api/update-by-field/:collection", writeLimiter, async (req, res) => {
   try {
     const { collection } = req.params;
     const { searchField, searchValue, updateData: rawUpdateData } = req.body;
@@ -194,7 +215,7 @@ app.patch("/api/update-by-field/:collection", async (req, res) => {
 });
 
 // Atomic gain upsert — avoids race condition from client-side read-modify-write
-app.post("/api/upsert-gain", async (req, res) => {
+app.post("/api/upsert-gain", writeLimiter, async (req, res) => {
   try {
     const { email, employee, gainPayments, logDate, monthYear } = req.body;
     const gainPompisteId = collections.gainPompiste;
@@ -229,7 +250,7 @@ app.post("/api/upsert-gain", async (req, res) => {
 });
 
 // Create a new employee account (admin only — uses server-side Users API)
-app.post("/api/create-employee", async (req, res) => {
+app.post("/api/create-employee", writeLimiter, async (req, res) => {
   try {
     const { name, email, password } = req.body;
 

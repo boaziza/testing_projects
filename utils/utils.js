@@ -111,14 +111,23 @@ async function userAccess() {
 }
 
 async function loadFuelPrices() {
-    const pmEl  = document.getElementById("pmsPrice");
-    const agoEl = document.getElementById("agoPrice");
+    const pmEl      = document.getElementById("pmsPrice");
+    const agoEl     = document.getElementById("agoPrice");
+    const stationEl = document.getElementById("headerStationName");
     if (!pmEl || !agoEl) return;
 
     try {
         const doc = await _AW.db.getDocument(_AW.DB_ID, "69d3ed400021197ed76e", "69d7db7ed8d5d2b73d66");
         pmEl.textContent  = doc.pmsPrice  != null ? Number(doc.pmsPrice).toLocaleString()  + " RWF" : "—";
         agoEl.textContent = doc.agoPrice  != null ? Number(doc.agoPrice).toLocaleString()  + " RWF" : "—";
+        if (stationEl) {
+            if (doc.stationName) {
+                stationEl.textContent    = doc.stationName;
+                stationEl.style.display  = "";
+            } else {
+                stationEl.style.display  = "none";
+            }
+        }
     } catch {
         pmEl.textContent  = "—";
         agoEl.textContent = "—";

@@ -148,7 +148,11 @@ async function calculateIndex() {
         if (match) {
             toast("All indices match", "success");
         } else {
-            toast("Check index — values do not match", "error");
+            toast("Index mismatch — correct your values before continuing.", "error");
+            totalVente = undefined;
+            document.getElementById("resultpms").textContent = "—";
+            document.getElementById("resultago").textContent = "—";
+            document.getElementById("result").textContent    = "—";
         }
 
     } catch (error) {

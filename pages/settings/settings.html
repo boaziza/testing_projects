@@ -22,6 +22,7 @@
     <div class="fuel-prices">
       <p>ESSENCE: <span id="pmsPrice">—</span></p>
       <p>MAZOUT: <span id="agoPrice">—</span></p>
+      <p id="headerStationName" style="display:none;"></p>
     </div>
   </header>
 
@@ -93,7 +94,7 @@
             <option value="admin">Admin</option>
             <option value="manager">Manager</option>
           </select>
-          <button class="action-btn" id="addAdminBtn" onclick="handleAddAdmin(this)">Add</button>
+          <button class="action-btn" id="addAdminBtn" onclick="promptAddAdmin()">Add</button>
         </div>
         <div id="staffStatus" class="status-msg" aria-live="polite"></div>
       </div>
@@ -117,7 +118,7 @@
           <input type="password" id="empPassword" placeholder="Min. 8 characters" minlength="8">
         </div>
         <div class="settings-actions">
-          <button class="action-btn" id="createEmpBtn" onclick="handleCreateEmployee(this)">Create Account</button>
+          <button class="action-btn" id="createEmpBtn" onclick="promptCreateEmployee()">Create Account</button>
         </div>
         <div id="empStatus" class="status-msg" aria-live="polite"></div>
       </div>
@@ -148,6 +149,26 @@
       <p class="popup-sub">This will update fuel prices, station name, and MoMo fee for all users.</p>
       <button id="confirmSave" onclick="closeDialog('confirmSavePopup'); handleSavePrices(this)">Save</button>
       <button id="cancelSave" onclick="closeDialog('confirmSavePopup')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ── ADD ADMIN POPUP ── -->
+  <div class="popup" id="confirmAddAdminPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-add-admin-title" aria-hidden="true" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title" id="dlg-add-admin-title">Add Admin?</p>
+      <p class="popup-sub" id="addAdminPopupSub"></p>
+      <button id="confirmAddAdmin" onclick="closeDialog('confirmAddAdminPopup'); handleAddAdmin(this)">Add</button>
+      <button id="cancelAddAdmin" onclick="closeDialog('confirmAddAdminPopup')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ── CREATE EMPLOYEE POPUP ── -->
+  <div class="popup" id="confirmCreateEmpPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-create-emp-title" aria-hidden="true" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title" id="dlg-create-emp-title">Create Account?</p>
+      <p class="popup-sub" id="createEmpPopupSub"></p>
+      <button id="confirmCreateEmp" onclick="closeDialog('confirmCreateEmpPopup'); handleCreateEmployee(this)">Create</button>
+      <button id="cancelCreateEmp" onclick="closeDialog('confirmCreateEmpPopup')">Cancel</button>
     </div>
   </div>
 

@@ -128,6 +128,22 @@ async function addAdmin() {
     }
 }
 
+// ── ADD ADMIN (popup-based) ───────────────────────────────────
+function promptAddAdmin() {
+    const email    = document.getElementById("newAdminEmail").value.trim();
+    const role     = document.getElementById("newAdminRole").value;
+    const statusEl = document.getElementById("staffStatus");
+
+    if (!email) {
+        showStatus(statusEl, "Enter an email address.", "error");
+        return;
+    }
+
+    document.getElementById("addAdminPopupSub").textContent =
+        `Add ${email} as ${role}?`;
+    openDialog("confirmAddAdminPopup");
+}
+
 // ── REMOVE ADMIN (popup-based) ────────────────────────────────
 let _pendingRemoveId = null;
 
@@ -173,6 +189,27 @@ function showStatus(el, msg, type) {
     }, 4000);
 
     _statusTimers.set(el, t);
+}
+
+// ── CREATE EMPLOYEE (popup-based) ────────────────────────────
+function promptCreateEmployee() {
+    const name      = document.getElementById("empName").value.trim();
+    const email     = document.getElementById("empEmail").value.trim();
+    const password  = document.getElementById("empPassword").value;
+    const statusEl  = document.getElementById("empStatus");
+
+    if (!name || !email || !password) {
+        showStatus(statusEl, "Name, email, and password are all required.", "error");
+        return;
+    }
+    if (password.length < 8) {
+        showStatus(statusEl, "Password must be at least 8 characters.", "error");
+        return;
+    }
+
+    document.getElementById("createEmpPopupSub").textContent =
+        `Create account for ${name} (${email})?`;
+    openDialog("confirmCreateEmpPopup");
 }
 
 // ── EMPLOYEE CREATION ─────────────────────────────────────────
@@ -232,7 +269,9 @@ loadAdmins();
 
 window.switchTab              = switchTab;
 window.handleSavePrices       = handleSavePrices;
+window.promptAddAdmin         = promptAddAdmin;
 window.handleAddAdmin         = handleAddAdmin;
 window.promptRemoveAdmin      = promptRemoveAdmin;
 window.confirmRemoveAdmin     = confirmRemoveAdmin;
+window.promptCreateEmployee   = promptCreateEmployee;
 window.handleCreateEmployee   = handleCreateEmployee;
