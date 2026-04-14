@@ -248,12 +248,54 @@ nav ul li a:hover {
 
 .sidebar-footer {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
   color: var(--muted);
   font-size: 11px;
   text-align: center;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
 }
+
+.btn-logout {
+  width: 100%;
+  background: #fee2e2;
+  color: var(--loss);
+  border: 1.5px solid #fca5a5;
+  font-size: 12px;
+  padding: 7px 18px;
+  font-weight: 700;
+}
+
+.btn-logout:hover {
+  background: var(--loss);
+  color: white;
+  border-color: var(--loss);
+  box-shadow: none;
+  transform: none;
+}
+
+/* ── POPUP ───────────────────────────────────── */
+.popup {
+  display: none; position: fixed; z-index: 2000; inset: 0;
+  background: rgba(0,0,0,0.45); backdrop-filter: blur(3px);
+  align-items: center; justify-content: center;
+}
+
+.popup-content {
+  background: white; padding: 18px 20px;
+  border-radius: 10px; text-align: center;
+  width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.popup-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+.popup-sub   { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+
+.popup-content button { margin: 4px 4px 0; padding: 7px 18px; font-size: 12px; }
+
+#confirmLogout { background: var(--loss); color: white; }
 
 /* ── MAIN CONTENT ────────────────────────────── */
 .main {

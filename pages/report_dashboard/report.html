@@ -54,6 +54,7 @@
       </div>
       <div class="reports-list" id="reportsList"></div>
       <div class="sidebar-footer">
+        <button class="btn-logout" onclick="openDialog('confirmLogoutPopup')">Log Out</button>
         <small>© 2025 My Dashboard</small>
       </div>
     </aside>
@@ -112,6 +113,16 @@
       </section>
 
     </main>
+  </div>
+
+  <!-- ── LOGOUT POPUP ── -->
+  <div class="popup" id="confirmLogoutPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-logout-title" aria-hidden="true" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title" id="dlg-logout-title">Log Out?</p>
+      <p class="popup-sub">You will be redirected to the sign-in page.</p>
+      <button id="confirmLogout" onclick="closeDialog('confirmLogoutPopup'); this.disabled=true; logout().finally(()=>this.disabled=false)">Log Out</button>
+      <button id="cancelLogout" onclick="closeDialog('confirmLogoutPopup')">Cancel</button>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
