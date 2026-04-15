@@ -47,7 +47,7 @@
 
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('fuel', this)">Fuel Prices</button>
-      <button class="tab-btn"        onclick="switchTab('staff', this)">Admin Access</button>
+      <button class="tab-btn"        onclick="switchTab('teams', this)">Teams</button>
       <button class="tab-btn"        onclick="switchTab('employees', this)">Employees</button>
     </div>
 
@@ -78,25 +78,17 @@
       </div>
     </div>
 
-    <!-- TAB 2: ADMIN ACCESS -->
-    <div id="tab-staff" class="tab-content" style="display:none;">
+    <!-- TAB 2: TEAMS -->
+    <div id="tab-teams" class="tab-content" style="display:none;">
       <div class="settings-card">
-        <div class="settings-card-title">Admin Access</div>
-        <p class="settings-hint">Users listed here have access to all admin pages. Pompistes are not listed — they only access the Rapport page.</p>
-
-        <div id="adminList" class="admin-list">
-          <div class="loading">Loading...</div>
+        <div class="settings-card-title">Teams</div>
+        <p class="settings-hint">Users in any team except <strong>employees</strong> have admin access to all pages.</p>
+        <div id="teamsList"><div class="loading">Loading...</div></div>
+        <div class="add-team-row">
+          <input type="text" id="newTeamName" placeholder="New team name (e.g. Managers)">
+          <button class="action-btn" onclick="promptCreateTeam()">Create Team</button>
         </div>
-
-        <div class="add-admin-row">
-          <input type="email" id="newAdminEmail" placeholder="Enter email address">
-          <select id="newAdminRole">
-            <option value="admin">Admin</option>
-            <option value="manager">Manager</option>
-          </select>
-          <button class="action-btn" id="addAdminBtn" onclick="promptAddAdmin()">Add</button>
-        </div>
-        <div id="staffStatus" class="status-msg" aria-live="polite"></div>
+        <div id="teamsStatus" class="status-msg" aria-live="polite"></div>
       </div>
     </div>
 
@@ -121,6 +113,12 @@
           <button class="action-btn" id="createEmpBtn" onclick="promptCreateEmployee()">Create Account</button>
         </div>
         <div id="empStatus" class="status-msg" aria-live="polite"></div>
+      </div>
+
+      <div class="settings-card" style="margin-top:16px;">
+        <div class="settings-card-title">All Accounts</div>
+        <p class="settings-hint">View and edit existing employee accounts.</p>
+        <div id="allEmployeesList"><div class="loading">Loading...</div></div>
       </div>
     </div>
 
@@ -152,13 +150,60 @@
     </div>
   </div>
 
-  <!-- ── ADD ADMIN POPUP ── -->
-  <div class="popup" id="confirmAddAdminPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-add-admin-title" aria-hidden="true" style="display:none;">
+  <!-- ── CREATE TEAM POPUP ── -->
+  <div class="popup" id="confirmCreateTeamPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-create-team-title" aria-hidden="true" style="display:none;">
     <div class="popup-content">
-      <p class="popup-title" id="dlg-add-admin-title">Add Admin?</p>
-      <p class="popup-sub" id="addAdminPopupSub"></p>
-      <button id="confirmAddAdmin" onclick="closeDialog('confirmAddAdminPopup'); handleAddAdmin(this)">Add</button>
-      <button id="cancelAddAdmin" onclick="closeDialog('confirmAddAdminPopup')">Cancel</button>
+      <p class="popup-title" id="dlg-create-team-title">Create Team?</p>
+      <p class="popup-sub" id="createTeamPopupSub"></p>
+      <button id="confirmCreateTeam" onclick="closeDialog('confirmCreateTeamPopup'); handleCreateTeam(this)">Create</button>
+      <button id="cancelCreateTeam" onclick="closeDialog('confirmCreateTeamPopup')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ── DELETE TEAM POPUP ── -->
+  <div class="popup" id="confirmDeleteTeamPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-delete-team-title" aria-hidden="true" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title" id="dlg-delete-team-title">Delete Team?</p>
+      <p class="popup-sub" id="deleteTeamPopupSub"></p>
+      <button id="confirmDeleteTeam" onclick="this.disabled=true; handleDeleteTeam(this).finally(()=>this.disabled=false)">Delete</button>
+      <button id="cancelDeleteTeam" onclick="closeDialog('confirmDeleteTeamPopup')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ── ADD MEMBER POPUP ── -->
+  <div class="popup" id="confirmAddMemberPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-add-member-title" aria-hidden="true" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title" id="dlg-add-member-title">Add Member?</p>
+      <p class="popup-sub" id="addMemberPopupSub"></p>
+      <button id="confirmAddMember" onclick="this.disabled=true; handleAddMember(this).finally(()=>this.disabled=false)">Add</button>
+      <button id="cancelAddMember" onclick="closeDialog('confirmAddMemberPopup')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ── REMOVE MEMBER POPUP ── -->
+  <div class="popup" id="confirmRemoveMemberPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-remove-member-title" aria-hidden="true" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title" id="dlg-remove-member-title">Remove Member?</p>
+      <p class="popup-sub" id="removeMemberPopupSub"></p>
+      <button id="confirmRemoveMember" onclick="this.disabled=true; handleRemoveMember(this).finally(()=>this.disabled=false)">Remove</button>
+      <button id="cancelRemoveMember" onclick="closeDialog('confirmRemoveMemberPopup')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ── EDIT EMPLOYEE POPUP ── -->
+  <div class="popup" id="editEmployeePopup" role="dialog" aria-modal="true" aria-labelledby="dlg-edit-emp-title" aria-hidden="true" style="display:none;">
+    <div class="popup-content popup-wide">
+      <p class="popup-title" id="dlg-edit-emp-title">Edit Account</p>
+      <div class="popup-form-field">
+        <label for="editEmpName">Full Name</label>
+        <input type="text" id="editEmpName" placeholder="e.g. Jean Claude">
+      </div>
+      <div class="popup-form-field">
+        <label for="editEmpStation">Station</label>
+        <input type="text" id="editEmpStation" placeholder="e.g. Station Total Kigali">
+      </div>
+      <button id="saveEmployeeEdit" onclick="this.disabled=true; handleEditEmployee(this).finally(()=>this.disabled=false)">Save</button>
+      <button id="cancelEmployeeEdit" onclick="closeDialog('editEmployeePopup')">Cancel</button>
     </div>
   </div>
 
@@ -169,16 +214,6 @@
       <p class="popup-sub" id="createEmpPopupSub"></p>
       <button id="confirmCreateEmp" onclick="closeDialog('confirmCreateEmpPopup'); handleCreateEmployee(this)">Create</button>
       <button id="cancelCreateEmp" onclick="closeDialog('confirmCreateEmpPopup')">Cancel</button>
-    </div>
-  </div>
-
-  <!-- ── REMOVE ADMIN POPUP ── -->
-  <div class="popup" id="confirmRemovePopup" role="dialog" aria-modal="true" aria-labelledby="dlg-remove-title" aria-hidden="true" style="display:none;">
-    <div class="popup-content">
-      <p class="popup-title" id="dlg-remove-title">Remove Access?</p>
-      <p class="popup-sub" id="removePopupSub">This admin will lose access immediately.</p>
-      <button id="confirmRemove" onclick="this.disabled=true; confirmRemoveAdmin().finally(()=>this.disabled=false)">Remove</button>
-      <button id="cancelRemove" onclick="closeDialog('confirmRemovePopup')">Cancel</button>
     </div>
   </div>
 

@@ -341,6 +341,121 @@ footer {
 #cancelSave { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
 #cancelSave:hover { background: #e2e8f0; transform: none; box-shadow: none; }
 
+/* ── TEAM CARDS ── */
+.team-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.team-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border);
+}
+
+.team-name { font-size: 13px; font-weight: 700; color: var(--navy); flex: 1; }
+
+.team-members { padding: 0 14px; }
+
+.add-member-row {
+  display: flex; gap: 8px; padding: 10px 14px;
+  border-top: 1px solid var(--border); background: #fafafa; flex-wrap: wrap;
+}
+
+.add-member-row input[type="email"] {
+  flex: 1; min-width: 180px; padding: 6px 10px;
+  border: 1.5px solid #cbd5e1; border-radius: 5px;
+  font-size: 12px; font-family: inherit; color: var(--text);
+}
+
+.add-member-row input[type="email"]:focus {
+  border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,38,59,0.1); outline: none;
+}
+
+/* ── CREATE TEAM ROW ── */
+.add-team-row {
+  display: flex; gap: 8px; padding-top: 14px;
+  border-top: 1px solid var(--border); flex-wrap: wrap;
+}
+
+.add-team-row input[type="text"] {
+  flex: 1; min-width: 180px; padding: 6px 10px;
+  border: 1.5px solid #cbd5e1; border-radius: 5px;
+  font-size: 12px; font-family: inherit; color: var(--text);
+}
+
+.add-team-row input[type="text"]:focus {
+  border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,38,59,0.1); outline: none;
+}
+
+/* ── EMPLOYEE EDIT BUTTON ── */
+.btn-edit {
+  padding: 4px 10px; font-size: 11px;
+  background: var(--navy-light);
+}
+
+.emp-station {
+  font-size: 11px; color: var(--muted);
+  background: #f1f5f9; border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 7px;
+}
+
+/* ── EDIT EMPLOYEE POPUP ── */
+.popup-wide { width: 340px !important; text-align: left !important; }
+
+.popup-form-field { margin-bottom: 12px; }
+
+.popup-form-field label {
+  display: block; font-size: 11px; font-weight: 700;
+  color: var(--muted); margin-bottom: 4px;
+  text-transform: uppercase; letter-spacing: 0.4px;
+}
+
+.popup-form-field input {
+  width: 100%; padding: 7px 10px;
+  border: 1.5px solid var(--border); border-radius: 5px;
+  font-size: 12px; font-family: inherit; color: var(--text);
+  box-sizing: border-box;
+}
+
+.popup-form-field input:focus {
+  border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,38,59,0.1); outline: none;
+}
+
+/* ── NEW POPUP BUTTON COLOURS ── */
+#confirmCreateTeam { background: var(--navy); color: white; }
+#confirmCreateTeam:hover { background: var(--navy-light); transform: none; box-shadow: none; }
+#cancelCreateTeam { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
+#cancelCreateTeam:hover { background: #e2e8f0; transform: none; box-shadow: none; }
+
+#confirmDeleteTeam { background: var(--loss); color: white; }
+#confirmDeleteTeam:hover { background: #b91c1c; transform: none; box-shadow: none; }
+#cancelDeleteTeam { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
+#cancelDeleteTeam:hover { background: #e2e8f0; transform: none; box-shadow: none; }
+
+#confirmAddMember { background: var(--navy); color: white; }
+#confirmAddMember:hover { background: var(--navy-light); transform: none; box-shadow: none; }
+#cancelAddMember { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
+#cancelAddMember:hover { background: #e2e8f0; transform: none; box-shadow: none; }
+
+#confirmRemoveMember { background: var(--loss); color: white; }
+#confirmRemoveMember:hover { background: #b91c1c; transform: none; box-shadow: none; }
+#cancelRemoveMember { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
+#cancelRemoveMember:hover { background: #e2e8f0; transform: none; box-shadow: none; }
+
+#confirmCreateEmp { background: var(--navy); color: white; }
+#confirmCreateEmp:hover { background: var(--navy-light); transform: none; box-shadow: none; }
+#cancelCreateEmp { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
+#cancelCreateEmp:hover { background: #e2e8f0; transform: none; box-shadow: none; }
+
+#saveEmployeeEdit { background: var(--navy); color: white; }
+#saveEmployeeEdit:hover { background: var(--navy-light); transform: none; box-shadow: none; }
+#cancelEmployeeEdit { background: #f1f5f9; color: var(--navy); border: 1px solid var(--border) !important; }
+#cancelEmployeeEdit:hover { background: #e2e8f0; transform: none; box-shadow: none; }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 600px) {
   .settings-wrapper { padding: 0 12px; margin: 16px auto; }

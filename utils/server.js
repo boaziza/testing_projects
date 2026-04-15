@@ -63,6 +63,7 @@ const client = new sdk.Client()
 
 const databases = new sdk.Databases(client);
 const users     = new sdk.Users(client);
+const teamsAPI  = new sdk.Teams(client);
 
 // ✅ Shared database + collections
 const databaseId = process.env.APPWRITE_DATABASE_ID;
@@ -266,6 +267,102 @@ app.post("/api/create-employee", writeLimiter, async (req, res) => {
   } catch (err) {
     console.error("Create employee error:", err);
     // Surface Appwrite's message (e.g. "A user with the same email already exists")
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── TEAMS ──────────────────────────────────────────────────────
+
+app.get("/api/teams", readLimiter, async (req, res) => {
+  try {
+    const result = await teamsAPI.list();
+    res.json({ teams: result.teams });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/teams", writeLimiter, async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name?.trim()) return res.status(400).json({ error: "Team name is required." });
+    const team = await teamsAPI.create(ID.unique(), name.trim());
+    res.json({ success: true, team });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/api/teams/:teamId", writeLimiter, async (req, res) => {
+  try {
+    await teamsAPI.delete(req.params.teamId);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/teams/:teamId/members", readLimiter, async (req, res) => {
+  try {
+    const result = await teamsAPI.listMemberships(req.params.teamId);
+    res.json({ memberships: result.memberships });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/teams/:teamId/members", writeLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email is required." });
+
+    const found = await users.list([Query.equal("email", email)]);
+    if (found.users.length === 0) {
+      return res.status(404).json({ error: `No account found for ${email}` });
+    }
+    const user = found.users[0];
+
+    // Pass userId to add directly without sending an invite email
+    const membership = await teamsAPI.createMembership(
+      req.params.teamId, ["member"], user.email, user.$id
+    );
+    res.json({ success: true, membership });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/api/teams/:teamId/members/:membershipId", writeLimiter, async (req, res) => {
+  try {
+    await teamsAPI.deleteMembership(req.params.teamId, req.params.membershipId);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── USERS ───────────────────────────────────────────────────────
+
+app.get("/api/users", readLimiter, async (req, res) => {
+  try {
+    const result = await users.list();
+    res.json({ users: result.users });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch("/api/users/:userId", writeLimiter, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { name, prefs } = req.body;
+    const updates = [];
+    if (name?.trim()) updates.push(users.updateName(userId, name.trim()));
+    if (prefs)        updates.push(users.updatePrefs(userId, prefs));
+    if (updates.length === 0) return res.status(400).json({ error: "Nothing to update." });
+    await Promise.all(updates);
+    res.json({ success: true });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });

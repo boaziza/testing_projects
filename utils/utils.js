@@ -90,24 +90,22 @@ function welcomeMessage() {
 
 
 async function userAccess() {
-
     const currentPage = _currentPageName();
+    if (currentPage === "index") return;
 
-    if (currentPage === "index") {
-        return;
-    }
+    const adminCollectionId = "68d95af4003245ef87a7";
 
     try {
-        const adminId = "68d95af4003245ef87a7";
-        const user  = await _AW.account.get();
-        const admin = await _AW.db.listDocuments(_AW.DB_ID, adminId, [Appwrite.Query.equal("email", user.email)]);
-        if (admin.documents.length === 0) {
+        const user = await _AW.account.get();
+        const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, adminCollectionId, [
+            Appwrite.Query.equal("email", user.email)
+        ]);
+        if (adminCheck.documents.length === 0) {
             window.location.replace("/testing_projects/index");
         }
     } catch {
         window.location.replace("/testing_projects/auth/sign-in/sign-in");
     }
-
 }
 
 async function loadFuelPrices() {
