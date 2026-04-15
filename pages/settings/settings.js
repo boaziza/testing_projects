@@ -82,7 +82,6 @@ async function loadTeams() {
             return;
         }
         listEl.innerHTML = data.teams.map(t => renderTeamCard(t)).join("");
-        data.teams.forEach(t => loadTeamMembers(t.$id));
     } catch (err) {
         listEl.innerHTML = `<div class="loading">Error loading teams.</div>`;
     }
@@ -91,19 +90,42 @@ async function loadTeams() {
 function renderTeamCard(team) {
     return `
     <div class="team-card" id="team-${team.$id}">
-      <div class="team-header">
+      <div class="team-header" onclick="toggleTeam('${team.$id}')" role="button" tabindex="0" aria-expanded="false" id="team-header-${team.$id}">
+        <span class="team-chevron">▶</span>
         <span class="team-name">${team.name}</span>
-        <button class="btn-remove" onclick="promptDeleteTeam('${team.$id}', '${team.name.replace(/'/g, "\\'")}')">Delete</button>
+        <button class="btn-remove" onclick="event.stopPropagation(); promptDeleteTeam('${team.$id}', '${team.name.replace(/'/g, "\\'")}')">Delete</button>
       </div>
-      <div class="team-members" id="members-${team.$id}">
-        <div class="loading">Loading members...</div>
+      <div class="team-body" id="team-body-${team.$id}" style="display:none;">
+        <div class="team-members" id="members-${team.$id}">
+          <div class="loading">Loading members...</div>
+        </div>
+        <div class="add-member-row">
+          <input type="email" id="memberEmail-${team.$id}" placeholder="Enter email to add">
+          <button class="action-btn" onclick="promptAddMember('${team.$id}', '${team.name.replace(/'/g, "\\'")}', this)">Add Member</button>
+        </div>
+        <div id="teamStatus-${team.$id}" class="status-msg" aria-live="polite"></div>
       </div>
-      <div class="add-member-row">
-        <input type="email" id="memberEmail-${team.$id}" placeholder="Enter email to add">
-        <button class="action-btn" onclick="promptAddMember('${team.$id}', '${team.name.replace(/'/g, "\\'")}', this)">Add Member</button>
-      </div>
-      <div id="teamStatus-${team.$id}" class="status-msg" aria-live="polite"></div>
     </div>`;
+}
+
+function toggleTeam(teamId) {
+    const body   = document.getElementById(`team-body-${teamId}`);
+    const header = document.getElementById(`team-header-${teamId}`);
+    const chevron = header.querySelector(".team-chevron");
+    const isOpen = body.style.display !== "none";
+
+    if (isOpen) {
+        body.style.display = "none";
+        chevron.textContent = "▶";
+        header.setAttribute("aria-expanded", "false");
+    } else {
+        body.style.display = "block";
+        chevron.textContent = "▼";
+        header.setAttribute("aria-expanded", "true");
+        // Load members only on first open
+        const membersEl = document.getElementById(`members-${teamId}`);
+        if (membersEl.querySelector(".loading")) loadTeamMembers(teamId);
+    }
 }
 
 async function loadTeamMembers(teamId) {
@@ -393,6 +415,7 @@ async function handleEditEmployee(btn) {
 // ── INIT ──────────────────────────────────────────────────────
 loadFuelSettings();
 
+window.toggleTeam           = toggleTeam;
 window.switchTab            = switchTab;
 window.handleSavePrices     = handleSavePrices;
 window.promptCreateTeam     = promptCreateTeam;

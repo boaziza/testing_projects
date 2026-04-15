@@ -1,8 +1,8 @@
 // ── STATE ──────────────────────────────────────────────────────
-let allRows       = [];   // pre-processed documents for the active table
-let filtered      = null; // non-null only when a search filter is active
-let currentPage   = 1;
-let lastAttributes = [];  // column definitions for the active table
+let allRows        = [];   // pre-processed documents for the active table
+let filtered       = null; // non-null only when any filter is active
+let currentPage    = 1;
+let lastAttributes = [];   // column definitions for the active table
 
 const PAGE_SIZE = 20;
 const API = _AW.SERVER_URL;
@@ -163,6 +163,16 @@ async function display(tableName) {
     filtered       = null;
     currentPage    = 1;
 
+    // Reset all filters when switching tables
+    document.getElementById("dateFrom").value = "";
+    document.getElementById("dateTo").value   = "";
+    document.getElementById("search").value   = "";
+
+    // Show date filter row and export button now that data is loaded
+    const hasLogDate = lastAttributes.some(a => a.key === "logDate");
+    document.getElementById("dateFilterRow").style.display = hasLogDate ? "flex" : "none";
+    document.getElementById("exportBtn").style.display     = "inline-block";
+
     buildHeaders(lastAttributes);
     buildSearchControls(lastAttributes);
     renderCurrentPage();
@@ -203,10 +213,8 @@ function buildSearchControls(attributes) {
     const selected = attributes.find(a => a.key === searchWith.value);
     if (selected) searchInput.type = mapTypeToInput(selected.type);
     searchInput.value = "";
-    filtered = null;
-    currentPage = 1;
     updateSuggestions();
-    renderCurrentPage();
+    applyFilters();
   };
 
   // Reset input
@@ -215,12 +223,12 @@ function buildSearchControls(attributes) {
 
   // Live search with 300ms debounce
   searchInput.oninput = debounce(() => {
-    applySearch();
+    applyFilters();
   }, 300);
 
   // Enter key also triggers immediately
   searchInput.onkeydown = e => {
-    if (e.key === "Enter") applySearch();
+    if (e.key === "Enter") applyFilters();
   };
 
   // Populate initial suggestions for first column
@@ -250,22 +258,77 @@ function updateSuggestions() {
   });
 }
 
-// ── SEARCH / FILTER ────────────────────────────────────────────
-function applySearch() {
+// ── FILTERS (date range + text search) ────────────────────────
+function applyFilters() {
+  const dateFromVal = document.getElementById("dateFrom").value;
+  const dateToVal   = document.getElementById("dateTo").value;
   const searchKey   = document.getElementById("searchWith").value;
   const searchValue = document.getElementById("search").value.trim();
 
-  if (!searchValue) {
-    filtered = null;
-  } else {
-    filtered = allRows.filter(row => {
+  let rows = allRows;
+
+  if (dateFromVal || dateToVal) {
+    rows = rows.filter(row => {
+      const d = row.logDate;
+      if (!d) return true;
+      if (dateFromVal && d < dateFromVal) return false;
+      if (dateToVal   && d > dateToVal)   return false;
+      return true;
+    });
+  }
+
+  if (searchValue) {
+    rows = rows.filter(row => {
       const cellValue = String(row[searchKey] ?? "").toLowerCase();
       return cellValue.includes(searchValue.toLowerCase());
     });
   }
 
+  filtered    = (!dateFromVal && !dateToVal && !searchValue) ? null : rows;
   currentPage = 1;
   renderCurrentPage();
+}
+
+function clearDateFilter() {
+  document.getElementById("dateFrom").value = "";
+  document.getElementById("dateTo").value   = "";
+  applyFilters();
+}
+
+// ── CSV EXPORT ─────────────────────────────────────────────────
+function exportCSV() {
+  const source = filtered ?? allRows;
+  if (source.length === 0) { toast("No data to export.", "warning"); return; }
+
+  const headers = lastAttributes.map(a => `"${a.displayName}"`);
+  const rows = source.map(row =>
+    lastAttributes.map(attr => {
+      if (attr.key === "loans") {
+        const versement = (row._loans || [])
+          .filter(l => l.company === "Versement")
+          .reduce((sum, l) => sum + (Number(l.amount) || 0), 0);
+        return versement || "";
+      }
+      const v = row[attr.key];
+      if (v === null || v === undefined) return "";
+      const s = String(v);
+      return s.includes(",") || s.includes('"') || s.includes("\n")
+        ? `"${s.replace(/"/g, '""')}"` : s;
+    })
+  );
+
+  const csv  = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href     = url;
+  const title = document.getElementById("tableTitle").textContent.replace(/[^a-zA-Z0-9]/g, "_");
+  a.download  = `${title}_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast(`Exported ${source.length} row${source.length !== 1 ? "s" : ""}.`, "success");
 }
 
 // ── RENDER ─────────────────────────────────────────────────────

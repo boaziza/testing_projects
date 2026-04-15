@@ -76,9 +76,23 @@
           <div class="table-header-row">
             <h4 id="tableTitle">Select a report</h4>
             <span class="result-count" id="resultCount"></span>
+            <button class="btn-export" id="exportBtn" onclick="exportCSV()" style="display:none;">Export CSV</button>
           </div>
 
           <div class="table-wrap">
+
+            <!-- Date range filter -->
+            <div class="date-filter-row" id="dateFilterRow" style="display:none;">
+              <div class="control-group">
+                <label for="dateFrom">From</label>
+                <input type="date" id="dateFrom" onchange="applyFilters()">
+              </div>
+              <div class="control-group">
+                <label for="dateTo">To</label>
+                <input type="date" id="dateTo" onchange="applyFilters()">
+              </div>
+              <button class="btn-clear-date" onclick="clearDateFilter()">Clear</button>
+            </div>
 
             <!-- Search controls -->
             <div class="controls">

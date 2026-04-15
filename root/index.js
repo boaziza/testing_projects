@@ -210,25 +210,50 @@ async function payments() {
     }
 }
 
+function validateBeforeStore() {
+    logDate = document.getElementById("logDate").value;
+    shift   = document.getElementById("shift").value;
+
+    if (!logDate) { toast("Select a date before storing.", "warning"); return false; }
+    if (!shift)   { toast("Select a shift before storing.", "warning"); return false; }
+
+    if (totalVente === undefined || isNaN(totalVente)) {
+        toast("Run Calculate Index first.", "warning"); return false;
+    }
+    if (totalPayments === undefined || isNaN(totalPayments)) {
+        toast("Run Calculate Payments first.", "warning"); return false;
+    }
+
+    const fields = [
+        [pmsPrice,       "PMS price (check Settings)"],
+        [agoPrice,       "AGO price (check Settings)"],
+        [venteLitresPms, "PMS litres"],
+        [venteLitresAgo, "AGO litres"],
+        [totalPms,       "Total PMS"],
+        [totalAgo,       "Total AGO"],
+        [momo,           "MoMo"],
+        [momoLoss,       "MoMo Loss"],
+        [totalCash,      "Total Cash"],
+        [gainPayments,   "Gain Payments"],
+    ];
+    for (const [val, label] of fields) {
+        if (val === undefined || val === null || isNaN(val)) {
+            toast(`Invalid value for ${label} — re-run the calculations.`, "warning");
+            return false;
+        }
+    }
+    return true;
+}
+
 let dataSituation;
 async function situation() {
     const indexId = "68cd1987002bae34ea4b";
     const paymentsId = "68cd19990006cbb33843";
     const situationId = "68cd6b7f00330a840d96";
 
-    if (totalVente === undefined || totalPayments === undefined) {
-        toast("Run Calculate Index and Calculate Payments first.", "warning");
-        return;
-    }
+    if (!validateBeforeStore()) return;
 
     try {
-        logDate = document.getElementById("logDate").value;
-        shift   = document.getElementById("shift").value;
-
-        // I-2: Require date and shift before writing anything
-        if (!logDate) { toast("Select a date before storing.", "warning"); return; }
-        if (!shift)   { toast("Select a shift before storing.", "warning"); return; }
-
         const user = await _AW.account.get();
         const email = user.email;
         const employee = user.name;

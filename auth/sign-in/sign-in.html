@@ -102,22 +102,16 @@
       const email    = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      // [DEBUG] Step 1: authenticate
-      toast(`[DEBUG] Trying: ${email}`, "info");
       try {
         await _AW.account.createEmailSession(email, password);
-        toast("[DEBUG] ✓ Session created", "success");
-      } catch (err) {
-        toast(`[DEBUG] Auth failed: ${err.message}`, "error");
+      } catch {
         toast("Invalid email or password. Please try again.", "error");
         btn.disabled = false;
         return;
       }
 
-      // [DEBUG] Step 2: login log
       try {
         const _mappedId = _employeeIdMap[email];
-        toast(`[DEBUG] Map ID: ${_mappedId ?? "not in map"}`, "info");
         if (_mappedId !== undefined) {
           try {
             await _AW.db.createDocument(_AW.DB_ID, _collectionId, "unique()", {
@@ -125,29 +119,21 @@
               emailAddress: email,
               logDate:      new Date().toISOString(),
             });
-            toast("[DEBUG] ✓ Login log written", "info");
-          } catch (err) {
-            toast(`[DEBUG] Login log failed: ${err.message}`, "info");
-          }
+          } catch { /* login-log failure is non-blocking */ }
         }
 
-        // [DEBUG] Step 3: admin collection check
-        toast("[DEBUG] Checking admin collection…", "info");
         const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, _adminCollectionId, [
           Appwrite.Query.equal("email", email)
         ]);
-        toast(`[DEBUG] Admin docs: ${adminCheck.documents.length} — routing in 3s…`, "info");
 
-        setTimeout(() => {
-          if (adminCheck.documents.length > 0) {
-            window.location.replace("../../pages/situation/situation");
-          } else {
-            sessionStorage.setItem("pompisteLoginTime", Date.now());
-            window.location.replace("../../index");
-          }
-        }, 3000);
+        if (adminCheck.documents.length > 0) {
+          window.location.replace("../../pages/situation/situation");
+        } else {
+          sessionStorage.setItem("pompisteLoginTime", Date.now());
+          window.location.replace("../../index");
+        }
       } catch (err) {
-        toast(`[DEBUG] Post-login error: ${err.message}`, "error");
+        toast("Signed in, but could not load your profile. Try refreshing.", "error");
         btn.disabled = false;
       }
     });

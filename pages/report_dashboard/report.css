@@ -389,6 +389,36 @@ nav ul li a:hover {
   border-color: #fca5a5;
 }
 
+/* ── EXPORT BUTTON ───────────────────────────── */
+.btn-export {
+  background: var(--pms); color: white; border: none;
+  padding: 6px 14px; border-radius: 6px; cursor: pointer;
+  font-size: 11px; font-weight: 700; font-family: inherit;
+  white-space: nowrap; flex-shrink: 0;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-export:hover { background: #15803d; transform: translateY(-1px); box-shadow: none; }
+
+/* ── DATE FILTER ROW ─────────────────────────── */
+.date-filter-row {
+  display: flex; align-items: flex-end; gap: 10px;
+  flex-wrap: wrap; margin-bottom: 10px;
+  padding: 10px 12px; background: #f8fafc;
+  border: 1px solid var(--border); border-radius: 8px;
+}
+
+.btn-clear-date {
+  background: transparent; color: var(--muted);
+  border: 1.5px solid var(--border); padding: 6px 12px;
+  border-radius: 6px; font-size: 11px; font-weight: 700;
+  font-family: inherit; cursor: pointer; align-self: flex-end;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-clear-date:hover {
+  background: var(--border); color: var(--text);
+  transform: none; box-shadow: none;
+}
+
 /* ── CONTROLS ────────────────────────────────── */
 .controls {
   display: flex;
