@@ -436,6 +436,11 @@ async function situation() {
             const doc   = response.documents[0];
             const docId = doc.$id;
 
+            // Day is only fully done when both Night shift AND stocks are stored.
+            // If stocks were already submitted before this Night shift, mark done now.
+            // Otherwise storeStock() will set done:true once it runs.
+            const stocksStored = doc.physicalStockPms != null;
+
             // I-8: Accumulate without mutating module-level variables
             dataSituation = {
                 momo:           momo           + (doc.momo           || 0),
@@ -457,7 +462,7 @@ async function situation() {
                 pms4,
                 ago2,
                 ago4,
-                done: true,
+                done: stocksStored,
             };
 
             await _AW.db.updateDocument(_AW.DB_ID, situationId, docId, dataSituation);

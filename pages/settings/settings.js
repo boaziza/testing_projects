@@ -355,22 +355,49 @@ async function handleCreateEmployee(btn) {
 async function loadAllEmployees() {
     const listEl = document.getElementById("allEmployeesList");
     listEl.innerHTML = `<div class="loading">Loading...</div>`;
-    try {
-        const res  = await fetch(`${_AW.SERVER_URL}/users`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
 
-        if (data.users.length === 0) {
+    const now       = new Date();
+    const monthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const monthLabel = now.toLocaleString("default", { month: "long", year: "numeric" });
+
+    const hintEl = document.getElementById("perfMonthLabel");
+    if (hintEl) hintEl.textContent = monthLabel;
+
+    try {
+        const [usersRes, gainRes] = await Promise.all([
+            fetch(`${_AW.SERVER_URL}/users`),
+            fetch(`${_AW.SERVER_URL}/documents/gainPompiste`),
+        ]);
+        const usersData = await usersRes.json();
+        const gainData  = await gainRes.json();
+        if (!usersRes.ok) throw new Error(usersData.error);
+
+        // Build email → gain map for the current month only
+        const gainMap = {};
+        if (gainData.documents) {
+            gainData.documents
+                .filter(d => d.monthYear === monthYear)
+                .forEach(d => { gainMap[d.email] = d.gainPayments ?? 0; });
+        }
+
+        if (usersData.users.length === 0) {
             listEl.innerHTML = `<div class="loading">No accounts found.</div>`;
             return;
         }
-        listEl.innerHTML = data.users.map(u => {
-            const station = u.prefs?.station || "";
+
+        listEl.innerHTML = usersData.users.map(u => {
+            const station  = u.prefs?.station || "";
+            const hasGain  = u.email in gainMap;
+            const gain     = gainMap[u.email] ?? 0;
+            const gainHtml = hasGain
+                ? `<span class="emp-gain ${gain >= 0 ? "gain-pos" : "gain-neg"}">${gain >= 0 ? "+" : ""}${gain.toLocaleString()} RWF</span>`
+                : `<span class="emp-gain emp-gain-none">No shifts</span>`;
             return `
             <div class="admin-row">
               <span class="admin-email">${u.name || "—"}</span>
               <span class="admin-role">${u.email}</span>
               ${station ? `<span class="emp-station">${station}</span>` : ""}
+              ${gainHtml}
               <button class="action-btn btn-edit" onclick="openEditEmployee('${u.$id}', '${(u.name || "").replace(/'/g, "\\'")}', '${station.replace(/'/g, "\\'")}')">Edit</button>
             </div>`;
         }).join("");

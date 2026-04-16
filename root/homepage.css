@@ -763,7 +763,9 @@ footer {
   padding: 12px 24px;
   background: var(--card);
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 8px;
 }
 
 .btn-logout {
@@ -781,6 +783,30 @@ footer {
   box-shadow: none;
   transform: none;
 }
+
+.btn-print {
+  background: var(--navy-light);
+  color: white;
+  border: none;
+  font-size: 12px;
+  padding: 7px 18px;
+  font-weight: 700;
+}
+.btn-print:hover {
+  background: var(--navy);
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-history {
+  margin-right: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy-light);
+  text-decoration: none;
+  padding: 7px 4px;
+}
+.btn-history:hover { color: var(--navy); text-decoration: underline; }
 
 /* ── OUTPUT / GAIN / LOSS ────────────────────── */
 .output {
@@ -864,4 +890,39 @@ span { font-weight: 600; }
   .forms-container { padding: 10px 12px; }
   nav { padding: 0 8px; }
   nav ul li a { padding: 10px 10px; font-size: 12px; }
+}
+
+/* ── PRINT ────────────────────────────────── */
+@media print {
+  @page { size: A4 portrait; margin: 15mm; }
+
+  .site-header, .store-bar, footer, .popup, button,
+  .shift-field label, .chip-input-group, .entry-actions,
+  .btn-secondary { display: none !important; }
+
+  body { background: white; font-size: 12px; }
+
+  .shift-bar {
+    display: flex; gap: 16px; padding: 0 0 10px;
+    border-bottom: 1px solid #e2e8f0; margin-bottom: 12px;
+  }
+  .shift-field { display: flex; align-items: center; gap: 6px; }
+  .shift-field::before { font-weight: 700; font-size: 11px; color: #475569; }
+
+  input, select {
+    border: none !important; background: transparent !important;
+    box-shadow: none !important; padding: 0 !important;
+    font-weight: 700; font-size: 12px; color: #0f172a;
+  }
+
+  .forms-container { display: flex; gap: 20px; padding: 0; }
+  .form-side { break-inside: avoid; }
+
+  .chip { background: #f1f5f9; border: 1px solid #e2e8f0; }
+  .chip-remove { display: none !important; }
+
+  .result-cards { break-inside: avoid; }
+  .result-card { border: 1px solid #e2e8f0 !important; }
+
+  .entry-panel, .fiche-loan-section { break-inside: avoid; }
 }

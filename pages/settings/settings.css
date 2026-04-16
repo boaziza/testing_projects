@@ -402,6 +402,25 @@ footer {
   border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,38,59,0.1); outline: none;
 }
 
+/* ── EMPLOYEE GAIN BADGE ── */
+.emp-gain {
+  font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+.gain-pos {
+  background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0;
+}
+
+.gain-neg {
+  background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;
+}
+
+.emp-gain-none {
+  background: #f1f5f9; color: var(--muted); border: 1px solid var(--border);
+}
+
 /* ── EMPLOYEE EDIT BUTTON ── */
 .btn-edit {
   padding: 4px 10px; font-size: 11px;

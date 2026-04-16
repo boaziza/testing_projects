@@ -152,7 +152,9 @@ async function storeStock() {
         );
 
         if (sitDocs.total > 0) {
-            await _AW.db.updateDocument(_AW.DB_ID, situationId, sitDocs.documents[0].$id, {
+            const sitDoc = sitDocs.documents[0];
+            const nightSubmitted = sitDoc.pms2 != null;
+            await _AW.db.updateDocument(_AW.DB_ID, situationId, sitDoc.$id, {
                 initialAgo,
                 receivedAgo,
                 physicalStockAgo,
@@ -163,6 +165,7 @@ async function storeStock() {
                 physicalStockPms,
                 theoryStockPms,
                 gainFuelPms,
+                ...(nightSubmitted ? { done: true } : {}),
             });
         }
 

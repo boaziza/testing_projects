@@ -11,7 +11,9 @@
     ":focus-visible{outline:2px solid #2563eb;outline-offset:2px;border-radius:2px}" +
     ".skip-nav{position:absolute;left:-9999px;top:4px;padding:8px 16px;background:#1e293b;color:#fff;border-radius:4px;font-size:13px;font-weight:600;z-index:10000;text-decoration:none}" +
     ".skip-nav:focus{left:4px}" +
-    ".dropdown.open .dropdown-menu{display:block}";
+    ".dropdown.open .dropdown-menu{display:block}" +
+    ".stock-alert-badge{display:inline-flex;align-items:center;gap:4px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;" +
+    "border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap;cursor:default}";
   document.head.appendChild(style);
 })();
 
@@ -91,7 +93,7 @@ function welcomeMessage() {
 
 async function userAccess() {
     const currentPage = _currentPageName();
-    if (currentPage === "index") return;
+    if (currentPage === "index" || currentPage === "history") return;
 
     const adminCollectionId = "68d95af4003245ef87a7";
 
@@ -210,8 +212,52 @@ function initNavDropdowns() {
     });
 }
 
+const _SIT_COLLECTION  = "68cd6b7f00330a840d96";
+const _LOW_STOCK_LIMIT = 1000; // litres — warn when physical stock drops below this
+
+async function checkLowStock() {
+    if (_currentPageName() === "index") return;
+    try {
+        const res = await _AW.db.listDocuments(_AW.DB_ID, _SIT_COLLECTION, [
+            Appwrite.Query.orderDesc("logDate"),
+            Appwrite.Query.limit(1),
+        ]);
+        if (res.documents.length === 0) return;
+
+        const doc = res.documents[0];
+        const pms = doc.physicalStockPms;
+        const ago = doc.physicalStockAgo;
+
+        const warnings = [];
+        if (pms !== null && pms !== undefined && pms < _LOW_STOCK_LIMIT)
+            warnings.push(`PMS: ${Number(pms).toLocaleString()} L`);
+        if (ago !== null && ago !== undefined && ago < _LOW_STOCK_LIMIT)
+            warnings.push(`AGO: ${Number(ago).toLocaleString()} L`);
+
+        if (warnings.length === 0) return;
+
+        // Inject badge into header
+        const fuelDiv = document.querySelector(".fuel-prices");
+        if (fuelDiv && !document.getElementById("stockAlertBadge")) {
+            const badge = document.createElement("span");
+            badge.id        = "stockAlertBadge";
+            badge.className = "stock-alert-badge";
+            badge.textContent = "⚠ Low Stock";
+            badge.title     = `Last recorded: ${warnings.join(" | ")}`;
+            fuelDiv.appendChild(badge);
+        }
+
+        // Toast once per browser session
+        if (!sessionStorage.getItem("stockAlertShown")) {
+            sessionStorage.setItem("stockAlertShown", "1");
+            toast(`⚠ Low fuel stock — ${warnings.join(", ")}`, "warning");
+        }
+    } catch { /* non-critical — silent fail */ }
+}
+
 loadFuelPrices();
 userAccess();
 welcomeMessage();
 checkPompisteSession();
 initNavDropdowns();
+checkLowStock();

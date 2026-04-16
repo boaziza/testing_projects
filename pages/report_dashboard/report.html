@@ -53,10 +53,6 @@
         </div>
       </div>
       <div class="reports-list" id="reportsList"></div>
-      <div class="sidebar-footer">
-        <button class="btn-logout" onclick="openDialog('confirmLogoutPopup')">Log Out</button>
-        <small>© 2025 My Dashboard</small>
-      </div>
     </aside>
 
     <!-- ── MAIN ── -->
@@ -128,6 +124,10 @@
 
     </main>
   </div>
+
+  <footer>
+    <button class="btn-logout" onclick="openDialog('confirmLogoutPopup')">Log Out</button>
+  </footer>
 
   <!-- ── LOGOUT POPUP ── -->
   <div class="popup" id="confirmLogoutPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-logout-title" aria-hidden="true" style="display:none;">
