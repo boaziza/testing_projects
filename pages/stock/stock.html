@@ -42,8 +42,17 @@
       </ul>
     </nav>
 
-    <!-- ── STOCK FORM ── -->
+    <!-- ── STOCK WRAPPER ── -->
     <div class="stock-wrapper" id="main-content">
+
+      <!-- TABS -->
+      <div class="stock-tabs">
+        <button class="stock-tab-btn active" onclick="switchStockTab('submit', this)">Submit Stock</button>
+        <button class="stock-tab-btn"        onclick="switchStockTab('history', this)">Stock History</button>
+      </div>
+
+      <!-- TAB: SUBMIT STOCK -->
+      <div id="stock-tab-submit">
 
         <form action="" id="stockForm">
 
@@ -123,6 +132,30 @@
             <button class="action-btn btn-store" onclick="openDialog('confirmStorePopup')">Store Stock</button>
             <button class="action-btn btn-secondary" onclick="this.disabled=true; download().finally(() => this.disabled=false)">Download PDF</button>
         </div>
+
+      </div><!-- /stock-tab-submit -->
+
+      <!-- TAB: STOCK HISTORY -->
+      <div id="stock-tab-history" style="display:none;">
+
+        <!-- Date lookup -->
+        <div class="history-card">
+          <div class="history-card-title">Look Up a Date</div>
+          <div class="history-lookup-bar">
+            <input type="date" id="historyDate">
+            <button class="action-btn" onclick="lookupStockDate()">View</button>
+          </div>
+          <div id="lookupResult" style="display:none;"></div>
+        </div>
+
+        <!-- Recent entries -->
+        <div class="history-card" style="margin-top:16px;">
+          <div class="history-card-title">Recent Entries</div>
+          <p class="history-hint">Click any row to see full details above.</p>
+          <div id="historyTableWrap"><div class="history-loading">Loading…</div></div>
+        </div>
+
+      </div><!-- /stock-tab-history -->
 
     </div><!-- /stock-wrapper -->
 

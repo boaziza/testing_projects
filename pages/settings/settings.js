@@ -392,13 +392,15 @@ async function loadAllEmployees() {
             const gainHtml = hasGain
                 ? `<span class="emp-gain ${gain >= 0 ? "gain-pos" : "gain-neg"}">${gain >= 0 ? "+" : ""}${gain.toLocaleString()} RWF</span>`
                 : `<span class="emp-gain emp-gain-none">No shifts</span>`;
+            const safeName = (u.name || "").replace(/'/g, "\\'");
             return `
             <div class="admin-row">
               <span class="admin-email">${u.name || "—"}</span>
               <span class="admin-role">${u.email}</span>
               ${station ? `<span class="emp-station">${station}</span>` : ""}
               ${gainHtml}
-              <button class="action-btn btn-edit" onclick="openEditEmployee('${u.$id}', '${(u.name || "").replace(/'/g, "\\'")}', '${station.replace(/'/g, "\\'")}')">Edit</button>
+              <button class="action-btn btn-edit" onclick="openEditEmployee('${u.$id}', '${safeName}', '${station.replace(/'/g, "\\'")}')">Edit</button>
+              <button class="btn-reset-pwd" onclick="promptResetPassword('${u.$id}', '${safeName}')">Reset Pwd</button>
             </div>`;
         }).join("");
     } catch (err) {
@@ -439,6 +441,79 @@ async function handleEditEmployee(btn) {
     }
 }
 
+// ── RESET EMPLOYEE PASSWORD ────────────────────────────────────
+let _resetPwdUserId = null;
+
+function promptResetPassword(userId, name) {
+    _resetPwdUserId = userId;
+    document.getElementById("resetPwdPopupSub").textContent =
+        `Set a new password for ${name || "this account"}.`;
+    document.getElementById("resetPwdInput").value = "";
+    openDialog("resetPasswordPopup");
+}
+
+async function handleResetPassword(btn) {
+    if (!_resetPwdUserId) return;
+    const password = document.getElementById("resetPwdInput").value;
+    if (!password || password.length < 8) {
+        toast("Password must be at least 8 characters.", "warning");
+        btn.disabled = false;
+        return;
+    }
+    const userId = _resetPwdUserId;
+    _resetPwdUserId = null;
+    try {
+        const res  = await fetch(`${_AW.SERVER_URL}/users/${encodeURIComponent(userId)}/password`, {
+            method:  "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body:    JSON.stringify({ password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        closeDialog("resetPasswordPopup");
+        toast("Password reset successfully.", "success");
+    } catch (err) {
+        toast("Error: " + err.message, "error");
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+// ── CHANGE OWN PASSWORD ────────────────────────────────────────
+async function handleChangeOwnPassword(btn) {
+    const currentPwd = document.getElementById("ownCurrentPwd").value;
+    const newPwd     = document.getElementById("ownNewPwd").value;
+    const confirmPwd = document.getElementById("ownConfirmPwd").value;
+    const statusEl   = document.getElementById("ownPwdStatus");
+
+    if (!currentPwd || !newPwd || !confirmPwd) {
+        showStatus(statusEl, "All three fields are required.", "error");
+        btn.disabled = false;
+        return;
+    }
+    if (newPwd.length < 8) {
+        showStatus(statusEl, "New password must be at least 8 characters.", "error");
+        btn.disabled = false;
+        return;
+    }
+    if (newPwd !== confirmPwd) {
+        showStatus(statusEl, "New passwords do not match.", "error");
+        btn.disabled = false;
+        return;
+    }
+    try {
+        await _AW.account.updatePassword(newPwd, currentPwd);
+        document.getElementById("ownCurrentPwd").value = "";
+        document.getElementById("ownNewPwd").value     = "";
+        document.getElementById("ownConfirmPwd").value = "";
+        showStatus(statusEl, "✓ Password changed successfully.", "success");
+    } catch (err) {
+        showStatus(statusEl, "Error: " + err.message, "error");
+    } finally {
+        btn.disabled = false;
+    }
+}
+
 // ── INIT ──────────────────────────────────────────────────────
 loadFuelSettings();
 
@@ -455,5 +530,8 @@ window.promptRemoveMember   = promptRemoveMember;
 window.handleRemoveMember   = handleRemoveMember;
 window.promptCreateEmployee = promptCreateEmployee;
 window.handleCreateEmployee = handleCreateEmployee;
-window.openEditEmployee     = openEditEmployee;
-window.handleEditEmployee   = handleEditEmployee;
+window.openEditEmployee       = openEditEmployee;
+window.handleEditEmployee     = handleEditEmployee;
+window.promptResetPassword    = promptResetPassword;
+window.handleResetPassword    = handleResetPassword;
+window.handleChangeOwnPassword = handleChangeOwnPassword;

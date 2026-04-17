@@ -367,6 +367,20 @@ app.patch("/api/users/:userId", writeLimiter, async (req, res) => {
   }
 });
 
+app.patch("/api/users/:userId/password", writeLimiter, async (req, res) => {
+  try {
+    const { userId }  = req.params;
+    const { password } = req.body;
+    if (!password || password.length < 8) {
+      return res.status(400).json({ error: "Password must be at least 8 characters." });
+    }
+    await users.updatePassword(userId, password);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ✅ Health check
 app.get("/health", (_, res) => res.json({ status: "ok", time: new Date().toISOString() }));
 

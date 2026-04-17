@@ -164,14 +164,25 @@ async function display(tableName) {
     currentPage    = 1;
 
     // Reset all filters when switching tables
-    document.getElementById("dateFrom").value = "";
-    document.getElementById("dateTo").value   = "";
-    document.getElementById("search").value   = "";
+    document.getElementById("search").value = "";
 
     // Show date filter row and export button now that data is loaded
     const hasLogDate = lastAttributes.some(a => a.key === "logDate");
     document.getElementById("dateFilterRow").style.display = hasLogDate ? "flex" : "none";
     document.getElementById("exportBtn").style.display     = "inline-block";
+
+    // Default date range to current month for tables that have logDate
+    if (hasLogDate) {
+      const now = new Date();
+      const y   = now.getFullYear();
+      const m   = String(now.getMonth() + 1).padStart(2, "0");
+      const d   = String(now.getDate()).padStart(2, "0");
+      document.getElementById("dateFrom").value = `${y}-${m}-01`;
+      document.getElementById("dateTo").value   = `${y}-${m}-${d}`;
+    } else {
+      document.getElementById("dateFrom").value = "";
+      document.getElementById("dateTo").value   = "";
+    }
 
     buildHeaders(lastAttributes);
     buildSearchControls(lastAttributes);

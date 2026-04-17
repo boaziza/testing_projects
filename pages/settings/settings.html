@@ -49,6 +49,7 @@
       <button class="tab-btn active" onclick="switchTab('fuel', this)">Fuel Prices</button>
       <button class="tab-btn"        onclick="switchTab('teams', this)">Teams</button>
       <button class="tab-btn"        onclick="switchTab('employees', this)">Employees</button>
+      <button class="tab-btn"        onclick="switchTab('account', this)">Account</button>
     </div>
 
     <!-- TAB 1: FUEL PRICES -->
@@ -119,6 +120,33 @@
         <div class="settings-card-title">All Accounts</div>
         <p class="settings-hint">View and manage accounts. Gain shown for <strong id="perfMonthLabel">current month</strong>.</p>
         <div id="allEmployeesList"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- TAB 4: ACCOUNT -->
+    <div id="tab-account" class="tab-content" style="display:none;">
+      <div class="settings-card">
+        <div class="settings-card-title">Change My Password</div>
+        <p class="settings-hint">Update the password for your own admin account.</p>
+        <div class="settings-field">
+          <label for="ownCurrentPwd">Current Password</label>
+          <input type="password" id="ownCurrentPwd" placeholder="Enter current password">
+        </div>
+        <div class="settings-field">
+          <label for="ownNewPwd">New Password</label>
+          <input type="password" id="ownNewPwd" placeholder="Min. 8 characters" minlength="8">
+        </div>
+        <div class="settings-field">
+          <label for="ownConfirmPwd">Confirm New Password</label>
+          <input type="password" id="ownConfirmPwd" placeholder="Repeat new password">
+        </div>
+        <div class="settings-actions">
+          <button class="action-btn btn-store" id="changeOwnPwdBtn"
+            onclick="this.disabled=true; handleChangeOwnPassword(this).finally(()=>this.disabled=false)">
+            Change Password
+          </button>
+        </div>
+        <div id="ownPwdStatus" class="status-msg" aria-live="polite"></div>
       </div>
     </div>
 
@@ -204,6 +232,20 @@
       </div>
       <button id="saveEmployeeEdit" onclick="this.disabled=true; handleEditEmployee(this).finally(()=>this.disabled=false)">Save</button>
       <button id="cancelEmployeeEdit" onclick="closeDialog('editEmployeePopup')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ── RESET PASSWORD POPUP ── -->
+  <div class="popup" id="resetPasswordPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-reset-pwd-title" aria-hidden="true" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title" id="dlg-reset-pwd-title">Reset Password</p>
+      <p class="popup-sub" id="resetPwdPopupSub"></p>
+      <div class="popup-form-field">
+        <label for="resetPwdInput">New Password</label>
+        <input type="password" id="resetPwdInput" placeholder="Min. 8 characters" minlength="8">
+      </div>
+      <button id="confirmResetPwd" onclick="this.disabled=true; handleResetPassword(this).finally(()=>this.disabled=false)">Reset</button>
+      <button id="cancelResetPwd" onclick="closeDialog('resetPasswordPopup')">Cancel</button>
     </div>
   </div>
 
