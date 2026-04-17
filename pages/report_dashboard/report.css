@@ -6,7 +6,11 @@
   --navy-dark:  #0d1b2a;
   --navy-light: #415a77;
   --pms:        #16a34a;
+  --pms-bg:     #f0fdf4;
+  --pms-border: #86efac;
   --ago:        #d97706;
+  --ago-bg:     #fffbeb;
+  --ago-border: #fcd34d;
   --gain:       #16a34a;
   --loss:       #dc2626;
   --bg:         #f1f5f9;
@@ -106,7 +110,7 @@ body {
 /* ── NAV ─────────────────────────────────────── */
 nav {
   background: var(--navy-dark);
-  padding: 0 20px;
+  padding: 0 24px;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -252,15 +256,16 @@ footer {
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
 }
 
 .btn-logout {
   background: #fee2e2;
   color: var(--loss);
   border: 1.5px solid #fca5a5;
-  font-size: 12px;
   padding: 7px 18px;
-  font-weight: 700;
 }
 
 .btn-logout:hover {

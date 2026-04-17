@@ -32,7 +32,7 @@
       <li><a href="../situation/situation">Situation</a></li>
       <li><a href="../stock/stock">Stock</a></li>
       <li class="dropdown">
-        <a href="#" class="active" aria-haspopup="true" aria-expanded="false">Employees</a>
+        <a href="#" aria-haspopup="true" aria-expanded="false">Employees</a>
         <ul class="dropdown-menu">
           <li><a href="logsDetail" class="active">Employee Reports</a></li>
         </ul>
@@ -193,14 +193,12 @@
 
       </div><!-- /sheet -->
 
-      <footer>
-        <button class="btn-logout" onclick="openDialog('confirmLogoutPopup')">
-          Log Out
-        </button>
-      </footer>
-
     </main><!-- /pom-main -->
   </div><!-- /pom-layout -->
+
+  <footer>
+    <button class="action-btn btn-logout" onclick="openDialog('confirmLogoutPopup')">Log Out</button>
+  </footer>
 
   <!-- ── LOGOUT POPUP ── -->
   <div class="popup" id="confirmLogoutPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-logout-title" aria-hidden="true" style="display:none;">

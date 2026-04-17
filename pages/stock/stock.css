@@ -305,7 +305,7 @@ button, .action-btn {
   background: var(--navy);
   color: white;
   border: none;
-  padding: 9px 20px;
+  padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 12px;
@@ -354,7 +354,9 @@ footer {
   display: flex;
   justify-content: flex-end;
   border-top: 1px solid var(--border);
-  margin-top: 20px;
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
 }
 
 .btn-logout {
@@ -456,15 +458,15 @@ input[type="date"]:focus {
 }
 
 /* ── TABS ────────────────────────────────────── */
-.stock-tabs {
+.tabs {
   display: flex;
   gap: 4px;
   margin-bottom: 16px;
   border-bottom: 2px solid var(--border);
 }
 
-.stock-tab-btn {
-  padding: 8px 22px;
+.tab-btn {
+  padding: 9px 18px;
   background: transparent;
   border: none;
   font-size: 13px;
@@ -473,17 +475,17 @@ input[type="date"]:focus {
   cursor: pointer;
   border-bottom: 3px solid transparent;
   margin-bottom: -2px;
-  border-radius: 6px 6px 0 0;
+  border-radius: 0;
+  font-family: inherit;
   transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
-.stock-tab-btn.active {
+.tab-btn.active {
   color: var(--navy);
   border-bottom-color: var(--navy);
-  background: var(--card);
 }
-.stock-tab-btn:hover:not(.active) {
+.tab-btn:hover:not(.active) {
   color: var(--navy);
-  background: #f8fafc;
+  background: transparent;
   transform: none;
   box-shadow: none;
 }
@@ -493,7 +495,7 @@ input[type="date"]:focus {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 18px 20px;
+  padding: 20px 24px;
   box-shadow: var(--shadow);
 }
 

@@ -208,7 +208,7 @@ async function download() {
 function switchStockTab(tab, btn) {
     document.getElementById("stock-tab-submit").style.display  = tab === "submit"  ? "block" : "none";
     document.getElementById("stock-tab-history").style.display = tab === "history" ? "block" : "none";
-    document.querySelectorAll(".stock-tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     if (tab === "history") loadStockHistory();
 }

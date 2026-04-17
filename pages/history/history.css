@@ -6,7 +6,11 @@
   --navy-dark:  #0d1b2a;
   --navy-light: #415a77;
   --pms:        #16a34a;
+  --pms-bg:     #f0fdf4;
+  --pms-border: #86efac;
   --ago:        #d97706;
+  --ago-bg:     #fffbeb;
+  --ago-border: #fcd34d;
   --gain:       #16a34a;
   --loss:       #dc2626;
   --bg:         #f1f5f9;
@@ -85,7 +89,7 @@ body {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 20px;
+  padding: 20px 24px;
   box-shadow: var(--shadow);
 }
 
@@ -175,6 +179,9 @@ footer {
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
 }
 
 .btn-back {

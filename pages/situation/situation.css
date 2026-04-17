@@ -85,7 +85,7 @@ body {
 /* ── NAV ─────────────────────────────────────── */
 nav {
   background: var(--navy-dark);
-  padding: 0 20px;
+  padding: 0 24px;
   flex-shrink: 0;
 }
 
@@ -439,7 +439,7 @@ nav ul li a:hover    { color: white; border-bottom-color: var(--pms); }
 /* ── BUTTONS ─────────────────────────────────── */
 button, .action-btn {
   background: var(--navy); color: white; border: none;
-  padding: 8px 18px; border-radius: 6px; cursor: pointer;
+  padding: 8px 16px; border-radius: 6px; cursor: pointer;
   font-size: 12px; font-weight: 700; font-family: inherit;
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
 }

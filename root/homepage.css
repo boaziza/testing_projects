@@ -766,6 +766,10 @@ footer {
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  border-top: 1px solid var(--border);
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
 }
 
 .btn-logout {
