@@ -215,116 +215,198 @@ function switchStockTab(tab, btn) {
 
 // ── STOCK HISTORY ─────────────────────────────────────────────
 let _historyLoaded = false;
+let _stockDocs     = [];
+let _stockDates    = new Set();
+let _calYear, _calMonth;
+let _selectedDate  = null;
 
 async function loadStockHistory() {
     if (_historyLoaded) return;
-    const wrap = document.getElementById("historyTableWrap");
+    const listEl = document.getElementById("histEntryList");
     try {
         const res  = await _AW.db.listDocuments(_AW.DB_ID, _SIT_ID, [
             Appwrite.Query.orderDesc("logDate"),
-            Appwrite.Query.limit(30),
+            Appwrite.Query.limit(50),
         ]);
-        const docs = res.documents.filter(d => d.physicalStockPms != null);
-        if (docs.length === 0) {
-            wrap.innerHTML = '<div class="history-empty">No stock entries found yet.</div>';
+        _stockDocs = res.documents.filter(d => d.physicalStockPms != null);
+
+        if (_stockDocs.length === 0) {
+            listEl.innerHTML = '<div class="hist-list-empty">No stock entries found yet.</div>';
             _historyLoaded = true;
+            _initCalendar();
             return;
         }
-        wrap.innerHTML = `
-            <table class="stock-history-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th class="align-right">PMS Physical</th>
-                        <th class="align-right">PMS Gain/Loss</th>
-                        <th class="align-right">AGO Physical</th>
-                        <th class="align-right">AGO Gain/Loss</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${docs.map(doc => {
-                        const dateStr  = String(doc.logDate || "").substring(0, 10);
-                        const d        = new Date(dateStr + "T00:00:00");
-                        const label    = isNaN(d.getTime()) ? dateStr : d.toLocaleString("default", { day: "numeric", month: "short", year: "numeric" });
-                        const gPms     = Number(doc.gainFuelPms) || 0;
-                        const gAgo     = Number(doc.gainFuelAgo) || 0;
-                        return `
-                            <tr onclick="lookupStockDate('${dateStr}')" style="cursor:pointer;" title="Click to see full details">
-                                <td class="date-cell">${label}</td>
-                                <td class="align-right">${(Number(doc.physicalStockPms) || 0).toLocaleString()} L</td>
-                                <td class="align-right ${gPms >= 0 ? "gain" : "loss"}">${gPms >= 0 ? "+" : ""}${gPms.toLocaleString()} L</td>
-                                <td class="align-right">${(Number(doc.physicalStockAgo) || 0).toLocaleString()} L</td>
-                                <td class="align-right ${gAgo >= 0 ? "gain" : "loss"}">${gAgo >= 0 ? "+" : ""}${gAgo.toLocaleString()} L</td>
-                            </tr>`;
-                    }).join("")}
-                </tbody>
-            </table>`;
+
+        _stockDocs.forEach(d => {
+            const ds = String(d.logDate || "").substring(0, 10);
+            if (ds) _stockDates.add(ds);
+        });
+
+        _renderEntryList();
         _historyLoaded = true;
+        _initCalendar();
+
     } catch {
-        wrap.innerHTML = '<div class="history-empty">Error loading history.</div>';
+        listEl.innerHTML = '<div class="hist-list-empty">Error loading history.</div>';
     }
 }
 
-async function lookupStockDate(dateStr) {
-    if (dateStr) document.getElementById("historyDate").value = dateStr;
-    const date    = document.getElementById("historyDate").value;
-    if (!date) { toast("Select a date to look up.", "warning"); return; }
+function _renderEntryList() {
+    const listEl = document.getElementById("histEntryList");
+    listEl.innerHTML = _stockDocs.map(doc => {
+        const dateStr = String(doc.logDate || "").substring(0, 10);
+        const d       = new Date(dateStr + "T00:00:00");
+        const label   = isNaN(d.getTime()) ? dateStr : d.toLocaleString("default", { day: "numeric", month: "short", year: "numeric" });
+        const gPms    = Number(doc.gainFuelPms) || 0;
+        const gAgo    = Number(doc.gainFuelAgo) || 0;
+        const net     = gPms + gAgo;
+        const pillCls = net > 0 ? "hist-pill-gain" : net < 0 ? "hist-pill-loss" : "hist-pill-neutral";
+        const pillTxt = net > 0 ? "+" + net.toLocaleString() + " L" : net.toLocaleString() + " L";
+        return `<div class="hist-entry-item" data-date="${dateStr}" onclick="_selectHistDate('${dateStr}', this)">
+            <span class="hist-dot"></span>
+            <div class="hist-entry-info">
+                <div class="hist-entry-date">${label}</div>
+                <div class="hist-entry-sub">PMS ${(Number(doc.physicalStockPms)||0).toLocaleString()} L &middot; AGO ${(Number(doc.physicalStockAgo)||0).toLocaleString()} L</div>
+            </div>
+            <span class="hist-pill ${pillCls}">${pillTxt}</span>
+        </div>`;
+    }).join("");
+}
 
-    const resultEl = document.getElementById("lookupResult");
-    resultEl.style.display = "block";
-    resultEl.innerHTML     = '<div class="history-loading">Loading…</div>';
+function _initCalendar() {
+    const now = new Date();
+    _calYear  = now.getFullYear();
+    _calMonth = now.getMonth();
+    _renderCalendar();
+}
 
-    try {
-        const res = await _AW.db.listDocuments(_AW.DB_ID, _SIT_ID, [
-            Appwrite.Query.equal("logDate", date),
-        ]);
-        if (res.documents.length === 0 || res.documents[0].physicalStockPms == null) {
-            resultEl.innerHTML = '<div class="history-empty">No stock entry found for this date.</div>';
-            return;
+function _renderCalendar() {
+    const label   = new Date(_calYear, _calMonth, 1).toLocaleString("default", { month: "long", year: "numeric" });
+    document.getElementById("histCalMonthLabel").textContent = label;
+
+    const today   = new Date().toISOString().substring(0, 10);
+    const grid    = document.getElementById("histCalGrid");
+    const headers = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+    let html      = headers.map(h => `<div class="hist-cal-day cal-header">${h}</div>`).join("");
+
+    const firstDay  = new Date(_calYear, _calMonth, 1).getDay();
+    const daysInMon = new Date(_calYear, _calMonth + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+        html += `<div class="hist-cal-day"></div>`;
+    }
+    for (let day = 1; day <= daysInMon; day++) {
+        const ds      = `${_calYear}-${String(_calMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const hasData = _stockDates.has(ds);
+        const isSel   = ds === _selectedDate;
+        const isToday = ds === today;
+        let cls = "hist-cal-day";
+        if (hasData) cls += " has-stock";
+        if (isSel)   cls += " cal-selected";
+        else if (isToday) cls += " cal-today";
+        const onclick = hasData ? `onclick="_selectHistDate('${ds}')"` : "";
+        html += `<div class="${cls}" ${onclick}>${day}</div>`;
+    }
+    grid.innerHTML = html;
+}
+
+function _calPrev() {
+    _calMonth--;
+    if (_calMonth < 0) { _calMonth = 11; _calYear--; }
+    _renderCalendar();
+}
+
+function _calNext() {
+    _calMonth++;
+    if (_calMonth > 11) { _calMonth = 0; _calYear++; }
+    _renderCalendar();
+}
+
+function _selectHistDate(dateStr, listItemEl) {
+    _selectedDate = dateStr;
+
+    document.querySelectorAll(".hist-entry-item").forEach(el => el.classList.remove("active"));
+    if (listItemEl) {
+        listItemEl.classList.add("active");
+    } else {
+        const match = document.querySelector(`.hist-entry-item[data-date="${dateStr}"]`);
+        if (match) {
+            match.classList.add("active");
+            match.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
-        _renderLookupResult(res.documents[0], date);
-        resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    } catch {
-        resultEl.innerHTML = '<div class="history-empty">Error loading entry.</div>';
+    }
+
+    _renderCalendar();
+
+    const doc = _stockDocs.find(d => String(d.logDate || "").substring(0, 10) === dateStr);
+    if (doc) {
+        _renderHistDetail(doc, dateStr);
+    } else {
+        document.getElementById("histDetail").innerHTML = '<div class="hist-list-empty" style="padding:40px;text-align:center;">No entry for this date.</div>';
     }
 }
 
-function _renderLookupResult(doc, date) {
-    const d     = new Date(String(date) + "T00:00:00");
-    const label = isNaN(d.getTime()) ? date : d.toLocaleString("default", { day: "numeric", month: "long", year: "numeric" });
+function _renderHistDetail(doc, dateStr) {
+    const d     = new Date(dateStr + "T00:00:00");
+    const label = isNaN(d.getTime()) ? dateStr : d.toLocaleString("default", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
     const gPms  = Number(doc.gainFuelPms) || 0;
     const gAgo  = Number(doc.gainFuelAgo) || 0;
+    const net   = gPms + gAgo;
 
-    function row(lbl, val) {
+    function bdRow(lbl, val) {
         const v = val != null ? Number(val).toLocaleString() + " L" : "—";
-        return `<div class="lookup-row"><span class="lookup-label">${lbl}</span><span class="lookup-value">${v}</span></div>`;
+        return `<div class="hist-bd-row"><span class="hist-bd-label">${lbl}</span><span class="hist-bd-value">${v}</span></div>`;
     }
 
-    document.getElementById("lookupResult").innerHTML = `
-        <div class="lookup-result-title">Stock entry — ${label}</div>
-        <div class="lookup-result-grid">
-            <div class="lookup-section pms-lookup">
-                <div class="lookup-section-title pms-label">Essence (PMS)</div>
-                ${row("Initial Stock",   doc.initialPms)}
-                ${row("Received",        doc.receivedPms)}
-                ${row("Sold (Ventes)",   doc.venteLitresPms)}
-                ${row("Theory Stock",    doc.theoryStockPms)}
-                ${row("Physical Stock",  doc.physicalStockPms)}
-                <div class="lookup-row gain-row">
-                    <span class="lookup-label">Gain / Loss</span>
-                    <span class="lookup-value ${gPms >= 0 ? "gain" : "loss"}">${gPms >= 0 ? "+" : ""}${gPms.toLocaleString()} L</span>
+    document.getElementById("histDetail").innerHTML = `
+        <div class="hist-detail-header">
+            <div class="hist-detail-title">${label}</div>
+            <div class="hist-summary-strip">
+                <div class="hist-chip">
+                    <span class="hist-chip-label">PMS Physical</span>
+                    <span class="hist-chip-value">${(Number(doc.physicalStockPms)||0).toLocaleString()} L</span>
+                </div>
+                <div class="hist-chip">
+                    <span class="hist-chip-label">AGO Physical</span>
+                    <span class="hist-chip-value">${(Number(doc.physicalStockAgo)||0).toLocaleString()} L</span>
+                </div>
+                <div class="hist-chip">
+                    <span class="hist-chip-label">PMS Gain/Loss</span>
+                    <span class="hist-chip-value ${gPms >= 0 ? "gain" : "loss"}">${gPms >= 0 ? "+" : ""}${gPms.toLocaleString()} L</span>
+                </div>
+                <div class="hist-chip">
+                    <span class="hist-chip-label">AGO Gain/Loss</span>
+                    <span class="hist-chip-value ${gAgo >= 0 ? "gain" : "loss"}">${gAgo >= 0 ? "+" : ""}${gAgo.toLocaleString()} L</span>
+                </div>
+                <div class="hist-chip">
+                    <span class="hist-chip-label">Net Gain/Loss</span>
+                    <span class="hist-chip-value ${net >= 0 ? "gain" : "loss"}">${net >= 0 ? "+" : ""}${net.toLocaleString()} L</span>
                 </div>
             </div>
-            <div class="lookup-section ago-lookup">
-                <div class="lookup-section-title ago-label">Mazout (AGO)</div>
-                ${row("Initial Stock",   doc.initialAgo)}
-                ${row("Received",        doc.receivedAgo)}
-                ${row("Sold (Ventes)",   doc.venteLitresAgo)}
-                ${row("Theory Stock",    doc.theoryStockAgo)}
-                ${row("Physical Stock",  doc.physicalStockAgo)}
-                <div class="lookup-row gain-row">
-                    <span class="lookup-label">Gain / Loss</span>
-                    <span class="lookup-value ${gAgo >= 0 ? "gain" : "loss"}">${gAgo >= 0 ? "+" : ""}${gAgo.toLocaleString()} L</span>
+        </div>
+        <div class="hist-breakdown-grid">
+            <div class="hist-breakdown-card hist-bd-pms">
+                <div class="hist-bd-title">Essence (PMS)</div>
+                ${bdRow("Initial Stock",  doc.initialPms)}
+                ${bdRow("Received",       doc.receivedPms)}
+                ${bdRow("Sold (Ventes)",  doc.venteLitresPms)}
+                ${bdRow("Theory Stock",   doc.theoryStockPms)}
+                ${bdRow("Physical Stock", doc.physicalStockPms)}
+                <div class="hist-bd-row gain-row">
+                    <span class="hist-bd-label">Gain / Loss</span>
+                    <span class="hist-bd-value ${gPms >= 0 ? "gain" : "loss"}">${gPms >= 0 ? "+" : ""}${gPms.toLocaleString()} L</span>
+                </div>
+            </div>
+            <div class="hist-breakdown-card hist-bd-ago">
+                <div class="hist-bd-title">Mazout (AGO)</div>
+                ${bdRow("Initial Stock",  doc.initialAgo)}
+                ${bdRow("Received",       doc.receivedAgo)}
+                ${bdRow("Sold (Ventes)",  doc.venteLitresAgo)}
+                ${bdRow("Theory Stock",   doc.theoryStockAgo)}
+                ${bdRow("Physical Stock", doc.physicalStockAgo)}
+                <div class="hist-bd-row gain-row">
+                    <span class="hist-bd-label">Gain / Loss</span>
+                    <span class="hist-bd-value ${gAgo >= 0 ? "gain" : "loss"}">${gAgo >= 0 ? "+" : ""}${gAgo.toLocaleString()} L</span>
                 </div>
             </div>
         </div>`;

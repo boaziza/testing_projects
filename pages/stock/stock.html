@@ -137,24 +137,42 @@
 
       <!-- TAB: STOCK HISTORY -->
       <div id="stock-tab-history" style="display:none;">
+        <div class="history-split">
 
-        <!-- Date lookup -->
-        <div class="history-card">
-          <div class="history-card-title">Look Up a Date</div>
-          <div class="history-lookup-bar">
-            <input type="date" id="historyDate">
-            <button class="action-btn" onclick="lookupStockDate()">View</button>
+          <!-- Sidebar: calendar + entry list -->
+          <aside class="hist-sidebar">
+            <div class="hist-sidebar-head">
+              <div class="hist-sidebar-title">Stock History</div>
+              <div class="hist-sidebar-sub">Select a date to view details</div>
+            </div>
+
+            <div class="hist-cal-section">
+              <div class="hist-cal-nav">
+                <button onclick="_calPrev()">&#8249;</button>
+                <span id="histCalMonthLabel"></span>
+                <button onclick="_calNext()">&#8250;</button>
+              </div>
+              <div class="hist-cal-grid" id="histCalGrid"></div>
+              <div class="hist-cal-legend">
+                <span class="hist-legend-dot"></span> Has stock entry
+              </div>
+            </div>
+
+            <div class="hist-list-label">Recent Entries</div>
+            <div class="hist-entry-list" id="histEntryList">
+              <div class="hist-list-empty">Loading…</div>
+            </div>
+          </aside>
+
+          <!-- Detail panel -->
+          <div class="hist-detail" id="histDetail">
+            <div class="hist-detail-placeholder">
+              <div class="hist-placeholder-icon">&#128197;</div>
+              <div class="hist-placeholder-text">Select a date from the list or calendar</div>
+            </div>
           </div>
-          <div id="lookupResult" style="display:none;"></div>
-        </div>
 
-        <!-- Recent entries -->
-        <div class="history-card" style="margin-top:16px;">
-          <div class="history-card-title">Recent Entries</div>
-          <p class="history-hint">Click any row to see full details above.</p>
-          <div id="historyTableWrap"><div class="history-loading">Loading…</div></div>
         </div>
-
       </div><!-- /stock-tab-history -->
 
     </div><!-- /stock-wrapper -->
