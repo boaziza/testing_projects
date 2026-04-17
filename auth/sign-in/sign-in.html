@@ -83,6 +83,23 @@
     const _collectionId      = "68c82cf90024f35d491a";
     const _adminCollectionId = "68d95af4003245ef87a7";
 
+    // Redirect already-signed-in users away from the sign-in page
+    (async function () {
+      try {
+        const user       = await _AW.account.get();
+        const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, _adminCollectionId, [
+          Appwrite.Query.equal("email", user.email)
+        ]);
+        if (adminCheck.documents.length > 0) {
+          window.location.replace("../../pages/situation/situation");
+        } else {
+          window.location.replace("../../index");
+        }
+      } catch {
+        // Not signed in — stay on this page
+      }
+    })();
+
     const _employeeIdMap = {
       "izaprinceboaz@gmail.com": "12345",
       "janviern707@gmail.com": "1",

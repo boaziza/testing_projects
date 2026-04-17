@@ -155,7 +155,21 @@ function checkPompisteSession() {
 
     const loginTime = parseInt(sessionStorage.getItem("pompisteLoginTime"));
     if (!loginTime) {
-        logout();
+        (async () => {
+            try {
+                const user       = await _AW.account.get();
+                const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, "68d95af4003245ef87a7", [
+                    Appwrite.Query.equal("email", user.email)
+                ]);
+                if (adminCheck.documents.length > 0) {
+                    window.location.replace("/testing_projects/pages/situation/situation");
+                } else {
+                    logout();
+                }
+            } catch {
+                window.location.replace("/testing_projects/auth/sign-in/sign-in");
+            }
+        })();
         return;
     }
 

@@ -221,6 +221,7 @@ nav ul li a:hover {
 
 .reports-list {
   display: flex;
+  margin-bottom: 271px;
   flex-direction: column;
   gap: 3px;
 }
@@ -261,20 +262,6 @@ footer {
   z-index: 50;
 }
 
-.btn-logout {
-  background: #fee2e2;
-  color: var(--loss);
-  border: 1.5px solid #fca5a5;
-  padding: 7px 18px;
-}
-
-.btn-logout:hover {
-  background: var(--loss);
-  color: white;
-  border-color: var(--loss);
-  box-shadow: none;
-  transform: none;
-}
 
 /* ── POPUP ───────────────────────────────────── */
 .popup {
@@ -566,6 +553,21 @@ button:hover, .action-btn:hover {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+.btn-logout {
+  background: #fee2e2;
+  color: var(--loss);
+  border: 1.5px solid #fca5a5;
+  padding: 7px 18px;
+}
+
+.btn-logout:hover {
+  background: var(--loss);
+  color: white;
+  border-color: var(--loss);
+  box-shadow: none;
+  transform: none;
 }
 
 /* Date input */

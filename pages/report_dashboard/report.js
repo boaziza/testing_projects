@@ -108,8 +108,9 @@ async function loadTableList() {
       div.onclick = () => display(name);
       listEl.appendChild(div);
     });
+
+    if (tables.length > 0) display(tables[0]);
   } catch (err) {
-    console.error("Could not load table list:", err);
     toast("Could not load table list", "error");
   }
 }
@@ -171,18 +172,8 @@ async function display(tableName) {
     document.getElementById("dateFilterRow").style.display = hasLogDate ? "flex" : "none";
     document.getElementById("exportBtn").style.display     = "inline-block";
 
-    // Default date range to current month for tables that have logDate
-    if (hasLogDate) {
-      const now = new Date();
-      const y   = now.getFullYear();
-      const m   = String(now.getMonth() + 1).padStart(2, "0");
-      const d   = String(now.getDate()).padStart(2, "0");
-      document.getElementById("dateFrom").value = `${y}-${m}-01`;
-      document.getElementById("dateTo").value   = `${y}-${m}-${d}`;
-    } else {
-      document.getElementById("dateFrom").value = "";
-      document.getElementById("dateTo").value   = "";
-    }
+    document.getElementById("dateFrom").value = "";
+    document.getElementById("dateTo").value   = "";
 
     buildHeaders(lastAttributes);
     buildSearchControls(lastAttributes);
