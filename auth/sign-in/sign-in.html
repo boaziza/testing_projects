@@ -23,11 +23,11 @@
           <form id="loginForm">
             <div class="input-group">
               <label for="email">Email</label>
-              <input type="email" id="email" name="email" required>
+              <input type="email" id="email" name="email" autocomplete="email" required>
             </div>
             <div class="input-group">
               <label for="password">Password</label>
-              <input type="password" id="password" name="password" required>
+              <input type="password" id="password" name="password" autocomplete="current-password" required>
             </div>
             <button type="submit" class="login-button">Sign In</button>
           </form>
@@ -80,20 +80,21 @@
     }
   </script>
   <script>
-    const _collectionId      = "68c82cf90024f35d491a";
-    const _adminCollectionId = "68d95af4003245ef87a7";
+    const _collectionId = "68c82cf90024f35d491a";
 
     // Redirect already-signed-in users away from the sign-in page
     (async function () {
       try {
-        const user       = await _AW.account.get();
-        const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, _adminCollectionId, [
-          Appwrite.Query.equal("email", user.email)
-        ]);
-        if (adminCheck.documents.length > 0) {
+        await _AW.account.get();
+        const result     = await _AW.teams.list();
+        const isAdmin    = result.teams.some(t => t.name === "Admin");
+        const isEmployee = result.teams.some(t => t.name === "Employees");
+        if (isAdmin) {
           window.location.replace("../../pages/situation/situation");
-        } else {
+        } else if (isEmployee) {
           window.location.replace("../../index");
+        } else {
+          await _AW.account.deleteSession("current");
         }
       } catch {
         // Not signed in — stay on this page
@@ -119,6 +120,8 @@
       const email    = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
+      try { await _AW.account.deleteSession("current"); } catch { /* no existing session */ }
+
       try {
         await _AW.account.createEmailSession(email, password);
       } catch {
@@ -139,15 +142,19 @@
           } catch { /* login-log failure is non-blocking */ }
         }
 
-        const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, _adminCollectionId, [
-          Appwrite.Query.equal("email", email)
-        ]);
+        const result     = await _AW.teams.list();
+        const isAdmin    = result.teams.some(t => t.name === "Admin");
+        const isEmployee = result.teams.some(t => t.name === "Employees");
 
-        if (adminCheck.documents.length > 0) {
+        if (isAdmin) {
           window.location.replace("../../pages/situation/situation");
-        } else {
+        } else if (isEmployee) {
           sessionStorage.setItem("pompisteLoginTime", Date.now());
           window.location.replace("../../index");
+        } else {
+          await _AW.account.deleteSession("current");
+          toast("You do not have access to this application.", "error");
+          btn.disabled = false;
         }
       } catch (err) {
         toast("Signed in, but could not load your profile. Try refreshing.", "error");

@@ -95,14 +95,11 @@ async function userAccess() {
     const currentPage = _currentPageName();
     if (currentPage === "index" || currentPage === "history") return;
 
-    const adminCollectionId = "68d95af4003245ef87a7";
-
     try {
-        const user = await _AW.account.get();
-        const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, adminCollectionId, [
-            Appwrite.Query.equal("email", user.email)
-        ]);
-        if (adminCheck.documents.length === 0) {
+        await _AW.account.get();
+        const result  = await _AW.teams.list();
+        const isAdmin = result.teams.some(t => t.name === "Admin");
+        if (!isAdmin) {
             window.location.replace("/testing_projects/index");
         }
     } catch {
@@ -157,11 +154,10 @@ function checkPompisteSession() {
     if (!loginTime) {
         (async () => {
             try {
-                const user       = await _AW.account.get();
-                const adminCheck = await _AW.db.listDocuments(_AW.DB_ID, "68d95af4003245ef87a7", [
-                    Appwrite.Query.equal("email", user.email)
-                ]);
-                if (adminCheck.documents.length > 0) {
+                await _AW.account.get();
+                const result  = await _AW.teams.list();
+                const isAdmin = result.teams.some(t => t.name === "Admin");
+                if (isAdmin) {
                     window.location.replace("/testing_projects/pages/situation/situation");
                 } else {
                     logout();

@@ -11,6 +11,7 @@
     client,
     account:    new Appwrite.Account(client),
     db:         new Appwrite.Databases(client),
+    teams:      new Appwrite.Teams(client),
     DB_ID:      "695f766c003a8dc2b3be",
     SERVER_URL: "https://testing-projects-4ttw.onrender.com/api",
   };
