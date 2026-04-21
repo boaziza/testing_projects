@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Server Logs — Rapport Pompiste</title>
+  <link rel="stylesheet" href="logs.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231b263b'/><text x='16' y='23' text-anchor='middle' font-family='Arial' font-weight='900' font-size='16' fill='white'>RP</text></svg>">
+</head>
+<body>
+<a href="#logsMain" class="skip-nav">Skip to main content</a>
+
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="header-brand">
+      <div class="brand-icon">RP</div>
+      <div>
+        <div class="brand-title">Server Logs</div>
+        <div class="brand-sub" id="welcomeMessage"></div>
+      </div>
+    </div>
+    <div class="fuel-prices">
+      <p>ESSENCE: <span id="pmsPrice">—</span></p>
+      <p>MAZOUT: <span id="agoPrice">—</span></p>
+      <p id="headerStationName" style="display:none;"></p>
+    </div>
+  </header>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <ul>
+      <li><a href="../situation/situation">Situation</a></li>
+      <li><a href="../stock/stock">Stock</a></li>
+      <li class="dropdown">
+        <a href="#" aria-haspopup="true" aria-expanded="false">Employees</a>
+        <ul class="dropdown-menu">
+          <li><a href="../employeeCheck/logsDetail">Employee Reports</a></li>
+        </ul>
+      </li>
+      <li><a href="../report_dashboard/report">Dashboard</a></li>
+      <li><a href="../settings/settings">Settings</a></li>
+      <li><a href="logs" class="active" aria-current="page">Logs</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── MAIN ── -->
+  <main id="logsMain" class="logs-main">
+
+    <div class="logs-toolbar">
+      <div class="toolbar-left">
+        <span class="log-count" id="logCount">— entries</span>
+        <span class="refresh-status" id="refreshStatus">Refreshing every 5s</span>
+      </div>
+      <div class="toolbar-right">
+        <div class="filter-group" role="group" aria-label="Filter by level">
+          <button class="filter-btn active" data-level="ALL">All</button>
+          <button class="filter-btn info"   data-level="INFO">Info</button>
+          <button class="filter-btn warn"   data-level="WARN">Warn</button>
+          <button class="filter-btn error"  data-level="ERROR">Error</button>
+        </div>
+        <button class="action-btn" id="refreshBtn" onclick="fetchLogs()">↺ Refresh</button>
+      </div>
+    </div>
+
+    <div class="logs-table-wrap" id="logsTableWrap">
+      <div class="logs-loading" id="logsLoading">Loading logs…</div>
+      <table class="logs-table" id="logsTable" style="display:none;">
+        <thead>
+          <tr>
+            <th class="col-ts">Timestamp</th>
+            <th class="col-level">Level</th>
+            <th class="col-msg">Message</th>
+            <th class="col-ctx">Context</th>
+          </tr>
+        </thead>
+        <tbody id="logsBody"></tbody>
+      </table>
+      <div class="logs-empty" id="logsEmpty" style="display:none;">No log entries match the current filter.</div>
+    </div>
+
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <button class="action-btn btn-logout" onclick="openDialog('confirmLogoutPopup')">Log Out</button>
+  </footer>
+
+  <!-- ── LOGOUT POPUP ── -->
+  <div class="popup" id="confirmLogoutPopup" role="dialog" aria-modal="true" aria-labelledby="dlg-logout-title" aria-hidden="true" style="display:none;">
+    <div class="popup-content">
+      <p class="popup-title" id="dlg-logout-title">Log Out?</p>
+      <p class="popup-sub">Any unsaved data will be lost.</p>
+      <button id="confirmLogout" onclick="closeDialog('confirmLogoutPopup'); this.disabled=true; logout().finally(()=>this.disabled=false)">Log Out</button>
+      <button id="cancelLogout" onclick="closeDialog('confirmLogoutPopup')">Cancel</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <!-- <script src="../../utils/config.js"></script> -->
+  <script src="logs.js"></script>
+  <!-- <script type="module" src="../../utils/utils.js"></script> -->
+</body>
+</html>

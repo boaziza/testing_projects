@@ -8,8 +8,45 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// ── STRUCTURED LOGGER ──────────────────────────────────────────
+// Outputs one JSON line per event — Render captures stdout/stderr.
+// Also keeps the last 200 entries in memory for the admin log viewer.
+const _logBuffer = [];
+const _LOG_LIMIT = 200;
+
+const log = {
+  _write(level, msg, extra = {}) {
+    const entry = { ts: new Date().toISOString(), level, msg, ...extra };
+    process.stdout.write(JSON.stringify(entry) + "\n");
+    _logBuffer.unshift(entry);
+    if (_logBuffer.length > _LOG_LIMIT) _logBuffer.pop();
+  },
+  info:  (msg, extra) => log._write("INFO",  msg, extra),
+  warn:  (msg, extra) => log._write("WARN",  msg, extra),
+  error: (msg, extra) => log._write("ERROR", msg, extra),
+};
+
+// ── PROCESS CRASH HANDLERS ─────────────────────────────────────
+process.on("uncaughtException", (err) => {
+  log.error("Uncaught exception — shutting down", { error: err.message, stack: err.stack });
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  log.error("Unhandled promise rejection", { reason: String(reason) });
+});
+
 const app = express();
 app.use(express.json());
+
+// ── HTTP REQUEST LOGGER ────────────────────────────────────────
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    log.info("http", { method: req.method, path: req.path, status: res.statusCode, ms: Date.now() - start });
+  });
+  next();
+});
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
@@ -25,7 +62,7 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
-      console.warn(`❌ Blocked by CORS: ${origin}`);
+      log.warn("CORS blocked", { origin });
       return callback(new Error("Not allowed by CORS"));
     }
   },
@@ -122,7 +159,7 @@ app.get("/api/attributes/:collection", readLimiter, async (req, res) => {
     const response = await databases.listAttributes(databaseId, collectionId);
     res.json(response);
   } catch (err) {
-    console.error(`Error fetching attributes for ${collection}:`, err);
+    log.error("attributes fetch failed", { collection, error: err.message });
     res.status(500).json({ error: err.message });
   }
 });
@@ -140,7 +177,7 @@ app.get("/api/documents/:collection", readLimiter, async (req, res) => {
     const documents = await fetchAllDocuments(collectionId);
     res.json({ documents });
   } catch (error) {
-    console.error("Error fetching documents:", error);
+    log.error("documents fetch failed", { collection, error: error.message });
     res.status(500).json({ error: error.message });
   }
 });
@@ -166,7 +203,7 @@ app.post("/api/create/:collection", writeLimiter, async (req, res) => {
 
     res.json({ success: true, result });
   } catch (error) {
-    console.error("Create error:", error);
+    log.error("document create failed", { collection: req.params.collection, error: error.message });
     res.status(500).json({ error: "Failed to create document" });
   }
 });
@@ -210,7 +247,7 @@ app.patch("/api/update-by-field/:collection", writeLimiter, async (req, res) => 
 
     res.json({ success: true, result: updateResult });
   } catch (error) {
-    console.error("Update by field error:", error);
+    log.error("update-by-field failed", { collection, error: error.message });
     res.status(500).json({ error: error.message });
   }
 });
@@ -245,7 +282,7 @@ app.post("/api/upsert-gain", writeLimiter, async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error("Upsert gain error:", err);
+    log.error("upsert-gain failed", { email: req.body?.email, error: err.message });
     res.status(500).json({ error: err.message });
   }
 });
@@ -265,8 +302,7 @@ app.post("/api/create-employee", writeLimiter, async (req, res) => {
     const user = await users.create(ID.unique(), email, undefined, password, name);
     res.json({ success: true, userId: user.$id, name: user.name, email: user.email });
   } catch (err) {
-    console.error("Create employee error:", err);
-    // Surface Appwrite's message (e.g. "A user with the same email already exists")
+    log.error("create-employee failed", { email: req.body?.email, error: err.message });
     res.status(500).json({ error: err.message });
   }
 });
@@ -381,15 +417,45 @@ app.patch("/api/users/:userId/password", writeLimiter, async (req, res) => {
   }
 });
 
+// ── ADMIN LOG VIEWER ───────────────────────────────────────────
+// Returns the in-memory log buffer. Caller must present a valid
+// Appwrite JWT belonging to the Admin team.
+app.get("/api/logs", readLimiter, async (req, res) => {
+  const jwt = req.headers.authorization?.replace("Bearer ", "").trim();
+  if (!jwt) return res.status(401).json({ error: "Unauthorized" });
+
+  try {
+    const jwtClient = new sdk.Client()
+      .setEndpoint(process.env.APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1")
+      .setProject(process.env.APPWRITE_PROJECT_ID)
+      .setJWT(jwt);
+    const jwtTeams = new sdk.Teams(jwtClient);
+    await new sdk.Account(jwtClient).get();
+    const result  = await jwtTeams.list();
+    const isAdmin = result.teams.some(t => t.name === "Admin");
+    if (!isAdmin) return res.status(403).json({ error: "Forbidden" });
+  } catch {
+    return res.status(401).json({ error: "Invalid session" });
+  }
+
+  res.json({ logs: _logBuffer });
+});
+
 // ✅ Health check
 app.get("/health", (_, res) => res.json({ status: "ok", time: new Date().toISOString() }));
+
+// ── GLOBAL ERROR HANDLER ───────────────────────────────────────
+// Catches errors passed via next(err) from any route.
+app.use((err, req, res, next) => {
+  log.error("Unhandled route error", { method: req.method, path: req.path, error: err.message });
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: "Internal server error" });
+});
 
 // ✅ Start server
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
-  console.log("✅ Server running successfully!");
-  console.log(`   Local:     http://localhost:${port}`);
-  console.log(`   Frontend:  https://boaziza.github.io/myWebApp`);
+  log.info("Server started", { port, frontend: "https://boaziza.github.io/myWebApp" });
 });
 
 async function fetchAllDocuments(collectionId) {
