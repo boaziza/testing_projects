@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Rapport Pompiste</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231b263b'/><text x='16' y='23' text-anchor='middle' font-family='Arial' font-weight='900' font-size='16' fill='white'>RP</text></svg>">
+</head>
+<body>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">RP</div>
+      <div>
+        <div class="sidebar-brand-name">Rapport Pompiste</div>
+        <div class="sidebar-brand-role" id="sidebarRole">Loading…</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <!-- owner + manager -->
+      <a href="#" class="nav-item active" data-section="overview" data-roles="owner,manager">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Overview
+      </a>
+
+      <!-- owner only -->
+      <a href="#" class="nav-item" data-section="stations" data-roles="owner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        Stations
+      </a>
+
+      <!-- owner only -->
+      <a href="#" class="nav-item" data-section="managers" data-roles="owner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Managers
+      </a>
+
+      <!-- manager only -->
+      <a href="#" class="nav-item" data-section="pompistes" data-roles="manager">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Pompistes
+      </a>
+
+      <!-- owner + manager -->
+      <a href="#" class="nav-item" data-section="situation" data-roles="owner,manager">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
+        Situation
+      </a>
+
+      <!-- manager only -->
+      <a href="#" class="nav-item" data-section="stock" data-roles="manager">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        Stock
+      </a>
+
+      <!-- owner + manager -->
+      <a href="#" class="nav-item" data-section="history" data-roles="owner,manager">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18M3 9h18M3 15h18M3 21h18"/></svg>
+        History
+      </a>
+
+      <!-- owner + manager -->
+      <a href="#" class="nav-item" data-section="report" data-roles="owner,manager">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Report
+      </a>
+
+      <!-- manager only -->
+      <a href="#" class="nav-item" data-section="logs" data-roles="manager">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Employee Logs
+      </a>
+
+      <!-- owner only -->
+      <a href="#" class="nav-item" data-section="settings" data-roles="owner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41"/></svg>
+        Settings
+      </a>
+
+      <!-- manager only -->
+      <a href="#" class="nav-item" data-section="account" data-roles="manager">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Account
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="userAvatar">?</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="userName">Loading…</div>
+          <!-- owner sees company name; manager sees station name -->
+          <div class="sidebar-user-company" id="userContext">—</div>
+        </div>
+      </div>
+      <button class="sidebar-logout" id="logoutBtn">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main-content">
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         OVERVIEW  (owner + manager)
+         Stats differ per role — built by JS
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-overview" class="section active" data-roles="owner,manager">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title" id="overviewTitle">Good morning</h1>
+          <p class="section-sub" id="overviewSub">—</p>
+        </div>
+      </div>
+      <div class="stats-grid" id="overviewStats"></div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         STATIONS  (owner only)
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-stations" class="section" style="display:none;" data-roles="owner">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Stations</h1>
+          <p class="section-sub">Manage your company's gas stations.</p>
+        </div>
+        <button class="btn-primary" id="addStationBtn">+ Add Station</button>
+      </div>
+      <div id="stationsList" class="stations-grid">
+        <div class="loading-state">Loading…</div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         MANAGERS  (owner only)
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-managers" class="section" style="display:none;" data-roles="owner">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Managers</h1>
+          <p class="section-sub">Assign managers to your stations.</p>
+        </div>
+        <button class="btn-primary" id="addManagerBtn">+ Add Manager</button>
+      </div>
+      <div id="managersList" class="table-wrap">
+        <div class="loading-state">Loading…</div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         POMPISTES  (manager only)
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-pompistes" class="section" style="display:none;" data-roles="manager">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Pompistes</h1>
+          <p class="section-sub">Manage your station's pompistes.</p>
+        </div>
+        <button class="btn-primary" id="addPompisteBtn">+ Add Pompiste</button>
+      </div>
+      <div id="pompistesList" class="table-wrap">
+        <div class="loading-state">Loading…</div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         SITUATION  (owner + manager)
+         Daily reconciliation — owner sees a station picker,
+         manager is scoped to their station automatically.
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-situation" class="section" style="display:none;" data-roles="owner,manager">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Situation</h1>
+          <p class="section-sub">Daily fuel situation and shift reconciliation.</p>
+        </div>
+        <!-- Date picker + optional station picker (owner only, added by JS) -->
+        <div class="section-header-controls" id="situationControls"></div>
+      </div>
+      <!-- Content built by JS -->
+      <div id="situationContent"></div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         STOCK  (manager only)
+         Daily and monthly stock entry for the assigned station.
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-stock" class="section" style="display:none;" data-roles="manager">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Stock</h1>
+          <p class="section-sub">Submit and review daily fuel stock for your station.</p>
+        </div>
+        <div class="section-header-controls" id="stockControls"></div>
+      </div>
+      <!-- Content built by JS -->
+      <div id="stockContent"></div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         HISTORY  (owner + manager)
+         Browse past shift entries.
+         Owner sees all stations; manager is scoped to their station.
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-history" class="section" style="display:none;" data-roles="owner,manager">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">History</h1>
+          <p class="section-sub">Browse past shift entries and situations.</p>
+        </div>
+        <div class="section-header-controls" id="historyControls"></div>
+      </div>
+      <!-- Filters row (date range, employee, shift) — built by JS -->
+      <div id="historyFilters"></div>
+      <!-- Table — built by JS -->
+      <div id="historyContent" class="table-wrap"></div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         REPORT  (owner + manager)
+         Full data table with collection selector, date filters, export.
+         Owner can query any station; manager is scoped to their station.
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-report" class="section" style="display:none;" data-roles="owner,manager">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Report Dashboard</h1>
+          <p class="section-sub">Query, filter, and export any collection.</p>
+        </div>
+        <div class="section-header-controls" id="reportControls"></div>
+      </div>
+      <!-- Collection selector + date range — built by JS -->
+      <div id="reportFilters"></div>
+      <!-- Results table — built by JS -->
+      <div id="reportContent" class="table-wrap"></div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         EMPLOYEE LOGS  (manager only)
+         Review individual shift detail logs for pompistes at this station.
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-logs" class="section" style="display:none;" data-roles="manager">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Employee Logs</h1>
+          <p class="section-sub">Review shift detail logs for your pompistes.</p>
+        </div>
+        <div class="section-header-controls" id="logsControls"></div>
+      </div>
+      <!-- Employee selector + date picker — built by JS -->
+      <div id="logsFilters"></div>
+      <!-- Log detail table — built by JS -->
+      <div id="logsContent" class="table-wrap"></div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         SETTINGS  (owner only)
+         Company name, fuel prices per station, password change.
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-settings" class="section" style="display:none;" data-roles="owner">
+      <div class="section-header">
+        <h1 class="section-title">Settings</h1>
+      </div>
+      <div class="form-card">
+        <h3 class="form-card-title">Company</h3>
+        <div class="form-row"><label>Company Name</label><input type="text" id="companyName"></div>
+        <div class="form-actions"><button class="btn-primary" id="saveCompanyBtn">Save</button></div>
+      </div>
+      <!-- Fuel prices per station — list built by JS -->
+      <div id="stationPricesList"></div>
+      <div class="form-card">
+        <h3 class="form-card-title">Change My Password</h3>
+        <div class="form-row"><label>New Password</label><input type="password" id="ownerNewPwd" placeholder="Min. 8 characters"></div>
+        <div class="form-row"><label>Confirm</label><input type="password" id="ownerConfirmPwd"></div>
+        <div class="form-actions"><button class="btn-primary" id="ownerChangePwdBtn">Change Password</button></div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         ACCOUNT  (manager only)
+         Password change only.
+    ───────────────────────────────────────────────────────────────────────── -->
+    <section id="section-account" class="section" style="display:none;" data-roles="manager">
+      <div class="section-header">
+        <h1 class="section-title">Account</h1>
+      </div>
+      <div class="form-card">
+        <h3 class="form-card-title">Change My Password</h3>
+        <div class="form-row"><label>New Password</label><input type="password" id="mgrNewPwd" placeholder="Min. 8 characters"></div>
+        <div class="form-row"><label>Confirm</label><input type="password" id="mgrConfirmPwd"></div>
+        <div class="form-actions"><button class="btn-primary" id="mgrChangePwdBtn">Change Password</button></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── MODALS ── -->
+
+  <div class="modal-overlay" id="addUserModal" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="addUserModalTitle">Add User</h2>
+        <button class="modal-close" data-close="addUserModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row"><label>Full Name</label><input type="text" id="newUserName"></div>
+        <div class="form-row"><label>Email</label><input type="email" id="newUserEmail"></div>
+        <div class="form-row"><label>Temporary Password</label><input type="text" id="newUserPassword" placeholder="They will change it on first login"></div>
+        <div class="form-row" id="stationSelectRow" style="display:none;">
+          <label>Assign to Station</label>
+          <select id="newUserStation"></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" data-close="addUserModal">Cancel</button>
+        <button class="btn-primary" id="confirmAddUserBtn">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="editUserModal" style="display:none;">
+    <div class="modal">
+      <div class="modal-header"><h2>Edit Account</h2><button class="modal-close" data-close="editUserModal">×</button></div>
+      <div class="modal-body">
+        <div class="form-row"><label>Full Name</label><input type="text" id="editUserName"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" data-close="editUserModal">Cancel</button>
+        <button class="btn-primary" id="confirmEditUserBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="resetPwdModal" style="display:none;">
+    <div class="modal">
+      <div class="modal-header"><h2>Reset Password</h2><button class="modal-close" data-close="resetPwdModal">×</button></div>
+      <div class="modal-body">
+        <p class="modal-hint" id="resetPwdHint"></p>
+        <div class="form-row"><label>New Temporary Password</label><input type="text" id="resetPwdInput" placeholder="Min. 8 characters"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" data-close="resetPwdModal">Cancel</button>
+        <button class="btn-primary" id="confirmResetPwdBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="credentialModal" style="display:none;">
+    <div class="modal modal-sm">
+      <div class="modal-header"><h2>Account Created</h2></div>
+      <div class="modal-body">
+        <p class="modal-hint">Share these credentials. The user must change their password on first login.</p>
+        <div class="cred-row"><span class="cred-label">Email</span><code id="credEmail">—</code></div>
+        <div class="cred-row"><span class="cred-label">Password</span><code id="credPassword">—</code></div>
+      </div>
+      <div class="modal-footer"><button class="btn-primary" id="credDoneBtn">Done</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirmDeleteModal" style="display:none;">
+    <div class="modal modal-sm">
+      <div class="modal-header"><h2>Confirm Delete</h2><button class="modal-close" data-close="confirmDeleteModal">×</button></div>
+      <div class="modal-body"><p class="modal-hint" id="confirmDeleteMsg">Are you sure?</p></div>
+      <div class="modal-footer">
+        <button class="btn-ghost" data-close="confirmDeleteModal">Cancel</button>
+        <button class="btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/utils/config.js"></script>
+  <script src="/utils/auth.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
