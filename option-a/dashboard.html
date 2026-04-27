@@ -208,7 +208,10 @@
             <div class="loaded-date" id="loadedDate">Loading most recent…</div>
             <div class="main-bar-actions">
               <span class="done-pill" id="donePill"></span>
-              <button class="action-btn btn-download-main" onclick="this.disabled=true; download().finally(()=>this.disabled=false)">⬇ Download PDF</button>
+              <button class="action-btn btn-sit-edit"   id="sitEditBtn"   style="display:none;" onclick="window._sit.enterEditMode()">✏ Edit</button>
+              <button class="action-btn btn-sit-cancel" id="sitCancelBtn" style="display:none;" onclick="window._sit.exitEditMode()">Cancel</button>
+              <button class="action-btn btn-sit-save"   id="sitSaveBtn"   style="display:none;" onclick="this.disabled=true; window._sit.saveEdit(this).finally(()=>this.disabled=false)">Save</button>
+              <button class="action-btn btn-download-main" id="sitDownloadBtn" onclick="this.disabled=true; window._sit.download().finally(()=>this.disabled=false)">⬇ Download PDF</button>
             </div>
           </div>
 
@@ -858,16 +861,32 @@
 
     <!-- ─────────────────────────────────────────────────────────────────────
          ACCOUNT  (manager only)
-         Password change only.
     ───────────────────────────────────────────────────────────────────────── -->
     <section id="section-account" class="section" style="display:none;" data-roles="manager">
       <div class="section-header">
         <h1 class="section-title">Account</h1>
       </div>
+
+      <div class="form-card" style="margin-bottom:16px;">
+        <h3 class="form-card-title">My Profile</h3>
+        <div class="form-row"><label>Name</label><span id="acct-name" class="form-val">—</span></div>
+        <div class="form-row"><label>Email</label><span id="acct-email" class="form-val">—</span></div>
+        <div class="form-row"><label>Role</label><span id="acct-role" class="form-val">—</span></div>
+      </div>
+
+      <div class="form-card" style="margin-bottom:16px;">
+        <h3 class="form-card-title">My Station</h3>
+        <div class="form-row"><label>Station</label><span id="acct-station" class="form-val">—</span></div>
+        <div class="form-row"><label>PMS Price</label><span id="acct-pms" class="form-val">—</span></div>
+        <div class="form-row"><label>AGO Price</label><span id="acct-ago" class="form-val">—</span></div>
+        <div class="form-row"><label>MoMo Fee</label><span id="acct-momo" class="form-val">—</span></div>
+      </div>
+
       <div class="form-card">
         <h3 class="form-card-title">Change My Password</h3>
+        <div class="form-row"><label>Current Password</label><input type="password" id="mgrCurrentPwd" placeholder="Enter current password"></div>
         <div class="form-row"><label>New Password</label><input type="password" id="mgrNewPwd" placeholder="Min. 8 characters"></div>
-        <div class="form-row"><label>Confirm</label><input type="password" id="mgrConfirmPwd"></div>
+        <div class="form-row"><label>Confirm</label><input type="password" id="mgrConfirmPwd" placeholder="Repeat new password"></div>
         <div class="form-actions"><button class="btn-primary" id="mgrChangePwdBtn">Change Password</button></div>
       </div>
     </section>
@@ -1033,7 +1052,6 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="/utils/config.js"></script>
