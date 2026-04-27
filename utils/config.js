@@ -1,18 +1,24 @@
 // ── SHARED APPWRITE CLIENT ────────────────────────────────────
-// Loaded once (after the Appwrite SDK, before any page script).
-// Every page script references window._AW instead of creating
-// its own client, so credentials live in exactly one place.
 (function () {
   const client = new Appwrite.Client()
     .setEndpoint("https://cloud.appwrite.io/v1")
-    .setProject("68a9b3e90029e6a10ff5");
+    .setProject("69de2ba3003855a6c17c");
+
+  const BASE = "/testing_projects";
 
   window._AW = {
     client,
     account:    new Appwrite.Account(client),
     db:         new Appwrite.Databases(client),
     teams:      new Appwrite.Teams(client),
-    DB_ID:      "695f766c003a8dc2b3be",
-    SERVER_URL: "https://testing-projects-4ttw.onrender.com/api",
+    SERVER_URL: "http://localhost:4000/api",
+    DB_ID:       "695f766c003a8dc2b3be",
+
+    SIGNIN_URL:            `${BASE}/auth/sign-in/sign-in`,
+    SIGNUP_URL:            `${BASE}/auth/sign-up/sign-up`,
+    FIRST_LOGIN_URL:       `${BASE}/auth/first-login/first-login`,
+    OWNER_DASHBOARD_URL:   `${BASE}/pages/owner/dashboard`,
+    MANAGER_DASHBOARD_URL: `${BASE}/pages/manager/dashboard`,
+    POMPISTE_URL:          `${BASE}/pages/pompiste/index`,
   };
 })();

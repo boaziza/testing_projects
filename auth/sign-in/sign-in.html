@@ -134,27 +134,31 @@
         const _mappedId = _employeeIdMap[email];
         if (_mappedId !== undefined) {
           try {
-            await _AW.db.createDocument(_AW.DB_ID, _collectionId, "unique()", {
-              employeeId:   parseInt(_mappedId),
-              emailAddress: email,
-              logDate:      new Date().toISOString(),
+            await fetch(`${_AW.SERVER_URL}/create/loginLogs`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                employeeId:   parseInt(_mappedId),
+                emailAddress: email,
+                logDate:      new Date().toISOString()
+              })
             });
           } catch { /* login-log failure is non-blocking */ }
         }
 
         const result     = await _AW.teams.list();
-        const isAdmin    = result.teams.some(t => t.name === "Admin");
-        const isEmployee = result.teams.some(t => t.name === "Employees");
-
+        const teamNames  = result.teams.map(t => t.name.toLowerCase());
+        const isAdmin    = teamNames.includes("admin") || teamNames.includes("owner");
+        const isManager  = teamNames.includes("manager") || teamNames.includes("managers");
+        
+        // Employees are typically those without admin/manager roles, or explicitly in an "employees" team
         if (isAdmin) {
           window.location.replace("../../pages/situation/situation");
-        } else if (isEmployee) {
+        } else if (isManager) {
+          window.location.replace("../../pages/manager/dashboard");
+        } else {
           sessionStorage.setItem("pompisteLoginTime", Date.now());
           window.location.replace("../../index");
-        } else {
-          await _AW.account.deleteSession("current");
-          toast("You do not have access to this application.", "error");
-          btn.disabled = false;
         }
       } catch (err) {
         toast("Signed in, but could not load your profile. Try refreshing.", "error");

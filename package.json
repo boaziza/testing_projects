@@ -1,7 +1,7 @@
 {
   "name": "mywebapp-backend",
   "version": "1.0.0",
-  "type": "module",
+  "type": "commonjs",
   "main": "utils/server.js",
   "scripts": {
     "start": "node utils/server.js",
