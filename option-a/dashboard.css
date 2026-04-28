@@ -1064,7 +1064,6 @@ tbody tr:hover td { background: var(--rp-surface-off); }
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   align-self: start;
   position: sticky;
-  top: 97px;
 }
 
 .section-report .rep-brand { padding-bottom: 12px; border-bottom: 1px solid var(--rp-border); }
@@ -1199,6 +1198,16 @@ tbody tr:hover td { background: var(--rp-surface-off); }
   border-radius: 8px; border: 1px solid var(--rp-border);
 }
 #rep-pageNumber { font-size: 12px; color: var(--rp-muted); font-weight: 600; }
+#rep-prevPage, #rep-nextPage {
+  padding: 6px 14px; font-size: 12px; font-weight: 600; font-family: inherit;
+  background: var(--rp-surface); border: 1.5px solid var(--rp-border);
+  border-radius: var(--rp-r); color: var(--rp-navy); cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+#rep-prevPage:hover:not(:disabled), #rep-nextPage:hover:not(:disabled) {
+  background: var(--rp-navy); color: #fff; border-color: var(--rp-navy);
+}
+#rep-prevPage:disabled, #rep-nextPage:disabled { opacity: .35; cursor: not-allowed; }
 
 .section-report input[type="date"] {
   padding: 5px 8px; border: 1.5px solid var(--rp-border); border-radius: 5px;

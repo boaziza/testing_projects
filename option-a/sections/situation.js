@@ -1,7 +1,5 @@
 (function () {
 
-  const SIT_ID   = "68cd6b7f00330a840d96";
-  const STOCK_ID = "6908ab260012e0412ca8";
 
   let calMonth   = { year: new Date().getFullYear(), month: new Date().getMonth() + 1 };
   let activeDate = null;
