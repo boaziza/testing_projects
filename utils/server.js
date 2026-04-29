@@ -24,6 +24,7 @@ app.use('/api/customers',         require('./routes/customers'));
 app.use('/api/station-managers',  require('./routes/stationManagers'));
 app.use('/api/fuel-prices',       require('./routes/fuelPriceHistory'));
 app.use('/api/teams',             require('./routes/authAppwrite/teams'));
+app.use('/api/accounts',          require('./routes/authAppwrite/accounts'));
 
 app.get('/health', (_, res) => res.json({ ok: true }));
 

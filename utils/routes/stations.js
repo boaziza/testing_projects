@@ -3,7 +3,7 @@ const router = express.Router();
 const {db, ID, Query} = require('../appwrite');
 const { verifyJWT, requireRole } = require('../middleware/auth');
 
-const COLLECTION_STATIONS_ID = process.env.APPWRITE_STATION_ID;
+const COLLECTION_STATIONS_ID = process.env.APPWRITE_STATIONS_ID;
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID;
 
 /**
@@ -36,22 +36,21 @@ router.post('/', verifyJWT, requireRole(['owner']), async (req, res) => {
  * GET /station
  * Returns the station details for the logged-in owner.
  */
-router.get('/', verifyJWT, requireRole(['owner']), async (req, res) => {
+router.get('/', verifyJWT, requireRole(['owner', 'manager']), async (req, res) => {
   try {
-    const name = req.user.name;
-    if (!name) {
-      return res.status(404).json({ error: "No station associated with this name." });
+    const { role, stationId, companyId } = req.user;
+
+    if (role === 'manager') {
+      if (!stationId) return res.status(404).json({ error: "No station associated with this account." });
+      const station = await db.getDocument(DATABASE_ID, COLLECTION_STATIONS_ID, stationId);
+      return res.json({ stations: [station] });
     }
 
-    const station = await db.listDocuments(
-        DATABASE_ID, 
-        COLLECTION_STATIONS_ID, 
-        [
-            Query.equal('name', name) // The search filter
-        ]
-    );
-
-    res.json({ station });
+    // owner — list all stations for their company
+    const queries = [Query.limit(100)];
+    if (companyId) queries.push(Query.equal('company', companyId));
+    const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_STATIONS_ID, queries);
+    res.json({ stations: documents, total });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

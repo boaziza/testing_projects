@@ -69,10 +69,13 @@
   }
 
   async function loadTeams() {
+    const { apiFetch } = window._dash;
     const listEl = document.getElementById("teamsList");
     listEl.innerHTML = `<div class="loading">Loading...</div>`;
     try {
-      const res  = await fetch(`${_AW.SERVER_URL}/teams`);
+      // const res  = await fetch(`${_AW.SERVER_URL}/teams`);
+      const res = await apiFetch(`/teams`);
+      // const data = await res.json();
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       if (data.teams.length === 0) { listEl.innerHTML = `<div class="loading">No teams yet. Create one below.</div>`; return; }
@@ -113,10 +116,11 @@
   }
 
   async function loadTeamMembers(teamId) {
+    const { apiFetch } = window._dash;
     const el = document.getElementById(`members-${teamId}`);
     if (!el) return;
     try {
-      const res  = await fetch(`${_AW.SERVER_URL}/teams/${encodeURIComponent(teamId)}/members`);
+      const res = await apiFetch(`/teams/${teamId}/members`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       if (data.memberships.length === 0) { el.innerHTML = `<div class="loading">No members yet.</div>`; return; }

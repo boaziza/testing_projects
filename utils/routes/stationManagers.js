@@ -3,7 +3,7 @@ const router = express.Router();
 const {db, ID, Query} = require('../appwrite');
 const { verifyJWT, requireRole } = require('../middleware/auth');
 
-const COLLECTION_STATION_MANAGERS = process.env.APPWRITE_STATION_MANAGERS;
+const COLLECTION_STATION_MANAGERS = process.env.APPWRITE_STATION_MANAGERS_ID;
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID;
 
 /**
@@ -38,20 +38,12 @@ router.post('/', verifyJWT, requireRole(['owner']), async (req, res) => {
  */
 router.get('/', verifyJWT, requireRole(['owner']), async (req, res) => {
   try {
-    const userId = req.query.userId;
-    if (!userId) {
-      return res.status(404).json({ error: "No station manager associated with this account." });
-    }
+    const { limit = 100, offset = 0 } = req.query;
+    const queries = [Query.limit(Number(limit)), Query.offset(Number(offset))];
+    if (req.user.companyId) queries.push(Query.equal('companyId', req.user.companyId));
 
-    const stationManager = await db.listDocuments(
-        DATABASE_ID, 
-        COLLECTION_STATION_MANAGERS, 
-        [
-            Query.equal('userId', userId) // The search filter
-        ]
-    );
-
-    res.json({ stationManager });
+    const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_STATION_MANAGERS, queries);
+    res.json({ managers: documents, total });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

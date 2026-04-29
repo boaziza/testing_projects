@@ -64,12 +64,11 @@ router.get('/me', verifyJWT, requireRole(['owner','manager','pompiste']), async 
  */
 router.get('/', verifyJWT, requireRole(['owner','manager','pompiste']), async (req, res) => {
   try {
-    // const { search, limit = 25, offset = 0 } = req.query;
+    const { limit = 100, offset = 0, monthYear } = req.query;
+    const queries = [Query.limit(Number(limit)), Query.offset(Number(offset)), Query.orderDesc('monthYear')];
+    if (monthYear) queries.push(Query.equal('monthYear', monthYear));
 
-    // const queries = [Query.limit(Number(limit)), Query.offset(Number(offset))];
-    // if (search) queries.push(Query.search('name', search));
-
-    const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_GAIN_ID);
+    const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_GAIN_ID, queries);
     res.json({ gains: documents, total });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -38,20 +38,13 @@ router.post('/', verifyJWT, requireRole(['owner']), async (req, res) => {
  */
 router.get('/', verifyJWT, requireRole(['owner']), async (req, res) => {
   try {
-    const ownerId = req.query.ownerId;
-    if (!ownerId) {
+    const companyId = req.user.companyId;
+    if (!companyId) {
       return res.status(404).json({ error: "No company associated with this account." });
     }
 
-    const company = await db.listDocuments(
-        DATABASE_ID, 
-        COLLECTION_COMPANIES_ID, 
-        [
-            Query.equal('ownerId', ownerId) // The search filter
-        ]
-    );
-
-    res.json({ company });
+    const company = await db.getDocument(DATABASE_ID, COLLECTION_COMPANIES_ID, companyId);
+    res.json({ companies: [company], total: 1 });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

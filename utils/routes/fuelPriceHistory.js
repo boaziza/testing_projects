@@ -37,19 +37,19 @@ router.post('/', verifyJWT, requireRole(['owner','manager']), async (req, res) =
  * GET /fuel-price-history
  * Returns the fuel price history details for the logged-in user.
  */
-router.get('/me', verifyJWT, requireRole(['owner','manager']), async (req, res) => {
+router.get('/me', verifyJWT, requireRole(['owner','manager','pompiste']), async (req, res) => {
   try {
-    const stationId = req.query.stationId;
+    const stationId = req.user.stationId;
     if (!stationId) {
       return res.status(404).json({ error: "No station ID associated with this account." });
     }
 
     const fuelPriceHistory = await db.listDocuments(
-        DATABASE_ID,
-        COLLECTION_FUEL_PRICE_HISTORY_ID,
-        [
-            Query.equal('stationId', stationId) // The search filter
-        ]
+      DATABASE_ID,
+      COLLECTION_FUEL_PRICE_HISTORY_ID,
+      [
+        Query.equal('stationId', stationId) // The search filter
+      ]
     );
     res.json({ fuelPriceHistory });
   } catch (error) {

@@ -244,23 +244,23 @@
 
     if (_state.role === "owner") {
       const [compRes, stRes, mgrRes, pmpRes] = await Promise.all([
-        apiFetch("/company"),
+        apiFetch("/companies"),
         apiFetch("/stations"),
-        apiFetch("/managers"),
-        apiFetch("/pompistes"),
+        apiFetch("/station-managers"),
+        apiFetch("/users"),
       ]);
-      if (compRes.ok) { const d = await compRes.json(); _state.company   = d.company; }
+      if (compRes.ok) { const d = await compRes.json(); _state.company   = (d.companies || [])[0] || null; }
       if (stRes.ok)   { const d = await stRes.json();   _state.stations  = d.stations  || []; }
       if (mgrRes.ok)  { const d = await mgrRes.json();  _state.managers  = d.managers  || []; }
-      if (pmpRes.ok)  { const d = await pmpRes.json();  _state.pompistes = d.pompistes || []; }
+      if (pmpRes.ok)  { const d = await pmpRes.json();  _state.pompistes = (d.users || []).filter(u => u.role === "pompiste"); }
       document.getElementById("userContext").textContent = _state.company?.name || "—";
     } else {
       const [stRes, pmpRes] = await Promise.all([
         apiFetch("/stations"),
-        apiFetch("/pompistes"),
+        apiFetch("/users"),
       ]);
       if (stRes.ok)  { const d = await stRes.json();  _state.station   = (d.stations || []).find(s => s.$id === _state.profile.stationId) || null; }
-      if (pmpRes.ok) { const d = await pmpRes.json(); _state.pompistes = d.pompistes || []; }
+      if (pmpRes.ok) { const d = await pmpRes.json(); _state.pompistes = (d.users || []).filter(u => u.role === "pompiste"); }
       document.getElementById("userContext").textContent = _state.station?.name || "No station assigned";
     }
 
