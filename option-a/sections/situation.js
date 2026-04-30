@@ -358,11 +358,10 @@
     const done   = doneEl?.tagName === "INPUT" ? doneEl.checked : !!_activeSitDoc.done;
 
     try {
-      const res = await apiFetch("/situation", {
+      const res = await apiFetch(`/situation/${_activeSitDoc.$id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          $Id: _activeSitDoc.$id,
           pms1, pms2, pms3, pms4,
           ago1, ago2, ago3, ago4,
           pmsPrice, agoPrice,
