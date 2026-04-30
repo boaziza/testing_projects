@@ -13,13 +13,16 @@
     (async () => {
       try {
         const jwt = (await _AW.account.createJWT()).jwt;
-        const res = await fetch(`${_AW.SERVER_URL}/auth/me`, { headers: { Authorization: `Bearer ${jwt}` } });
+        const res = await fetch(`${_AW.SERVER_URL}/user/me`);
         if (!res.ok) throw new Error();
         const { user } = await res.json();
-        if (user.mustChangePassword)  return location.replace(_AW.FIRST_LOGIN_URL);
-        if (user.role === "owner")     return location.replace(_AW.OWNER_DASHBOARD_URL);
-        if (user.role === "manager")   return location.replace(_AW.MANAGER_DASHBOARD_URL);
+        const doc = user.documents?.[0];
+        if (!doc) throw new Error();
+        if (doc.mustChangePassword)  return location.replace(_AW.FIRST_LOGIN_URL);
+        if (doc.role === "owner")    return location.replace(_AW.OWNER_DASHBOARD_URL);
+        if (doc.role === "manager")  return location.replace(_AW.MANAGER_DASHBOARD_URL);
         location.replace(_AW.POMPISTE_URL);
+
       } catch {
         location.replace(_AW.SIGNIN_URL);
       }

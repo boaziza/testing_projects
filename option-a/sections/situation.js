@@ -358,7 +358,7 @@
     const done   = doneEl?.tagName === "INPUT" ? doneEl.checked : !!_activeSitDoc.done;
 
     try {
-      const res = await fetch("/situation", {
+      const res = await apiFetch("/situation", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

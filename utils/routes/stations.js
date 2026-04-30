@@ -61,9 +61,10 @@ router.get('/', verifyJWT, requireRole(['owner', 'manager']), async (req, res) =
  * PATCH /station
  * Updates station information (e.g., name).
  */
-router.patch('/', verifyJWT, requireRole(['owner']), async (req, res) => {
+router.patch('/:id', verifyJWT, requireRole(['owner']), async (req, res) => {
   try {
-    const { $Id, ...body } = req.body;
+    const id = req.params.id;
+    const body = req.body
 
     if (!body) {
       return res.status(400).json({ error: "Station body is required." });
@@ -72,7 +73,7 @@ router.patch('/', verifyJWT, requireRole(['owner']), async (req, res) => {
     const updatedStation = await db.updateDocument(
       DATABASE_ID,
       COLLECTION_STATIONS_ID,
-      $Id,
+      id,
       body
     );
 
@@ -89,7 +90,7 @@ router.patch('/', verifyJWT, requireRole(['owner']), async (req, res) => {
  */
 router.delete('/:id', verifyJWT, requireRole(['owner']), async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id;
 
     if (!id) {
       return res.status(400).json({ error: "Station ID is required." });

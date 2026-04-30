@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="dashboard.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231b263b'/><text x='16' y='23' text-anchor='middle' font-family='Arial' font-weight='900' font-size='16' fill='white'>RP</text></svg>">
 </head>
-<body>
+<body style="visibility:hidden;">
 
   <!-- ── SIDEBAR ── -->
   <aside class="sidebar" id="sidebar">
@@ -53,12 +53,6 @@
       <a href="#" class="nav-item" data-section="stock" data-roles="manager">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
         Stock
-      </a>
-
-      <!-- history: owner only — manager view deferred to pompiste page -->
-      <a href="#" class="nav-item" data-section="history" data-roles="owner">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18M3 9h18M3 15h18M3 21h18"/></svg>
-        History
       </a>
 
       <a href="#" class="nav-item" data-section="report" data-roles="owner,manager">
@@ -498,28 +492,6 @@
     </section>
 
     <!-- ─────────────────────────────────────────────────────────────────────
-         HISTORY  (owner + manager)
-         Browse past shift entries.
-         Owner sees all stations; manager is scoped to their station.
-    ───────────────────────────────────────────────────────────────────────── -->
-    <section id="section-history" class="section section-history" style="display:none;" data-roles="owner">
-      <div class="history-card">
-        <div class="history-card-title">My Shifts</div>
-        <p class="history-hint">Your last 50 recorded shifts, most recent first.</p>
-        <div class="history-table-wrap">
-          <div class="history-thead">
-            <span>Date</span>
-            <span>Shift</span>
-            <span class="align-right">Total Vente</span>
-            <span class="align-right">Total Payments</span>
-            <span class="align-right">Gain / Loss</span>
-          </div>
-          <div id="historyList"><div class="history-empty">Loading…</div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────────────────────────────────────────────────────
          REPORT  (owner + manager)
          Full data table with collection selector, date filters, export.
          Owner can query any station; manager is scoped to their station.
@@ -577,47 +549,6 @@
               </div>
             </div>
           </section>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────────────────────────────────────────────────────
-         EMPLOYEE LOGS  (manager only)
-         Review individual shift detail logs for pompistes at this station.
-    ───────────────────────────────────────────────────────────────────────── -->
-    <section id="section-logs" class="section" style="display:none;" data-roles="manager">
-
-      <div class="logs-main">
-        <div class="logs-toolbar">
-          <div class="toolbar-left">
-            <span class="log-count" id="logCount">— entries</span>
-            <span class="refresh-status" id="refreshStatus">Refreshing every 5s</span>
-          </div>
-          <div class="toolbar-right">
-            <div class="filter-group" role="group" aria-label="Filter by level">
-              <button class="filter-btn active" data-level="ALL">All</button>
-              <button class="filter-btn info"   data-level="INFO">Info</button>
-              <button class="filter-btn warn"   data-level="WARN">Warn</button>
-              <button class="filter-btn error"  data-level="ERROR">Error</button>
-            </div>
-            <button class="btn-primary" id="refreshBtn" onclick="fetchLogs()">↺ Refresh</button>
-          </div>
-        </div>
-
-        <div class="logs-table-wrap" id="logsTableWrap">
-          <div class="logs-loading" id="logsLoading">Loading logs…</div>
-          <table class="logs-table" id="logsTable" style="display:none;">
-            <thead>
-              <tr>
-                <th class="col-ts">Timestamp</th>
-                <th class="col-level">Level</th>
-                <th class="col-msg">Message</th>
-                <th class="col-ctx">Context</th>
-              </tr>
-            </thead>
-            <tbody id="logsBody"></tbody>
-          </table>
-          <div class="logs-empty" id="logsEmpty" style="display:none;">No log entries match the current filter.</div>
         </div>
       </div>
     </section>

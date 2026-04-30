@@ -12,17 +12,24 @@ const DATABASE_ID = process.env.APPWRITE_DATABASE_ID;
  */
 router.post('/', verifyJWT, requireRole(['owner','manager','pompiste']), async (req, res) => {
   try {
-    const body = req.body;
+    // const body = req.body;
 
-    if (!body){
-     return res.status(400).json({ error: "Loan body is required." });
-    }
+    // if (!body){
+    //  return res.status(400).json({ error: "Loan body is required." });
+    // }
 
-    const newLoan = await db.createDocument(
-      DATABASE_ID,
-      COLLECTION_LOANS_ID,
-      ID.unique(),
-      body
+    // const newLoan = await db.createDocument(
+    //   DATABASE_ID,
+    //   COLLECTION_LOANS_ID,
+    //   ID.unique(),
+    //   body
+    // );
+
+    const items = Array.isArray(req.body) ? req.body : [req.body];
+    if (items.length === 0) return res.status(400).json({ error: "Fiche body is required." });
+
+    const results = await Promise.all(
+      items.map(item => db.createDocument(DATABASE_ID, COLLECTION_LOANS_ID, ID.unique(), item))
     );
 
     res.json({ message: "Loan created successfully", loan: newLoan });

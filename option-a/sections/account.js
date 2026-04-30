@@ -16,16 +16,26 @@
     set("acct-station", station?.name);
 
     try {
-      const settRes = await _AW.db.listDocuments(_AW.DB_ID, SETTINGS_ID);
-      if (settRes.documents.length > 0) {
-        const doc = settRes.documents[0];
-        set("acct-pms",  doc.pmsPrice       != null ? Number(doc.pmsPrice).toLocaleString()  + " RWF/L" : "—");
-        set("acct-ago",  doc.agoPrice        != null ? Number(doc.agoPrice).toLocaleString()  + " RWF/L" : "—");
-        set("acct-momo", doc.momoFeePercent  != null ? doc.momoFeePercent + "%" : "—");
-      }
-    } catch {}
-  };
+      // const settRes = await _AW.db.listDocuments(_AW.DB_ID, SETTINGS_ID);
+      const stationRes = await apiFetch(`/stations/`).then(res => res.json());
+      const stationDocs = stationRes.stations?.documents ?? stationRes.stations ?? [];
 
+      const fuelPrices = await apiFetch(`/fuel-prices/me`).then(res => res.json());
+      const priceDocs = fuelPrices.fuelPriceHistory?.documents ?? fuelPrices.fuelPriceHistory ?? [];
+
+      const sorted     = [...priceDocs].sort((a, b) => (b.effectiveFrom || "").localeCompare(a.effectiveFrom || ""));
+      const pmsPriceDoc = sorted.find(p => p.fuelType === "PMS");
+      const agoPriceDoc = sorted.find(p => p.fuelType === "AGO");
+
+      const stationDoc = stationDocs[0];
+
+      set("acct-pms",  pmsPriceDoc?.price != null ? Number(pmsPriceDoc.price).toLocaleString()  + " RWF/L" : "—");
+      set("acct-ago",  agoPriceDoc?.price != null ? Number(agoPriceDoc.price).toLocaleString()  + " RWF/L" : "—");
+      set("acct-momo", stationDoc?.momoFee   != null ? stationDoc.momoFee + "%" : "—");
+    } catch {
+
+    };
+  };
   // ── Password change ────────────────────────────────────────────────────────
   async function changePwd() {
     const { toast } = window._dash;

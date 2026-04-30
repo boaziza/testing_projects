@@ -3,6 +3,9 @@
   const settingsId = "69d3ed400021197ed76e";
   const _statusTimers = new WeakMap();
 
+  const { apiFetch, state } = window._dash;
+  
+
   function showStatus(el, msg, type) {
     if (!el) return;
     if (_statusTimers.has(el)) clearTimeout(_statusTimers.get(el));
@@ -23,17 +26,29 @@
 
   async function loadFuelSettings() {
     try {
-      const res = await _AW.db.listDocuments(_AW.DB_ID, settingsId);
-      if (res.documents.length > 0) {
-        const doc = res.documents[0];
+      const stationRes = await apiFetch(`/stations`).then(res => res.json());
+      const stationDocs = stationRes.stations?.documents ?? stationRes.stations ?? [];
+
+      const fuelPrices = await apiFetch(`/fuel-prices/me`).then(res => res.json());
+      const priceDocs = fuelPrices.fuelPriceHistory?.documents ?? fuelPrices.fuelPriceHistory ?? [];
+
+      const sorted     = [...priceDocs].sort((a, b) => (b.effectiveFrom || "").localeCompare(a.effectiveFrom || ""));
+      const pmsPriceDoc = sorted.find(p => p.fuelType === "PMS");
+      const agoPriceDoc = sorted.find(p => p.fuelType === "AGO");
+
+      const stationDoc = stationDocs[0];
+
+      if (pmsPriceDoc || agoPriceDoc) {
         const pmsEl = document.getElementById("pmsPriceInput");
-        if (pmsEl) pmsEl.value = doc.pmsPrice ?? "";
+        if (pmsEl) pmsEl.value = pmsPriceDoc?.price ?? "";
         const agoEl = document.getElementById("agoPriceInput");
-        if (agoEl) agoEl.value = doc.agoPrice ?? "";
+        if (agoEl) agoEl.value = agoPriceDoc?.price ?? "";
+      }
+      if (stationDoc) {
         const stationEl = document.getElementById("stationName");
-        if (stationEl) stationEl.value = doc.stationName ?? "";
+        if (stationEl) stationEl.value = stationDoc.name ?? "";
         const momoEl = document.getElementById("momoFeeInput");
-        if (momoEl) momoEl.value = doc.momoFeePercent ?? "";
+        if (momoEl) momoEl.value = stationDoc.momoFee ?? "";
       }
     } catch (err) { console.error("Could not load settings:", err); }
   }
@@ -44,6 +59,10 @@
   }
 
   async function saveFuelPrices() {
+    const profile = state.profile;;
+    console.log(profile.name);
+    const stationId = profile.stationId;
+    const userId = profile.userId;
     const pmsEl = document.getElementById("pmsPriceInput");
     const agoEl = document.getElementById("agoPriceInput");
     const stationEl = document.getElementById("stationName");
@@ -56,11 +75,94 @@
     if (!pmsPrice || !agoPrice) { showStatus(statusEl, "Both fuel prices are required.", "error"); return; }
     if (isNaN(momoFeePercent) || momoFeePercent < 0) { showStatus(statusEl, "Enter a valid MoMo fee percentage.", "error"); return; }
     try {
-      const res = await _AW.db.listDocuments(_AW.DB_ID, settingsId);
-      if (res.documents.length === 0) {
-        await _AW.db.createDocument(_AW.DB_ID, settingsId, "unique()", { pmsPrice, agoPrice, stationName, momoFeePercent });
-      } else {
-        await _AW.db.updateDocument(_AW.DB_ID, settingsId, res.documents[0].$id, { pmsPrice, agoPrice, stationName, momoFeePercent });
+
+      // const res = await _AW.db.listDocuments(_AW.DB_ID, settingsId);
+
+      await apiFetch(`/stations/${stationId}`,{
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: stationName, momoFee: momoFeePercent })
+      });      
+
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString('en-CA');
+      console.log(formattedDate);
+
+      const fuelPrices = await apiFetch(`/fuel-prices/me`).then(res => res.json());
+      const priceDocs = fuelPrices.fuelPriceHistory?.documents ?? fuelPrices.fuelPriceHistory ?? [];
+
+      const sorted     = [...priceDocs].sort((a, b) => (b.effectiveFrom || "").localeCompare(a.effectiveFrom || ""));
+      const pmsPriceDoc = sorted.find(p => p.fuelType === "PMS");
+      const agoPriceDoc = sorted.find(p => p.fuelType === "AGO");
+
+      if (sorted.length < 2) {
+        // await _AW.db.createDocument(_AW.DB_ID, settingsId, "unique()", { pmsPrice, agoPrice });
+
+        await apiFetch(`/fuel-prices`,{
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stationId, effectiveFrom: formattedDate, fuelType: "PMS", price: pmsPrice, setByUserId: userId })
+        });
+
+        await apiFetch(`/fuel-prices`,{
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stationId, effectiveFrom: formattedDate, fuelType: "AGO", price: agoPrice, setByUserId: userId })
+        });
+
+      } else if ( pmsPriceDoc.price !== pmsPrice && agoPriceDoc.price !== agoPrice){
+
+        await apiFetch(`/fuel-prices/${pmsPriceDoc.$id}`,{
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ effectiveTo: formattedDate })
+        });
+
+        await apiFetch(`/fuel-prices`,{
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stationId, effectiveFrom: formattedDate, fuelType: "PMS", price: pmsPrice, setByUserId: userId })
+        });
+
+        await apiFetch(`/fuel-prices/${agoPriceDoc.$id}`,{
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({  effectiveTo: formattedDate})
+        });
+
+        await apiFetch(`/fuel-prices`,{
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stationId, effectiveFrom: formattedDate, fuelType: "AGO", price: agoPrice, setByUserId: userId })
+        });
+
+      } else if (pmsPriceDoc.price !== pmsPrice ) {
+        // await _AW.db.updateDocument(_AW.DB_ID, settingsId, res.documents[0].$id, { pmsPrice, agoPrice, stationName, momoFeePercent });
+        await apiFetch(`/fuel-prices/${pmsPriceDoc.$id}`,{
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ effectiveTo: formattedDate })
+        });
+
+        await apiFetch(`/fuel-prices`,{
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stationId, effectiveFrom: formattedDate, fuelType: "PMS", price: pmsPrice, setByUserId: userId })
+        });
+
+      } else if (agoPriceDoc.price !== agoPrice ) {
+
+        await apiFetch(`/fuel-prices/${agoPriceDoc.$id}`,{
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({  effectiveTo: formattedDate})
+        });
+
+        await apiFetch(`/fuel-prices`,{
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stationId, effectiveFrom: formattedDate, fuelType: "AGO", price: agoPrice, setByUserId: userId })
+        });
       }
       showStatus(statusEl, "✓ Settings saved successfully.", "success");
     } catch (err) {
@@ -150,7 +252,8 @@
     const name = nameEl?.value.trim();
     btn.disabled = true;
     try {
-      const res = await fetch(`${_AW.SERVER_URL}/teams`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name }) });
+      // const res = await fetch(`${_AW.SERVER_URL}/teams`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name }) });
+      const res = await apiFetch(`/teams`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       if (nameEl) nameEl.value = "";
@@ -176,7 +279,7 @@
     if (!_pendingDeleteTeamId) return;
     const teamId = _pendingDeleteTeamId; _pendingDeleteTeamId = null; btn.disabled = true;
     try {
-      const res = await fetch(`${_AW.SERVER_URL}/teams/${encodeURIComponent(teamId)}`, { method:"DELETE" });
+      const res = await apiFetch(`/teams/${teamId}`, { method:"DELETE" });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
       document.getElementById(`team-${teamId}`)?.remove();
       const listEl = document.getElementById("teamsList");
@@ -210,7 +313,7 @@
     const statusEl = document.getElementById(`teamStatus-${teamId}`);
     if (btn) btn.disabled = true;
     try {
-      const res = await fetch(`${_AW.SERVER_URL}/teams/${encodeURIComponent(teamId)}/members`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ email }) });
+      const res = await apiFetch(`/teams/${teamId}/members`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ email }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       const inputEl = document.getElementById(`memberEmail-${teamId}`);
@@ -235,7 +338,7 @@
     if (!_pendingRemoveMember) return;
     const { teamId, membershipId } = _pendingRemoveMember; _pendingRemoveMember = null; btn.disabled = true;
     try {
-      const res = await fetch(`${_AW.SERVER_URL}/teams/${encodeURIComponent(teamId)}/members/${encodeURIComponent(membershipId)}`, { method:"DELETE" });
+      const res = await apiFetch(`/teams/${teamId}/members/${membershipId}`, { method:"DELETE" });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
       document.getElementById(`membership-${membershipId}`)?.remove();
       const membersEl = document.getElementById(`members-${teamId}`);
@@ -272,7 +375,11 @@
     const statusEl = document.getElementById("empStatus");
     btn.disabled = true;
     try {
-      const res = await fetch(`${_AW.SERVER_URL}/create-employee`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name, email, password }) });
+      const res = await apiFetch(`/accounts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role: "pompiste" }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to create employee");
       if (nameEl) nameEl.value = "";
@@ -294,29 +401,34 @@
     if (hintEl) hintEl.textContent = monthLabel;
     try {
       const [usersRes, gainRes] = await Promise.all([
-        fetch(`${_AW.SERVER_URL}/users`),
-        fetch(`${_AW.SERVER_URL}/documents/gainPompiste`),
+        apiFetch(`/users`),
+        apiFetch(`/gain-pompiste?monthYear=${monthYear}`),
       ]);
       const usersData = await usersRes.json();
       const gainData  = await gainRes.json();
       if (!usersRes.ok) throw new Error(usersData.error);
+
       const gainMap = {};
-      if (gainData.documents) gainData.documents.filter(d => d.monthYear === monthYear).forEach(d => { gainMap[d.email] = d.gainPayments ?? 0; });
+      if (gainData.gains) {
+        gainData.gains.forEach(d => { gainMap[d.email] = d.gainPayments ?? 0; });
+      }
+
       if (usersData.users.length === 0) { listEl.innerHTML = `<div class="loading">No accounts found.</div>`; return; }
       listEl.innerHTML = usersData.users.map(u => {
-        const station  = u.prefs?.station || "";
         const hasGain  = u.email in gainMap;
         const gain     = gainMap[u.email] ?? 0;
         const gainHtml = hasGain
           ? `<span class="emp-gain ${gain >= 0 ? "gain-pos" : "gain-neg"}">${gain >= 0 ? "+" : ""}${gain.toLocaleString()} RWF</span>`
           : `<span class="emp-gain emp-gain-none">No shifts</span>`;
-        const safeName = (u.name || "").replace(/'/g, "\\'");
+        const station    = u.stationId || "";
+        const safeName   = (u.name || "").replace(/'/g, "\\'");
+        const safeStation = station.replace(/'/g, "\\'");
         return `<div class="admin-row">
           <span class="admin-email">${u.name || "—"}</span>
           <span class="admin-role">${u.email}</span>
           ${station ? `<span class="emp-station">${station}</span>` : ""}
           ${gainHtml}
-          <button class="btn-edit btn-primary" onclick="window._set.openEditEmployee('${u.$id}', '${safeName}', '${station.replace(/'/g, "\\'")}')">Edit</button>
+          <button class="btn-edit btn-primary" onclick="window._set.openEditEmployee('${u.$id}', '${safeName}', '${safeStation}')">Edit</button>
           <button class="btn-reset-pwd" onclick="window._set.promptResetPassword('${u.$id}', '${safeName}')">Reset Pwd</button>
         </div>`;
       }).join("");
@@ -340,9 +452,15 @@
     const stationEl = document.getElementById("editEmpStation");
     const name = nameEl?.value.trim();
     const station = stationEl?.value.trim();
+    const userId = _setEditUserId;
     btn.disabled = true;
     try {
-      const res  = await fetch(`${_AW.SERVER_URL}/users/${encodeURIComponent(_setEditUserId)}`, { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name, prefs:{ station } }) });
+      // const res  = await fetch(`${_AW.SERVER_URL}/users/${encodeURIComponent(_setEditUserId)}`, { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name, prefs:{ station } }) });
+      const res = await apiFetch(`/users/${userId}`, {
+        method: "PATCH",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, stationId:  station  })
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       closeDialog("editEmployeePopup"); _setEditUserId = null; loadAllEmployees();
@@ -368,11 +486,15 @@
     if (!password || password.length < 8) { window._dash.toast("Password must be at least 8 characters.", "warning"); btn.disabled = false; return; }
     const userId = _setResetPwdUserId; _setResetPwdUserId = null;
     try {
-      const res  = await fetch(`${_AW.SERVER_URL}/users/${encodeURIComponent(userId)}/password`, { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ password }) });
+      const res = await apiFetch(`/accounts/${encodeURIComponent(userId)}/password`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       closeDialog("resetPasswordPopup");
-      window._dash.toast("Password reset successfully.", "success");
+      window._dash.toast("Password reset. User will be prompted to change it on next login.", "success");
     } catch (err) { window._dash.toast("Error: " + err.message, "error"); }
     finally { btn.disabled = false; }
   }

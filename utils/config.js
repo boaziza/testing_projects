@@ -1,7 +1,7 @@
 // ── SHARED APPWRITE CLIENT ────────────────────────────────────
 (function () {
   const client = new Appwrite.Client()
-    .setEndpoint("https://cloud.appwrite.io/v1")
+    .setEndpoint("https://fra.cloud.appwrite.io/v1")
     .setProject("69de2ba3003855a6c17c");
 
   const BASE = "/testing_projects";
@@ -17,8 +17,8 @@
     SIGNIN_URL:            `${BASE}/auth/sign-in/sign-in`,
     SIGNUP_URL:            `${BASE}/auth/sign-up/sign-up`,
     FIRST_LOGIN_URL:       `${BASE}/auth/first-login/first-login`,
-    OWNER_DASHBOARD_URL:   `${BASE}/pages/owner/dashboard`,
-    MANAGER_DASHBOARD_URL: `${BASE}/pages/manager/dashboard`,
-    POMPISTE_URL:          `${BASE}/pages/pompiste/index`,
+    OWNER_DASHBOARD_URL:   `${BASE}/option-a/dashboard`,
+    MANAGER_DASHBOARD_URL: `${BASE}/option-a/dashboard`,
+    POMPISTE_URL:          `${BASE}/root/index`,
   };
 })();

@@ -79,9 +79,10 @@ router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) =>
  * PATCH /fuel-price-history
  * Updates fuel price history information (e.g., name).
  */
-router.patch('/', verifyJWT, requireRole(['owner','manager']), async (req, res) => {
+router.patch('/:id', verifyJWT, requireRole(['owner','manager']), async (req, res) => {
   try {
-    const { $Id, ...body } = req.body;
+    const id = req.params.id;
+    const body = req.body;
 
     if (!body) {
       return res.status(400).json({ error: "Fuel price history body is required." });
@@ -90,7 +91,7 @@ router.patch('/', verifyJWT, requireRole(['owner','manager']), async (req, res) 
     const updatedFuelPriceHistory = await db.updateDocument(
       DATABASE_ID,
       COLLECTION_FUEL_PRICE_HISTORY_ID,
-      $Id,
+      id,
       body
     );
 
@@ -106,7 +107,7 @@ router.patch('/', verifyJWT, requireRole(['owner','manager']), async (req, res) 
  */
 router.delete('/:id',verifyJWT,requireRole(['owner','manager']), async (req, res) => {
     try {
-    const { id } = req.params;
+    const id = req.params.id;
 
         if (!id){
             return res.status(400).json({ error: "Fuel price history ID is required." });

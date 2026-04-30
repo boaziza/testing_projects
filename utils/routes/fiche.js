@@ -15,18 +15,25 @@ router.post('/', verifyJWT, requireRole(['owner','manager','pompiste']), async (
   try {
     const body = req.body;
 
-    if (!body){
-        return res.status(400).json({ error: "Fiche body is required." });
-    }
+    // if (!body){
+    //     return res.status(400).json({ error: "Fiche body is required." });
+    // }
 
-    const newFiche = await db.createDocument(
-      DATABASE_ID,
-      COLLECTION_FICHE_ID,
-      ID.unique(),
-      body
+    // const newFiche = await db.createDocument(
+    //   DATABASE_ID,
+    //   COLLECTION_FICHE_ID,
+    //   ID.unique(),
+    //   body
+    // );
+    
+    const items = Array.isArray(req.body) ? req.body : [req.body];
+    if (items.length === 0) return res.status(400).json({ error: "Fiche body is required." });
+
+    const results = await Promise.all(
+      items.map(item => db.createDocument(DATABASE_ID, COLLECTION_FICHE_ID, ID.unique(), item))
     );
 
-    res.json({ message: "Fiche created successfully", fiche: newFiche });
+    res.json({ message: "Fiche created successfully", fiche: results });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

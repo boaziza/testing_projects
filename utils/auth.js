@@ -38,18 +38,18 @@ function _cacheBust(endpoint) {
 // Wraps fetch() to the server URL and automatically includes the Appwrite JWT.
 window.apiFetch = async function apiFetch(endpoint, options = {}) {
   const method = (options.method || "GET").toUpperCase();
-  const isGet  = method === "GET";
+  // const isGet  = method === "GET";
 
   // Return cached response for GETs that haven't expired
-  if (isGet) {
-    const cached = _respCache.get(endpoint);
-    if (cached && Date.now() < cached.expiresAt) {
-      // Return a fake Response so callers can still do .json()
-      return new Response(JSON.stringify(cached.data), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
-    }
-  }
+  // if (isGet) {
+  //   const cached = _respCache.get(endpoint);
+  //   if (cached && Date.now() < cached.expiresAt) {
+  //     // Return a fake Response so callers can still do .json()
+  //     return new Response(JSON.stringify(cached.data), {
+  //       status: 200, headers: { "Content-Type": "application/json" },
+  //     });
+  //   }
+  // }
 
   const jwt = await _getJwt();
 
@@ -63,15 +63,15 @@ window.apiFetch = async function apiFetch(endpoint, options = {}) {
   const res  = await fetch(url, { ...options, headers });
 
   // Cache successful GET responses
-  if (isGet && res.ok) {
-    const clone = res.clone();
-    clone.json().then(data => {
-      _respCache.set(endpoint, { data, expiresAt: Date.now() + RESP_TTL });
-    }).catch(() => {});
-  }
+  // if (isGet && res.ok) {
+  //   const clone = res.clone();
+  //   clone.json().then(data => {
+  //     _respCache.set(endpoint, { data, expiresAt: Date.now() + RESP_TTL });
+  //   }).catch(() => {});
+  // }
 
   // Bust cache for mutating calls so stale data isn't served after a write
-  if (!isGet) _cacheBust(endpoint);
+  // if (!isGet) _cacheBust(endpoint);
 
   return res;
 };
@@ -108,6 +108,7 @@ window.requireAuth = async function requireAuth(options = {}) {
     // 4. Construct profile object
     // Station ID is typically saved in the user's Appwrite preferences
     const stationId = user.prefs && user.prefs.stationId ? user.prefs.stationId : null;
+    const companyId = user.prefs && user.prefs.companyId ? user.prefs.companyId : null;
 
     const profile = {
       userId: user.$id,
@@ -115,6 +116,7 @@ window.requireAuth = async function requireAuth(options = {}) {
       name: user.name,
       email: user.email,
       stationId: stationId,
+      companyId: companyId,
       prefs: user.prefs || {}
     };
     

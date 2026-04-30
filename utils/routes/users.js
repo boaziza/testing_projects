@@ -68,9 +68,9 @@ router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) =>
 
     // Scope to pompistes only; managers see their station, owners see all
     // queries.push(Query.equal('role', 'pompiste'));
-    // if (req.user.role === 'manager' && req.user.stationId) {
-    //   queries.push(Query.equal('stationId', req.user.stationId));
-    // }
+    if (req.user.role === 'manager' && req.user.stationId) {
+      queries.push(Query.equal('stationId', req.user.stationId));
+    }
 
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_USERS_ID, queries);
     res.json({ users: documents, total });
@@ -83,9 +83,10 @@ router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) =>
  * PATCH /user
  * Updates user information (e.g., name).
  */
-router.patch('/', verifyJWT, requireRole(['owner','manager','pompiste']), async (req, res) => {
+router.patch('/:id', verifyJWT, requireRole(['owner','manager','pompiste']), async (req, res) => {
   try {
-    const { $Id, ...body } = req.body;
+    const id = req.params.id;
+    const body = req.body;
 
     if (!body) {
       return res.status(400).json({ error: "User body is required." });
@@ -94,7 +95,7 @@ router.patch('/', verifyJWT, requireRole(['owner','manager','pompiste']), async 
     const updatedUser = await db.updateDocument(
       DATABASE_ID,
       COLLECTION_USERS_ID,
-      $Id,
+      id,
       body
     );
 
@@ -111,7 +112,7 @@ router.patch('/', verifyJWT, requireRole(['owner','manager','pompiste']), async 
 router.delete('/:id',verifyJWT,requireRole(['owner','manager']), async (req, res) => {
     try {
 
-    const { id } = req.params;
+    const id = req.params.id;
 
         if (!id){
             return res.status(400).json({ error: "User ID is required." });

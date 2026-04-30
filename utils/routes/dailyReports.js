@@ -41,21 +41,56 @@ router.get('/me', verifyJWT, requireRole(['owner','manager','pompiste']), async 
   try {
     const email = req.query.email;
     const logDate = req.query.logDate;
+    const shift = req.query.shift;
     
 
-    if (!email && !logDate) {
-      return res.status(404).json({ error: "No email and log date provided." });
+    if (!email && !logDate && !shift) {
+      return res.status(404).json({ error: "No email or log date provided." });
     }
 
-    const dailyReport = await db.listDocuments(
-      DATABASE_ID,
-      COLLECTION_DAILY_REPORTS_ID,
-      [
-        Query.equal('email', email),
-        Query.equal('logDate', logDate)// The search filter
-      ]
-    );
+    let dailyReport;
+    if ( email && logDate && shift ) {
+      dailyReport = await db.listDocuments(
+        DATABASE_ID,
+        COLLECTION_DAILY_REPORTS_ID,
+        [
+          Query.equal('email', email),
+          Query.equal('logDate', logDate),
+          Query.equal('shift', shift),
+          // The search filter
+        ]
+      );      
+
+    } else if ( email && logDate) {
+      dailyReport = await db.listDocuments(
+        DATABASE_ID,
+        COLLECTION_DAILY_REPORTS_ID,
+        [
+          Query.equal('email', email),
+          Query.equal('logDate', logDate)// The search filter
+        ]
+      );      
+    } else if ( email ) {
+      dailyReport = await db.listDocuments(
+        DATABASE_ID,
+        COLLECTION_DAILY_REPORTS_ID,
+        [
+          Query.equal('email', email)
+        ]
+      );
+    } else if ( logDate ) {
+      dailyReport = await db.listDocuments(
+        DATABASE_ID,
+        COLLECTION_DAILY_REPORTS_ID,
+        [
+          Query.equal('logDate', logDate)// The search filter
+        ]
+      );
+    };
+
     res.json({ dailyReport });
+
+    console.log("Daily report query result:", dailyReport);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -28,13 +28,15 @@ router.post('/', verifyJWT, requireRole(['owner']), async (req, res) => {
 
     // 3. Create the users-collection document
     const doc = await db.createDocument(DB_ID, USERS_ID, ID.unique(), {
-      userId:    account.$id,
+      userId:              account.$id,
       name,
       email,
       role,
       companyId,
-      stationId: stationId || null,
-      createdBy: req.user.$id,
+      stationId:           stationId || null,
+      createdBy:           req.user.$id,
+      mustChangePassword:  true,   // force password change on first login
+      active:              true,
     });
 
     res.json({ success: true, account: { $id: account.$id, name, email }, user: doc });
@@ -84,6 +86,17 @@ router.patch('/:userId/password', verifyJWT, requireRole(['owner']), async (req,
       return res.status(400).json({ error: 'Password must be at least 8 characters.' });
     }
     await users.updatePassword(req.params.userId, password);
+
+    // Mark mustChangePassword on the users-collection doc so the UI prompts them
+    const existing = await db.listDocuments(DB_ID, USERS_ID, [
+      Query.equal('userId', req.params.userId),
+    ]);
+    if (existing.documents.length > 0) {
+      await db.updateDocument(DB_ID, USERS_ID, existing.documents[0].$id, {
+        mustChangePassword: true,
+      });
+    }
+
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });

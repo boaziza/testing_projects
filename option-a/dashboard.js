@@ -234,8 +234,21 @@
     _state.role = _state.profile.role;
     applyRoleVisibility(_state.role);
 
+    // Reveal page only after role visibility applied — prevents flash of wrong sections
+    document.body.style.visibility = "visible";
+
     document.getElementById("userName").textContent    = _state.profile.name || _state.role;
     document.getElementById("userAvatar").textContent  = (_state.profile.name || _state.role)[0].toUpperCase();
+
+    // Show skeleton overview cards while data loads
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+    document.getElementById("overviewTitle").textContent = `${greeting}, ${(_state.profile.name || "").split(" ")[0]}`;
+    document.getElementById("overviewStats").innerHTML = `
+      <div class="stat-card skeleton-card"><div class="stat-val">—</div><div class="stat-label">Loading…</div></div>
+      <div class="stat-card skeleton-card"><div class="stat-val">—</div><div class="stat-label">Loading…</div></div>
+      <div class="stat-card skeleton-card"><div class="stat-val">—</div><div class="stat-label">Loading…</div></div>
+    `;
 
     const hash    = location.hash.slice(1);
     const hashNav = document.querySelector(`.nav-item[data-section="${hash}"]`);
