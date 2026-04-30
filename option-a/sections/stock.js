@@ -432,15 +432,15 @@
 
     try {
       const [resPms, resAgo] = await Promise.all([
-        apiFetch("/stock-daily", {
+        apiFetch(`/stock-daily/${_histActivDoc.pmsDocId}`, {
           method: "PATCH", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ $Id: _histActivDoc.pmsDocId,
+          body: JSON.stringify({
             initialStock: initPms, receivedLitres: recvPms, physicalStock: physPms,
             theoryStock: theoryPms, gainFuel: gainPms }),
         }),
-        apiFetch("/stock-daily", {
+        apiFetch(`/stock-daily${_histActivDoc.agoDocId}`, {
           method: "PATCH", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ $Id: _histActivDoc.agoDocId,
+          body: JSON.stringify({
             initialStock: initAgo, receivedLitres: recvAgo, physicalStock: physAgo,
             theoryStock: theoryAgo, gainFuel: gainAgo }),
         }),

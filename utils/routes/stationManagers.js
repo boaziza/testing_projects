@@ -54,9 +54,10 @@ router.get('/', verifyJWT, requireRole(['owner']), async (req, res) => {
  * PATCH /station manager
  * Updates station manager information (e.g., name).
  */
-router.patch('/', verifyJWT, requireRole(['owner']), async (req, res) => {
+router.patch('/:id', verifyJWT, requireRole(['owner']), async (req, res) => {
   try {
-    const { $Id, ...body } = req.body;
+    const id = req.params.id;
+    const body = req.body;
 
     if (!body) {
       return res.status(400).json({ error: "Station manager body is required." });
@@ -65,7 +66,7 @@ router.patch('/', verifyJWT, requireRole(['owner']), async (req, res) => {
     const updatedStationManager = await db.updateDocument(
       DATABASE_ID,
       COLLECTION_STATION_MANAGERS,
-      $Id,
+      id,
       body
     );
 

@@ -118,9 +118,10 @@ router.get('/', verifyJWT, requireRole(['owner','manager','pompiste']), async (r
  * PATCH /daily-report
  * Updates daily report information (e.g., name).
  */
-router.patch('/', verifyJWT, requireRole(['owner','manager']), async (req, res) => {
+router.patch('/:id', verifyJWT, requireRole(['owner','manager']), async (req, res) => {
   try {
-    const { $Id, ...body } = req.body;
+    const id = req.params.id;
+    const body = req.body;
 
     if (!body) {
       return res.status(400).json({ error: "Daily report body is required." });
@@ -129,7 +130,7 @@ router.patch('/', verifyJWT, requireRole(['owner','manager']), async (req, res) 
     const updatedDailyReport = await db.updateDocument(
       DATABASE_ID,
       COLLECTION_DAILY_REPORTS_ID,
-      $Id,
+      id,
       body
     );
 

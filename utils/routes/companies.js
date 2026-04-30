@@ -55,9 +55,10 @@ router.get('/', verifyJWT, requireRole(['owner']), async (req, res) => {
  * PATCH /company
  * Updates company information (e.g., name).
  */
-router.patch('/', verifyJWT, requireRole(['owner']), async (req, res) => {
+router.patch('/:id', verifyJWT, requireRole(['owner']), async (req, res) => {
   try {
-    const { $Id, ...body } = req.body;
+    const id = req.params.id;
+    const body = req.body;
 
     if (!body) {
       return res.status(400).json({ error: "Company body is required." });
@@ -66,7 +67,7 @@ router.patch('/', verifyJWT, requireRole(['owner']), async (req, res) => {
     const updatedCompany = await db.updateDocument(
       DATABASE_ID,
       COLLECTION_COMPANIES_ID,
-      $Id,
+      id,
       body
     );
 

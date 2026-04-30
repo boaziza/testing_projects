@@ -86,9 +86,10 @@ router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) =>
  * PATCH /fiche
  * Updates fiche information (e.g., name).
  */
-router.patch('/', verifyJWT, requireRole(['owner','manager']), async (req, res) => {
+router.patch('/:id', verifyJWT, requireRole(['owner','manager']), async (req, res) => {
   try {
-    const { $Id, ...body } = req.body;
+    const id = req.params.id;
+    const body = req.body;
 
     if (!body) {
       return res.status(400).json({ error: "Fiche body is required." });
@@ -97,7 +98,7 @@ router.patch('/', verifyJWT, requireRole(['owner','manager']), async (req, res) 
     const updatedFiche = await db.updateDocument(
       DATABASE_ID,
       COLLECTION_FICHE_ID,
-      $Id,
+      id,
       body
     );
 
