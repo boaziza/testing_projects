@@ -1,7 +1,7 @@
 # Ignore environment variables and sensitive files
 .env
 .venv
-.vscode
+.vscode/
 node_modules/
 pages/customers
 .claude
