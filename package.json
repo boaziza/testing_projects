@@ -2,9 +2,9 @@
   "name": "mywebapp-backend",
   "version": "1.0.0",
   "type": "commonjs",
-  "main": "utils/server.js",
+  "main": "server/server.js",
   "scripts": {
-    "start": "node utils/server.js",
+    "start": "node server/server.js",
     "lint": "eslint ."
   },
   "dependencies": {

@@ -11,9 +11,9 @@
     account:    new Appwrite.Account(client),
     SERVER_URL: "http://localhost:4000/api",
 
-    SIGNIN_URL:            `${BASE}/auth/sign-in/sign-in`,
-    SIGNUP_URL:            `${BASE}/auth/sign-up/sign-up`,
-    FIRST_LOGIN_URL:       `${BASE}/auth/first-login/first-login`,
+    SIGNIN_URL:            `${BASE}/auth/sign-in`,
+    SIGNUP_URL:            `${BASE}/auth/sign-up`,
+    FIRST_LOGIN_URL:       `${BASE}/auth/first-login`,
     OWNER_DASHBOARD_URL:   `${BASE}/portal/dashboard`,
     MANAGER_DASHBOARD_URL: `${BASE}/portal/dashboard`,
     POMPISTE_URL:          `${BASE}/pompiste/index`,

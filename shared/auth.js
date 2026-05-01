@@ -1,4 +1,4 @@
-// utils/auth.js
+// shared/auth.js
 
 // ── JWT cache — reuse the same JWT for 9 minutes (Appwrite JWTs last 15 min)
 // Saves one Appwrite roundtrip per request.
