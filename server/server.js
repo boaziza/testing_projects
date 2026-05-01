@@ -4,7 +4,10 @@ const cors    = require('cors');
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: '*', credentials: true }));
+app.use(cors({
+  origin: '*',
+  credentials: true,
+}));
 
 app.use('/api/companies',         require('./routes/companies'));
 app.use('/api/stations',          require('./routes/stations'));
@@ -25,12 +28,5 @@ app.use('/api/accounts',          require('./routes/authAppwrite/accounts'));
 
 app.get('/health', (_, res) => res.json({ ok: true }));
 
-// ── Appwrite Function entry point ──
-module.exports = async (context) => {
-  const { req, res } = context;
-
-  // Convert Appwrite context to Express-compatible request
-  await new Promise((resolve) => {
-    app(req, res, resolve);
-  });
-};
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
