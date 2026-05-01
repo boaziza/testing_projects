@@ -7,13 +7,13 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231b263b'/><text x='16' y='23' text-anchor='middle' font-family='Arial' font-weight='900' font-size='16' fill='white'>RP</text></svg>">
 </head>
 <body>
-  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.0"></script>
   <script src="utils/config.js"></script>
   <script>
     (async () => {
       try {
         const jwt = (await _AW.account.createJWT()).jwt;
-        const res = await fetch(`${_AW.SERVER_URL}/user/me`);
+        const res = await fetch(`${_AW.SERVER_URL}/users/me`);
         if (!res.ok) throw new Error();
         const { user } = await res.json();
         const doc = user.documents?.[0];

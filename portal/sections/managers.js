@@ -6,41 +6,6 @@
     if (listEl) listEl.innerHTML = "<div class='loading-state'>Loading…</div>";
 
     try {
-      // Fetch all teams, then load members of every non-employee team
-      // const teamsRes  = await fetch(`${_AW.SERVER_URL}/teams`);
-      // const teamsData = await teamsRes.json();
-      // if (!teamsRes.ok) throw new Error(teamsData.error || "Failed to load teams");
-
-      // const adminTeams = (teamsData.teams || []).filter(t =>
-      //   t.name.toLowerCase() !== "employees"
-      // );
-
-      // if (adminTeams.length === 0) {
-      //   if (listEl) listEl.innerHTML = "<div class='empty-state'>No manager teams found.</div>";
-      //   return;
-      // }
-
-      // // Load members of each team in parallel
-      // const memberResults = await Promise.all(
-      //   adminTeams.map(team =>
-      //     fetch(`${_AW.SERVER_URL}/teams/${encodeURIComponent(team.$id)}/members`)
-      //       .then(r => r.json())
-      //       .then(d => ({ team, memberships: d.memberships || [] }))
-      //       .catch(() => ({ team, memberships: [] }))
-      //   )
-      // );
-
-      // // Flatten into a single list, deduplicate by userId
-      // const seen    = new Set();
-      // const managers = [];
-      // memberResults.forEach(({ team, memberships }) => {
-      //   memberships.forEach(m => {
-      //     if (!seen.has(m.userId)) {
-      //       seen.add(m.userId);
-      //       managers.push({ ...m, teamName: team.name });
-      //     }
-      //   });
-      // });
 
       const res  = await apiFetch(`/users`).then(r => r.json());
       const managers = (res.users ?? []).filter(u => u.role === "manager");

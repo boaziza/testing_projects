@@ -1,7 +1,5 @@
 (function () {
 
-  const _STOCK_ID = "6908ab260012e0412ca8";
-
   let initialPms, initialAgo, receivedPms, receivedAgo;
   let physicalStockPms, physicalStockAgo, theoryStockPms, theoryStockAgo;
   let gainFuelPms, gainFuelAgo;

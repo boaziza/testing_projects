@@ -1,7 +1,5 @@
 (function () {
 
-  const SETTINGS_ID = "69d3ed400021197ed76e";
-
   window._sections.account = async function loadAccount() {
     const { state, apiFetch } = window._dash;
     const { profile, station } = state;
@@ -16,7 +14,6 @@
     set("acct-station", station?.name);
 
     try {
-      // const settRes = await _AW.db.listDocuments(_AW.DB_ID, SETTINGS_ID);
       const stationRes = await apiFetch(`/stations/`).then(res => res.json());
       const stationDocs = stationRes.stations?.documents ?? stationRes.stations ?? [];
 

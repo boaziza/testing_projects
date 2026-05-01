@@ -9,10 +9,7 @@
   window._AW = {
     client,
     account:    new Appwrite.Account(client),
-    db:         new Appwrite.Databases(client),
-    teams:      new Appwrite.Teams(client),
     SERVER_URL: "http://localhost:4000/api",
-    DB_ID:       "69e77d2b0033b9fde4a3",
 
     SIGNIN_URL:            `${BASE}/auth/sign-in/sign-in`,
     SIGNUP_URL:            `${BASE}/auth/sign-up/sign-up`,

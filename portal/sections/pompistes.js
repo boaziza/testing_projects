@@ -17,11 +17,11 @@
       if (usersData.error) throw new Error(usersData.error);
 
       // Build gain map keyed by email for current month
-      // const now = new Date();
-      // const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
       const gainMap = {};
       (gainData.gains?.documents ?? gainData.gains ?? [])
-        .filter(d => d.monthYear === `2026-01`)
+        .filter(d => d.monthYear === currentMonth)
         .forEach(d => { gainMap[d.email] = d.gainPayments ?? 0; });
 
       const users = usersData.users ?? [];

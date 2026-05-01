@@ -57,7 +57,7 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.0"></script>
   <script src="../../utils/config.js"></script>
   <script src="../../utils/auth.js"></script>
   <script>
@@ -101,7 +101,8 @@
 
       try {
         await _AW.account.createEmailPasswordSession(email, password);
-      } catch {
+      } catch(err){
+        console.log("err",err);
         showError("Invalid email or password. Please try again.");
         btn.disabled = false;
         return;

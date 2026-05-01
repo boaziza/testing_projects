@@ -13,20 +13,14 @@ const DATABASE_ID = process.env.APPWRITE_DATABASE_ID;
 
 router.post('/', verifyJWT, requireRole(['owner','manager','pompiste']), async (req, res) => {
   try {
+    
     const body = req.body;
 
-    // if (!body){
-    //     return res.status(400).json({ error: "Fiche body is required." });
-    // }
-
-    // const newFiche = await db.createDocument(
-    //   DATABASE_ID,
-    //   COLLECTION_FICHE_ID,
-    //   ID.unique(),
-    //   body
-    // );
+    if (!body){
+        return res.status(400).json({ error: "Fiche body is required." });
+    }
     
-    const items = Array.isArray(req.body) ? req.body : [req.body];
+    const items = Array.isArray(body) ? body : [body];
     if (items.length === 0) return res.status(400).json({ error: "Fiche body is required." });
 
     const results = await Promise.all(

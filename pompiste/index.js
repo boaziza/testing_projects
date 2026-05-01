@@ -19,8 +19,6 @@ let momoFeePercent = 0;
 // Reads pmsPrice, agoPrice, momoFeePercent from the single fixed
 // settings document so MomoLoss() always uses the correct rate,
 // even before the pompiste clicks "Calculate Index".
-const _SETTINGS_ID  = "69d3ed400021197ed76e";
-const _SETTINGS_DOC = "69d7db7ed8d5d2b73d66";
 
 
 async function initSettings() {
@@ -51,7 +49,6 @@ async function initSettings() {
 initSettings();
 
 async function calculateIndex() {
-    const indexId = "68cd1987002bae34ea4b";
 
     pms1 =Number(document.getElementById("pms1").value);
     pms2 =Number(document.getElementById("pms2").value);
@@ -102,7 +99,6 @@ async function calculateIndex() {
         let pmsMatch = false;
         let agoMatch = false;
 
-        // const response = await _AW.db.listDocuments(_AW.DB_ID, indexId, [Appwrite.Query.equal("logDate", logDate)]);
         const { dailyReport } = await apiFetch(`/daily-reports/me?logDate=${logDate}`).then(r => r.json());
         const document = dailyReport.documents;
 
@@ -139,13 +135,8 @@ async function calculateIndex() {
             pmsMatch = false;
             agoMatch = false;
 
-            // const beforeResponse = await _AW.db.listDocuments(_AW.DB_ID, indexId, [Appwrite.Query.equal("logDate", dateBefore)]);
             const beforeResponse = await apiFetch(`/daily-reports/me?logDate=${dateBefore}`).then(r => r.json());
-
             const beforeDocuments = beforeResponse.dailyReport.documents;
-
-            console.log(beforeDocuments);
-            
 
             for (const doc of beforeDocuments) {
                 // Check PMS match if values are provided
@@ -277,9 +268,6 @@ function validateBeforeStore() {
 
 let dataSituation;
 async function situation() {
-    const indexId = "68cd1987002bae34ea4b";
-    const paymentsId = "68cd19990006cbb33843";
-    const situationId = "68cd6b7f00330a840d96";
 
     if (!validateBeforeStore()) return;
 
@@ -298,26 +286,12 @@ async function situation() {
         const monthYear = `${yyyy}-${mm}`;
 
         // I-4: Check for duplicate submission before writing anything
-        // const dupCheck = await _AW.db.listDocuments(_AW.DB_ID, indexId, [
-        //     Appwrite.Query.equal("logDate", logDate),
-        //     Appwrite.Query.equal("email",   email),
-        //     Appwrite.Query.equal("shift",   shift),
-        // ]);
-
         const dupCheck = await apiFetch(`/daily-reports/me?logDate=${logDate}&email=${email}&shift=${shift}`).then(r => r.json());
 
         if (dupCheck.dailyReport.documents.length > 0) {
             toast("You already submitted this shift. Contact admin if a resubmission is needed.", "warning");
             return;
         }
-
-        // const gainRes = await fetch(`${_AW.SERVER_URL}/upsert-gain`, {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({ email, employee, gainPayments, logDate, monthYear }),
-        // });
 
         const gainRes = await apiFetch(`/gain-pompiste`,{
             method: "POST",
@@ -365,30 +339,7 @@ async function situation() {
             ago2,
             ago3,
             ago4
-        }       
-
-        // const dataIndex = {
-        //     venteLitresPms,
-        //     totalPms,
-        //     venteLitresAgo,
-        //     totalAgo,
-        //     totalVente,
-        //     pms1,
-        //     pms2,
-        //     pms3,
-        //     pms4,
-        //     ago1,
-        //     ago2,
-        //     ago3,
-        //     ago4,
-        //     pmsPrice,
-        //     agoPrice,
-        //     email,
-        //     logDate,
-        //     shift,
-        //     employee,
-        //     id,
-        // };
+        }
 
         const dataPayments = {
             companyId,
@@ -417,7 +368,6 @@ async function situation() {
             shiftKey: `${email}_${logDate}_${shift}`,
         };
 
-        // const response = await _AW.db.listDocuments(_AW.DB_ID, situationId, [Appwrite.Query.equal("logDate", logDate)]);
         const response = await apiFetch(`/situation/me?logDate=${logDate}`).then(r => r.json());
         const sitDocs = response.situation.documents;
 
@@ -459,13 +409,6 @@ async function situation() {
                     logDate,
                 };
 
-                // await _AW.db.createDocument(
-                //     _AW.DB_ID,
-                //     situationId,
-                //     "unique()",
-                //     dataSituation
-                // );
-
                 await apiFetch(`/situation`, {
                     method: "POST",
                     headers: {
@@ -497,7 +440,6 @@ async function situation() {
                     totalVente:     totalVente     + (doc.totalVente     || 0),
                 };
 
-                // await _AW.db.updateDocument(_AW.DB_ID, situationId, docId, dataSituation);
                 await apiFetch(`/situation/${docId}`, {
                     method: "PATCH",
                     headers: {
@@ -532,7 +474,6 @@ async function situation() {
                 totalVente:     totalVente     + (doc.totalVente     || 0),
             };
 
-            // await _AW.db.updateDocument(_AW.DB_ID, situationId, docId, dataSituation);
             await apiFetch(`/situation/${docId}`, {
                 method: "PATCH",
                 headers: {
@@ -575,7 +516,6 @@ async function situation() {
                 done: false,
             };
 
-            // await _AW.db.updateDocument(_AW.DB_ID, situationId, docId, dataSituation);
             await apiFetch(`/situation/${docId}`, {
                 method: "PATCH",
                 headers: {
@@ -597,12 +537,7 @@ async function situation() {
         // the index write so the database stays consistent and the user can retry.
         let indexDocId = null;
         try {
-            // const indexDoc = await _AW.db.createDocument(
-            //     _AW.DB_ID,
-            //     indexId,
-            //     "unique()",
-            //     dataIndex
-            // );
+
             const indexResponse = await apiFetch(`/daily-reports`, {
                 method: "POST",
                 headers: {
@@ -613,15 +548,6 @@ async function situation() {
 
             const indexDoc = await indexResponse.json();
             indexDocId = indexDoc.dailyReport.$id;
-
-            // indexDocId = indexDoc.$id;
-
-            // await _AW.db.createDocument(
-            //     _AW.DB_ID,
-            //     paymentsId,
-            //     "unique()",
-            //     dataPayments
-            // );
 
             await apiFetch(`/payments`, {
                 method: "POST",
@@ -640,16 +566,6 @@ async function situation() {
         }
 
         // Bulk-write each fiche entry to its own collection document
-        // const ficheId = "69007206001aed40d6f4";
-        // await Promise.all(fiche.map(item =>
-        //     _AW.db.createDocument(_AW.DB_ID, ficheId, "unique()", {
-        //         plate:    item.plate,
-        //         company:  item.company,
-        //         amount:   item.amount,
-        //         logDate,
-        //         employee,
-        //     })
-        // ));
         const newFiche = fiche.map(item => ({
             companyId:    profile.companyId,
             stationId:    profile.stationId,
@@ -673,18 +589,6 @@ async function situation() {
         });
 
         // Bulk-write each loan entry to its own collection document
-        // const loansId = "68fbe6f80019b53fb32f";
-        // await Promise.all(loans.map(item =>
-        //     _AW.db.createDocument(_AW.DB_ID, loansId, "unique()", {
-        //         plate:     item.plate,
-        //         company:   item.company,
-        //         amount:    item.amount,
-        //         logDate,
-        //         monthYear,
-        //         employee,
-        //     })
-        // ));
-
         const enrichedLoans = loans.map(item => ({
             companyId:    profile.companyId,
             stationId:    profile.stationId,

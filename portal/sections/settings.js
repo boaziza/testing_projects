@@ -1,6 +1,5 @@
 (function () {
 
-  const settingsId = "69d3ed400021197ed76e";
   const _statusTimers = new WeakMap();
 
   const { apiFetch, state } = window._dash;
@@ -60,7 +59,6 @@
 
   async function saveFuelPrices() {
     const profile = state.profile;;
-    console.log(profile.name);
     const stationId = profile.stationId;
     const userId = profile.userId;
     const pmsEl = document.getElementById("pmsPriceInput");
@@ -75,8 +73,6 @@
     if (!pmsPrice || !agoPrice) { showStatus(statusEl, "Both fuel prices are required.", "error"); return; }
     if (isNaN(momoFeePercent) || momoFeePercent < 0) { showStatus(statusEl, "Enter a valid MoMo fee percentage.", "error"); return; }
     try {
-
-      // const res = await _AW.db.listDocuments(_AW.DB_ID, settingsId);
 
       await apiFetch(`/stations/${stationId}`,{
         method: "PATCH",
@@ -96,7 +92,6 @@
       const agoPriceDoc = sorted.find(p => p.fuelType === "AGO");
 
       if (sorted.length < 2) {
-        // await _AW.db.createDocument(_AW.DB_ID, settingsId, "unique()", { pmsPrice, agoPrice });
 
         await apiFetch(`/fuel-prices`,{
           method: "POST",
@@ -137,7 +132,7 @@
         });
 
       } else if (pmsPriceDoc.price !== pmsPrice ) {
-        // await _AW.db.updateDocument(_AW.DB_ID, settingsId, res.documents[0].$id, { pmsPrice, agoPrice, stationName, momoFeePercent });
+        
         await apiFetch(`/fuel-prices/${pmsPriceDoc.$id}`,{
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -175,9 +170,8 @@
     const listEl = document.getElementById("teamsList");
     listEl.innerHTML = `<div class="loading">Loading...</div>`;
     try {
-      // const res  = await fetch(`${_AW.SERVER_URL}/teams`);
+
       const res = await apiFetch(`/teams`);
-      // const data = await res.json();
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       if (data.teams.length === 0) { listEl.innerHTML = `<div class="loading">No teams yet. Create one below.</div>`; return; }
@@ -252,7 +246,6 @@
     const name = nameEl?.value.trim();
     btn.disabled = true;
     try {
-      // const res = await fetch(`${_AW.SERVER_URL}/teams`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name }) });
       const res = await apiFetch(`/teams`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -455,7 +448,6 @@
     const userId = _setEditUserId;
     btn.disabled = true;
     try {
-      // const res  = await fetch(`${_AW.SERVER_URL}/users/${encodeURIComponent(_setEditUserId)}`, { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name, prefs:{ station } }) });
       const res = await apiFetch(`/users/${userId}`, {
         method: "PATCH",
         headers: { 'Content-Type': 'application/json' },
