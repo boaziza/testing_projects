@@ -101,7 +101,9 @@ window.requireAuth = async function requireAuth(options = {}) {
     // 3. Check role against allowed roles for this page
     if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
       console.warn(`Access denied. Role '${role}' not in allowed roles:`, allowedRoles);
-      window.location.replace(window._AW.SIGNIN_URL);
+      if (role === "pompiste")        window.location.replace(window._AW.POMPISTE_URL);
+      else if (role === "owner" || role === "manager") window.location.replace(window._AW.OWNER_DASHBOARD_URL);
+      else window.location.replace(window._AW.SIGNIN_URL);
       return null;
     }
     

@@ -12,13 +12,13 @@
     db:         new Appwrite.Databases(client),
     teams:      new Appwrite.Teams(client),
     SERVER_URL: "http://localhost:4000/api",
-    DB_ID:       "695f766c003a8dc2b3be",
+    DB_ID:       "69e77d2b0033b9fde4a3",
 
     SIGNIN_URL:            `${BASE}/auth/sign-in/sign-in`,
     SIGNUP_URL:            `${BASE}/auth/sign-up/sign-up`,
     FIRST_LOGIN_URL:       `${BASE}/auth/first-login/first-login`,
-    OWNER_DASHBOARD_URL:   `${BASE}/option-a/dashboard`,
-    MANAGER_DASHBOARD_URL: `${BASE}/option-a/dashboard`,
-    POMPISTE_URL:          `${BASE}/root/index`,
+    OWNER_DASHBOARD_URL:   `${BASE}/portal/dashboard`,
+    MANAGER_DASHBOARD_URL: `${BASE}/portal/dashboard`,
+    POMPISTE_URL:          `${BASE}/pompiste/index`,
   };
 })();
