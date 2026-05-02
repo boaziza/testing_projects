@@ -49,9 +49,9 @@
         Pompistes
       </a>
 
-      <div class="nav-section-label">Operations</div>
+      <div class="nav-section-label" data-roles="manager">Operations</div>
 
-      <a href="#" class="nav-item" data-section="situation" data-roles="owner,manager">
+      <a href="#" class="nav-item" data-section="situation" data-roles="manager">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
         Situation
       </a>
@@ -61,7 +61,7 @@
         Stock
       </a>
 
-      <a href="#" class="nav-item" data-section="report" data-roles="owner,manager">
+      <a href="#" class="nav-item" data-section="report" data-roles="manager">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Report
       </a>
@@ -686,7 +686,10 @@
       <div class="form-card" style="margin-bottom:16px;">
         <h3 class="form-card-title">Company</h3>
         <div class="form-row"><label>Company Name</label><input type="text" id="companyName"></div>
-        <div class="form-actions"><button class="btn-primary" id="saveCompanyBtn">Save</button></div>
+        <div class="form-actions">
+          <button class="btn-primary" id="saveCompanyBtn" onclick="window._set.saveCompanyName(this)">Save</button>
+          <span id="companyStatus" class="status-msg"></span>
+        </div>
       </div>
       <div class="settings-wrapper">
         <div class="tabs">

@@ -66,10 +66,10 @@ router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) =>
     const { limit = 50, offset = 0 } = req.query;
     const queries = [Query.limit(Number(limit)), Query.offset(Number(offset))];
 
-    // Scope to pompistes only; managers see their station, owners see all
-    // queries.push(Query.equal('role', 'pompiste'));
-    if (req.user.role === 'manager' && req.user.stationId) {
-      queries.push(Query.equal('stationId', req.user.stationId));
+    // Managers see only pompistes at their station; owners see all users
+    if (req.user.role === 'manager') {
+      queries.push(Query.equal('role', 'pompiste'));
+      if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
     }
 
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_USERS_ID, queries);

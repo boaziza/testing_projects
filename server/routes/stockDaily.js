@@ -72,7 +72,7 @@ router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) =>
       Query.limit(Number(limit)),
       Query.offset(Number(offset)),
     ];
-    // if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
+    if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_STOCK_DAILY_ID, queries);
     res.json({ stockDaily: documents, total });
   } catch (error) {

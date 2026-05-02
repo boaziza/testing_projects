@@ -512,6 +512,30 @@
     finally { btn.disabled = false; }
   }
 
+  async function saveCompanyName(btn) {
+    const nameEl = document.getElementById("companyName");
+    const name   = nameEl?.value.trim();
+    const statusEl = document.getElementById("companyStatus");
+    if (!name) { showStatus(statusEl, "Company name is required.", "error"); return; }
+    const companyId = state.company?.$id;
+    if (!companyId) { showStatus(statusEl, "No company found.", "error"); return; }
+    btn.disabled = true;
+    try {
+      const res  = await apiFetch(`/companies/${companyId}`, {
+        method: "PATCH",
+        body:   JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      state.company.name = name;
+      showStatus(statusEl, "✓ Company name saved.", "success");
+    } catch (err) {
+      showStatus(statusEl, "Error: " + err.message, "error");
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
   // Register
   window._sections.settings = function loadSettings() {
     const { state } = window._dash;
@@ -524,7 +548,7 @@
 
   // Expose for onclick attributes in HTML
   window._set = {
-    switchTab, handleSavePrices, promptCreateTeam, handleCreateTeam,
+    switchTab, saveCompanyName, handleSavePrices, promptCreateTeam, handleCreateTeam,
     promptDeleteTeam, handleDeleteTeam, toggleTeam,
     promptAddMember, handleAddMember, promptRemoveMember, handleRemoveMember,
     promptCreateEmployee, handleCreateEmployee, openEditEmployee, handleEditEmployee,
