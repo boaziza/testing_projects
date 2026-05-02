@@ -38,7 +38,15 @@ function _cacheBust(endpoint) {
 // Wraps fetch() to the server URL and automatically includes the Appwrite JWT.
 window.apiFetch = async function apiFetch(endpoint, options = {}) {
   const method = (options.method || "GET").toUpperCase();
-  // const isGet  = method === "GET";
+  const isGet  = method === "GET";
+
+  // Owner in station-view mode: scope all GET requests to the viewed station
+  if (isGet && window._dash?.state?.viewingStation && window._dash?.state?.role === "owner") {
+    const sid = window._dash.state.viewingStation.$id;
+    if (!endpoint.includes("station=")) {
+      endpoint += (endpoint.includes("?") ? "&" : "?") + `station=${sid}`;
+    }
+  }
 
   // Return cached response for GETs that haven't expired
   // if (isGet) {

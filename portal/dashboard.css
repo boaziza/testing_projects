@@ -135,6 +135,29 @@ body {
   font-weight: 400;
 }
 
+#stationViewBanner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  margin: 0 12px 8px;
+  padding: 8px 12px;
+  gap: 8px;
+}
+#stationViewName {
+  font-size: 12px; font-weight: 600; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#exitStationViewBtn {
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; border-radius: 5px; padding: 3px 8px; cursor: pointer;
+  transition: background .15s;
+}
+#exitStationViewBtn:hover { background: rgba(255,255,255,0.22); }
+
 /* ── NAV ──────────────────────────────────────── */
 .sidebar-nav {
   flex: 1;
@@ -687,13 +710,19 @@ tbody tr:hover td { background: var(--rp-surface-off); }
 }
 
 /* ── FORM CARD ────────────────────────────────── */
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
 .form-card {
   background: var(--rp-surface);
   border: 1px solid var(--rp-border);
   border-radius: var(--rp-r-lg);
   padding: 24px 28px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-  max-width: 480px;
 }
 
 .form-card-title {

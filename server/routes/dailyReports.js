@@ -48,49 +48,14 @@ router.get('/me', verifyJWT, requireRole(['owner','manager','pompiste']), async 
       return res.status(404).json({ error: "No email or log date provided." });
     }
 
-    let dailyReport;
-    if ( email && logDate && shift ) {
-      dailyReport = await db.listDocuments(
-        DATABASE_ID,
-        COLLECTION_DAILY_REPORTS_ID,
-        [
-          Query.equal('email', email),
-          Query.equal('logDate', logDate),
-          Query.equal('shift', shift),
-          // The search filter
-        ]
-      );      
+    const queries = [];
+    if (email)   queries.push(Query.equal('email',   email));
+    if (logDate) queries.push(Query.equal('logDate', logDate));
+    if (shift)   queries.push(Query.equal('shift',   shift));
+    if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
 
-    } else if ( email && logDate) {
-      dailyReport = await db.listDocuments(
-        DATABASE_ID,
-        COLLECTION_DAILY_REPORTS_ID,
-        [
-          Query.equal('email', email),
-          Query.equal('logDate', logDate)// The search filter
-        ]
-      );      
-    } else if ( email ) {
-      dailyReport = await db.listDocuments(
-        DATABASE_ID,
-        COLLECTION_DAILY_REPORTS_ID,
-        [
-          Query.equal('email', email)
-        ]
-      );
-    } else if ( logDate ) {
-      dailyReport = await db.listDocuments(
-        DATABASE_ID,
-        COLLECTION_DAILY_REPORTS_ID,
-        [
-          Query.equal('logDate', logDate)// The search filter
-        ]
-      );
-    };
-
+    const dailyReport = await db.listDocuments(DATABASE_ID, COLLECTION_DAILY_REPORTS_ID, queries);
     res.json({ dailyReport });
-
-    console.log("Daily report query result:", dailyReport);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -102,10 +67,12 @@ router.get('/me', verifyJWT, requireRole(['owner','manager','pompiste']), async 
  */
 router.get('/', verifyJWT, requireRole(['owner','manager','pompiste']), async (req, res) => {
   try {
-    const { search, limit = 25, offset = 0 } = req.query;
+    const { search, limit = 25, offset = 0, station } = req.query;
+    const scopedStation = station || (req.user.role !== 'owner' ? req.user.stationId : null);
 
     const queries = [Query.limit(Number(limit)), Query.offset(Number(offset))];
     if (search) queries.push(Query.search('name', search));
+    if (scopedStation) queries.push(Query.equal('stationId', scopedStation));
 
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_DAILY_REPORTS_ID, queries);
     res.json({ dailyReports: documents, total });

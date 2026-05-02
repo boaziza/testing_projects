@@ -45,13 +45,10 @@ router.get('/me', verifyJWT, requireRole(['owner','manager','pompiste']), async 
       return res.status(404).json({ error: "No email associated with this account." });
     }
 
-    const gain = await db.listDocuments(
-      DATABASE_ID,
-      COLLECTION_GAIN_ID,
-      [
-        Query.equal('email', email) // The search filter
-      ]
-    );
+    const queries = [Query.equal('email', email)];
+    if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
+
+    const gain = await db.listDocuments(DATABASE_ID, COLLECTION_GAIN_ID, queries);
     res.json({ gain });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -64,9 +61,12 @@ router.get('/me', verifyJWT, requireRole(['owner','manager','pompiste']), async 
  */
 router.get('/', verifyJWT, requireRole(['owner','manager','pompiste']), async (req, res) => {
   try {
-    const { limit = 100, offset = 0, monthYear } = req.query;
+    const { limit = 100, offset = 0, monthYear, station } = req.query;
+    const scopedStation = station || (req.user.role !== 'owner' ? req.user.stationId : null);
+
     const queries = [Query.limit(Number(limit)), Query.offset(Number(offset)), Query.orderDesc('monthYear')];
     if (monthYear) queries.push(Query.equal('monthYear', monthYear));
+    if (scopedStation) queries.push(Query.equal('stationId', scopedStation));
 
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_GAIN_ID, queries);
     res.json({ gains: documents, total });

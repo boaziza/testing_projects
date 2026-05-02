@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In — Rapport Pompiste</title>
-  <link rel="stylesheet" href="sign-in.css">
+  <link rel="stylesheet" href="auth.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231b263b'/><text x='16' y='23' text-anchor='middle' font-family='Arial' font-weight='900' font-size='16' fill='white'>RP</text></svg>">
 </head>
 <body>
@@ -58,8 +58,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.0"></script>
-  <script src="../../shared/config.js"></script>
-  <script src="../../shared/auth.js"></script>
+  <script src="../shared/config.js"></script>
+  <script src="../shared/auth.js"></script>
   <script>
     function showError(msg) {
       const el = document.getElementById("loginError");
@@ -140,7 +140,7 @@
       const btn      = this.querySelector('button[type="submit"]');
       btn.disabled   = true;
       const email    = document.getElementById("resetEmail").value.trim();
-      const resetUrl = `${window.location.origin}/testing_projects/auth/reset-password`;
+      const resetUrl = `${window.location.origin}/testing_projects/auth/reset-password.html`;
       try {
         await _AW.account.createRecovery(email, resetUrl);
         alert("Reset link sent — check your email.");

@@ -124,9 +124,19 @@ router.patch('/:userId/prefs', verifyJWT, requireRole(['owner']), async (req, re
  * DELETE /:userId
  * Delete an Appwrite account. Owner only.
  */
-router.delete('/:userId', verifyJWT, requireRole(['owner']), async (req, res) => {
+router.delete('/:userId', verifyJWT, requireRole(['owner', 'manager']), async (req, res) => {
   try {
-    await users.deleteIdentity(req.params.userId);
+    const { userId } = req.params;
+
+    // Delete users-collection document
+    const lookup = await db.listDocuments(DB_ID, USERS_ID, [Query.equal('userId', userId), Query.limit(1)]);
+    if (lookup.documents.length > 0) {
+      await db.deleteDocument(DB_ID, USERS_ID, lookup.documents[0].$id);
+    }
+
+    // Delete the Appwrite account
+    await users.delete(userId);
+
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });

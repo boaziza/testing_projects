@@ -38,9 +38,12 @@ router.post('/', verifyJWT, requireRole(['owner']), async (req, res) => {
  */
 router.get('/', verifyJWT, requireRole(['owner']), async (req, res) => {
   try {
-    const { limit = 100, offset = 0 } = req.query;
+    const { limit = 100, offset = 0, station } = req.query;
+    const scopedStation = station || (req.user.role !== 'owner' ? req.user.stationId : null);
+
     const queries = [Query.limit(Number(limit)), Query.offset(Number(offset))];
     if (req.user.companyId) queries.push(Query.equal('companyId', req.user.companyId));
+    if (scopedStation) queries.push(Query.equal('stationId', scopedStation));
 
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_STATION_MANAGERS, queries);
     res.json({ managers: documents, total });

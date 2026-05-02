@@ -45,13 +45,10 @@ router.get('/me', verifyJWT, requireRole(['owner','manager']), async (req, res) 
       return res.status(404).json({ error: "No customer ID associated with this account." });
     }
 
-    const fiche = await db.listDocuments(
-        DATABASE_ID,
-        COLLECTION_FICHE_ID,
-        [
-            Query.equal('customerId', customerId) // The search filter
-        ]
-    );
+    const queries = [Query.equal('customerId', customerId)];
+    if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
+
+    const fiche = await db.listDocuments(DATABASE_ID, COLLECTION_FICHE_ID, queries);
     res.json({ fiche });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -64,10 +61,12 @@ router.get('/me', verifyJWT, requireRole(['owner','manager']), async (req, res) 
  */
 router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) => {
   try {
-    const { search, limit = 25, offset = 0 } = req.query;
+    const { search, limit = 25, offset = 0, station } = req.query;
+    const scopedStation = station || (req.user.role !== 'owner' ? req.user.stationId : null);
 
     const queries = [Query.limit(Number(limit)), Query.offset(Number(offset))];
     if (search) queries.push(Query.search('name', search));
+    if (scopedStation) queries.push(Query.equal('stationId', scopedStation));
 
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_FICHE_ID, queries);
     res.json({ fiche: documents, total });

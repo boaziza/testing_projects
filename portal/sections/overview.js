@@ -20,8 +20,54 @@
         <div class="stat-card"><div class="stat-val">${state.managers.length}</div><div class="stat-label">Managers</div></div>
         <div class="stat-card"><div class="stat-val">${state.pompistes.length}</div><div class="stat-label">Pompistes</div></div>
       `;
+
+      // ── Per-station breakdown ──────────────────────────────────────────────
       const chartsEl = document.getElementById("overviewCharts");
-      if (chartsEl) chartsEl.innerHTML = "";
+      if (chartsEl) chartsEl.innerHTML = `<div class="ov-card"><div class="ov-card-title">Station Overview</div><div id="ov-station-table"><div class="loading-state">Loading…</div></div></div>`;
+
+      try {
+        const now          = new Date();
+        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        const sitRes       = await apiFetch(`/situation?limit=200`).then(r => r.json());
+        const situations   = sitRes.situations || [];
+        const monthSits    = situations.filter(d => safeDate(d.logDate)?.substring(0, 7) === currentMonth);
+
+        const stationMap   = Object.fromEntries(state.stations.map(s => [s.$id, s.name]));
+        const byStation    = {};
+        monthSits.forEach(d => {
+          if (!byStation[d.stationId]) byStation[d.stationId] = { vente: 0, gain: 0, shifts: 0 };
+          byStation[d.stationId].vente  += Number(d.totalVente)   || 0;
+          byStation[d.stationId].gain   += Number(d.gainPayments) || 0;
+          byStation[d.stationId].shifts += 1;
+        });
+
+        const tableEl = document.getElementById("ov-station-table");
+        if (!tableEl) return;
+        if (state.stations.length === 0) { tableEl.innerHTML = `<div class="empty-state">No stations yet.</div>`; return; }
+
+        tableEl.innerHTML = `
+          <table class="ov-shifts-table">
+            <thead><tr>
+              <th>Station</th>
+              <th class="align-right">Vente (RWF)</th>
+              <th class="align-right">Gain/Loss</th>
+              <th class="align-right">Shifts</th>
+            </tr></thead>
+            <tbody>${state.stations.map(s => {
+              const d     = byStation[s.$id] || { vente: 0, gain: 0, shifts: 0 };
+              const hasData = d.shifts > 0;
+              return `<tr>
+                <td>${s.name}</td>
+                <td class="align-right">${hasData ? fmtShort(d.vente) : "—"}</td>
+                <td class="align-right ${d.gain >= 0 ? "stat-ok" : "stat-warn"}">${hasData ? (d.gain >= 0 ? "+" : "") + fmtShort(d.gain) : "—"}</td>
+                <td class="align-right">${hasData ? d.shifts : "—"}</td>
+              </tr>`;
+            }).join("")}</tbody>
+          </table>`;
+      } catch {
+        const tableEl = document.getElementById("ov-station-table");
+        if (tableEl) tableEl.innerHTML = `<div class="empty-state">Could not load station data.</div>`;
+      }
       return;
     }
 
@@ -60,10 +106,9 @@
     ]);
 
     const situations = sitRes.status   === "fulfilled" ? (sitRes.value.situations  || []) : [];
-    const stockDocs  = stockRes.status === "fulfilled"
-      ? (stockRes.value.stockDaily?.documents ?? stockRes.value.stockDaily ?? []) : [];
+    const stockDocs  = stockRes.status === "fulfilled" ? (stockRes.value.stockDaily ?? []) : [];
     const priceDocs  = priceRes.status === "fulfilled"
-      ? (priceRes.value.fuelPriceHistory?.documents ?? []) : [];
+      ? (priceRes.value.fuelPriceHistory ?? []) : [];
 
     // Derive date window from most recent situation (not today's date)
     const mostRecentDate = situations.length > 0 ? safeDate(situations[0].logDate) : null;
@@ -161,9 +206,9 @@
           : '<span class="ov-badge ov-badge-warn">Pending</span>';
         return `<tr>
           <td>${dateStr}</td>
-          <td class="align-right">${fmtShort(d.totalVente)}</td>
-          <td class="align-right">${fmtShort(d.totalPayments)}</td>
-          <td class="align-right ${gain >= 0 ? "stat-ok" : "stat-warn"}">${gain >= 0 ? "+" : ""}${fmtShort(gain)}</td>
+          <td class="align-right">${(d.totalVente).toLocaleString()}</td>
+          <td class="align-right">${(d.totalPayments).toLocaleString()}</td>
+          <td class="align-right ${gain >= 0 ? "stat-ok" : "stat-warn"}">${gain >= 0 ? "+" : ""}${(gain).toLocaleString()}</td>
           <td>${status}</td>
         </tr>`;
       }).join("");

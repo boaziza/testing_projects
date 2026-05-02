@@ -20,13 +20,14 @@
 
   // ── SHARED STATE ───────────────────────────────────────────────
   const _state = {
-    profile:   null,
-    role:      null,
-    stations:  [],
-    managers:  [],
-    pompistes: [],
-    company:   null,
-    station:   null,
+    profile:        null,
+    role:           null,
+    stations:       [],
+    managers:       [],
+    pompistes:      [],
+    company:        null,
+    station:        null,
+    viewingStation: null,
   };
 
   // Shared modal state
@@ -119,10 +120,17 @@
     if (!name || !email || !password) { toast("All fields are required.", "warning"); return; }
     if (password.length < 8)          { toast("Password must be at least 8 characters.", "warning"); return; }
 
+    const btn = document.getElementById("confirmAddUserBtn");
+    btn.disabled = true;
     try {
-      const res  = await apiFetch(`/${_addingRole}s`, {
+      const res  = await apiFetch("/accounts", {
         method: "POST",
-        body:   JSON.stringify({ name, email, password, stationId }),
+        body:   JSON.stringify({
+          name, email, password,
+          role:      _addingRole,
+          stationId: stationId || null,
+          companyId: _state.profile.companyId,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed");
@@ -133,6 +141,8 @@
       callLoader(_addingRole === "pompiste" ? "pompistes" : "managers");
     } catch (err) {
       toast(err.message || `Could not create ${_addingRole}.`, "error");
+    } finally {
+      btn.disabled = false;
     }
   });
 
@@ -151,8 +161,10 @@
   document.getElementById("confirmEditUserBtn").addEventListener("click", async () => {
     const name = document.getElementById("editUserName").value.trim();
     if (!name) { toast("Name is required.", "warning"); return; }
+    const btn = document.getElementById("confirmEditUserBtn");
+    btn.disabled = true;
     try {
-      const res = await apiFetch(`/users/${_editUserId}`, {
+      const res = await apiFetch(`/accounts/${_editUserId}/name`, {
         method: "PATCH",
         body:   JSON.stringify({ name }),
       });
@@ -162,6 +174,32 @@
       callLoader(_state.role === "manager" ? "pompistes" : "managers");
     } catch (err) {
       toast(err.message || "Update failed.", "error");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // ── SHARED: DELETE USER ────────────────────────────────────────
+  let _deleteUserId = null;
+  function openDeleteUser(userId, name) {
+    _deleteUserId = userId;
+    document.getElementById("deleteUserHint").textContent = `Delete "${name}" permanently? This cannot be undone.`;
+    openModal("deleteUserModal");
+  }
+
+  document.getElementById("confirmDeleteUserBtn")?.addEventListener("click", async () => {
+    const btn = document.getElementById("confirmDeleteUserBtn");
+    btn.disabled = true;
+    try {
+      const res = await apiFetch(`/accounts/${_deleteUserId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error((await res.json()).error);
+      closeModal("deleteUserModal");
+      toast("Account deleted.", "success");
+      callLoader(_state.role === "manager" ? "pompistes" : "managers");
+    } catch (err) {
+      toast(err.message || "Delete failed.", "error");
+    } finally {
+      btn.disabled = false;
     }
   });
 
@@ -189,6 +227,29 @@
     }
   });
 
+  // ── STATION VIEW MODE ──────────────────────────────────────────
+  function enterStationView(station) {
+    _state.viewingStation = station;
+    applyRoleVisibility("manager");
+    const banner = document.getElementById("stationViewBanner");
+    const label  = document.getElementById("stationViewName");
+    if (banner) banner.style.display = "flex";
+    if (label)  label.textContent    = station.name;
+    showSection("overview");
+    callLoader("overview");
+  }
+
+  function exitStationView() {
+    _state.viewingStation = null;
+    applyRoleVisibility("owner");
+    const banner = document.getElementById("stationViewBanner");
+    if (banner) banner.style.display = "none";
+    showSection("stations");
+    callLoader("stations");
+  }
+
+  document.getElementById("exitStationViewBtn")?.addEventListener("click", () => exitStationView());
+
   // ── LOGOUT ─────────────────────────────────────────────────────
   document.getElementById("logoutBtn").addEventListener("click", () => logout());
 
@@ -202,8 +263,11 @@
     openModal,
     closeModal,
     openEditUser,
+    openDeleteUser,
     openResetPwd,
     openAddUserModal,
+    enterStationView,
+    exitStationView,
     reload: (section) => callLoader(section),
     state:  _state,
   };

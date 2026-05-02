@@ -45,13 +45,10 @@ router.get('/me', verifyJWT, requireRole(['owner','manager']), async (req, res) 
       return res.status(404).json({ error: "No month and year provided." });
     }
 
-    const stock = await db.listDocuments(
-      DATABASE_ID,
-      COLLECTION_STOCK_ID,
-      [
-        Query.equal('monthYear', monthYear)
-      ]
-    );
+    const queries = [Query.equal('monthYear', monthYear)];
+    if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
+
+    const stock = await db.listDocuments(DATABASE_ID, COLLECTION_STOCK_ID, queries);
     res.json({ stock });
   } catch (error) {
     res.status(500).json({ error: error.message });

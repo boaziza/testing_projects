@@ -46,14 +46,10 @@ router.get('/me', verifyJWT, requireRole(['owner','manager']), async (req, res) 
       return res.status(404).json({ error: "No email and log date provided." });
     }
 
-    const payment = await db.listDocuments(
-      DATABASE_ID,
-      COLLECTION_PAYMENTS_ID,
-      [
-        Query.equal('email', email),
-        Query.equal('logDate', logDate)
-      ]
-    );
+    const queries = [Query.equal('email', email), Query.equal('logDate', logDate)];
+    if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
+
+    const payment = await db.listDocuments(DATABASE_ID, COLLECTION_PAYMENTS_ID, queries);
     res.json({ payment });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -66,10 +62,12 @@ router.get('/me', verifyJWT, requireRole(['owner','manager']), async (req, res) 
  */
 router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) => {
   try {
-    const { search, limit = 25, offset = 0 } = req.query;
+    const { search, limit = 25, offset = 0, station } = req.query;
+    const scopedStation = station || (req.user.role !== 'owner' ? req.user.stationId : null);
 
     const queries = [Query.limit(Number(limit)), Query.offset(Number(offset))];
     if (search) queries.push(Query.search('name', search));
+    if (scopedStation) queries.push(Query.equal('stationId', scopedStation));
 
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_PAYMENTS_ID, queries);
     res.json({ payments: documents, total });

@@ -44,13 +44,10 @@ router.get('/me', verifyJWT, requireRole(['owner','manager']), async (req, res) 
       return res.status(404).json({ error: "No log date provided." });
     }
 
-    const situation = await db.listDocuments(
-        DATABASE_ID,
-        COLLECTION_SITUATION_ID,
-        [
-            Query.equal('logDate', logDate) // The search filter
-        ]
-    );
+    const queries = [Query.equal('logDate', logDate)];
+    if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
+
+    const situation = await db.listDocuments(DATABASE_ID, COLLECTION_SITUATION_ID, queries);
     res.json({ situation });
   } catch (error) {
     res.status(500).json({ error: error.message });
