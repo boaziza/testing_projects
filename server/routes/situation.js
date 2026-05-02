@@ -73,9 +73,9 @@ router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) =>
       queries.push(Query.lessThanEqual("logDate", to));
     }
 
-    if (station) {
-      queries.push(Query.equal("stationId", station));  // Assuming stationId field exists
-    }
+    // Scope to station: manager uses their own stationId, owner uses ?station= param
+    const scopedStation = station || (req.user.role !== 'owner' ? req.user.stationId : null);
+    if (scopedStation) queries.push(Query.equal('stationId', scopedStation));
 
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_SITUATION_ID, queries);
     res.json({ situations: documents, total });

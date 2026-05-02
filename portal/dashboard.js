@@ -149,12 +149,29 @@
   document.getElementById("credDoneBtn").addEventListener("click", () => closeModal("credentialModal"));
 
   // ── SHARED: EDIT USER MODAL ────────────────────────────────────
+  let _editingManagerStation = false;
+
   function openEditUser(userId) {
-    const list = _state.role === "owner" ? _state.managers : _state.pompistes;
-    const user = list.find(u => u.userId === userId);
+    const isOwner = _state.role === "owner" || _state.viewingStation;
+    const list    = isOwner ? _state.managers : _state.pompistes;
+    const user    = list.find(u => u.userId === userId);
     if (!user) return;
     _editUserId = userId;
-    document.getElementById("editUserName").value = user.name;
+    _editingManagerStation = isOwner;
+    document.getElementById("editUserName").value = user.name || "";
+
+    const stationRow = document.getElementById("editStationRow");
+    if (stationRow) {
+      stationRow.style.display = isOwner ? "" : "none";
+      if (isOwner) {
+        const sel = document.getElementById("editUserStation");
+        if (sel) {
+          sel.innerHTML = _state.stations.map(s =>
+            `<option value="${s.$id}" ${s.$id === user.stationId ? "selected" : ""}>${s.name}</option>`
+          ).join("");
+        }
+      }
+    }
     openModal("editUserModal");
   }
 
@@ -164,14 +181,32 @@
     const btn = document.getElementById("confirmEditUserBtn");
     btn.disabled = true;
     try {
-      const res = await apiFetch(`/accounts/${_editUserId}/name`, {
+      // Update name
+      const nameRes = await apiFetch(`/accounts/${_editUserId}/name`, {
         method: "PATCH",
         body:   JSON.stringify({ name }),
       });
-      if (!res.ok) throw new Error((await res.json()).error);
+      if (!nameRes.ok) throw new Error((await nameRes.json()).error);
+
+      // Update station if editing a manager
+      if (_editingManagerStation) {
+        const stationId = document.getElementById("editUserStation")?.value;
+        if (stationId) {
+          await apiFetch(`/accounts/${_editUserId}/prefs`, {
+            method: "PATCH",
+            body:   JSON.stringify({ stationId }),
+          });
+          // Also update the users-collection document
+          await apiFetch(`/users/${_editUserId}`, {
+            method: "PATCH",
+            body:   JSON.stringify({ stationId }),
+          });
+        }
+      }
+
       closeModal("editUserModal");
-      toast("Name updated.", "success");
-      callLoader(_state.role === "manager" ? "pompistes" : "managers");
+      toast("Account updated.", "success");
+      callLoader(_editingManagerStation ? "managers" : "pompistes");
     } catch (err) {
       toast(err.message || "Update failed.", "error");
     } finally {

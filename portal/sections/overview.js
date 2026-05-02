@@ -11,7 +11,7 @@
     if (titleEl) titleEl.textContent = `${greeting}, ${(state.profile.name || "").split(" ")[0]}`;
 
     // ── Owner view ────────────────────────────────────────────────────────────
-    if (state.role === "owner") {
+    if (state.role === "owner" && !state.viewingStation) {
       const subEl = document.getElementById("overviewSub");
       if (subEl) subEl.textContent = state.company?.name || "Your company";
       const statsEl = document.getElementById("overviewStats");

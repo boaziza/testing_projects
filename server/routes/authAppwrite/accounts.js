@@ -20,6 +20,18 @@ router.post('/', verifyJWT, requireRole(['owner']), async (req, res) => {
 
     const companyId = req.user.companyId;
 
+    // One manager per station — reject if station already has a manager
+    if (role === 'manager' && stationId) {
+      const existing = await db.listDocuments(DB_ID, USERS_ID, [
+        Query.equal('role', 'manager'),
+        Query.equal('stationId', stationId),
+        Query.limit(1),
+      ]);
+      if (existing.documents.length > 0) {
+        return res.status(400).json({ error: `Station already has a manager (${existing.documents[0].name || existing.documents[0].email}). Reassign or remove them first.` });
+      }
+    }
+
     // 1. Create the Appwrite account
     const account = await users.create(ID.unique(), email, undefined, password, name);
 
