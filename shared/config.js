@@ -9,7 +9,7 @@
   window._AW = {
     client,
     account:    new Appwrite.Account(client),
-    SERVER_URL: "http://localhost:4000/api",
+    SERVER_URL: "https://testing-projects-4ttw.onrender.comapi",
 
     SIGNIN_URL:            `${BASE}/auth/sign-in`,
     SIGNUP_URL:            `${BASE}/auth/sign-up`,
