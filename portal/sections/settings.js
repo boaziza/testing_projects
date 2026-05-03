@@ -25,31 +25,57 @@
 
   async function loadFuelSettings() {
     try {
-      const stationRes = await apiFetch(`/stations`).then(res => res.json());
-      const stationDocs = stationRes.stations?.documents ?? stationRes.stations ?? [];
+      const stationRes  = await apiFetch(`/stations`).then(r => r.json());
+      const stationDocs = stationRes.stations ?? [];
+      const isOwner     = state.role === "owner";
 
-      const fuelPrices = await apiFetch(`/fuel-prices/me`).then(res => res.json());
-      const priceDocs = fuelPrices.fuelPriceHistory?.documents ?? fuelPrices.fuelPriceHistory ?? [];
-
-      const sorted     = [...priceDocs].sort((a, b) => (b.effectiveFrom || "").localeCompare(a.effectiveFrom || ""));
-      const pmsPriceDoc = sorted.find(p => p.fuelType === "PMS");
-      const agoPriceDoc = sorted.find(p => p.fuelType === "AGO");
-
-      const stationDoc = stationDocs[0];
-
-      if (pmsPriceDoc || agoPriceDoc) {
-        const pmsEl = document.getElementById("pmsPriceInput");
-        if (pmsEl) pmsEl.value = pmsPriceDoc?.price ?? "";
-        const agoEl = document.getElementById("agoPriceInput");
-        if (agoEl) agoEl.value = agoPriceDoc?.price ?? "";
+      // Populate station selector for owner
+      const selRow = document.getElementById("stationSelectorRow");
+      const sel    = document.getElementById("settingsStationSelect");
+      if (selRow) selRow.style.display = isOwner ? "" : "none";
+      if (isOwner && sel) {
+        sel.innerHTML = stationDocs.map(s =>
+          `<option value="${s.$id}">${s.name}</option>`
+        ).join("");
+        sel.onchange = () => loadStationPrices(sel.value, stationDocs);
       }
+
+      const targetId  = isOwner ? sel?.value : state.profile.stationId;
+      const stationDoc = stationDocs.find(s => s.$id === targetId) || stationDocs[0];
       if (stationDoc) {
         const stationEl = document.getElementById("stationName");
         if (stationEl) stationEl.value = stationDoc.name ?? "";
         const momoEl = document.getElementById("momoFeeInput");
         if (momoEl) momoEl.value = stationDoc.momoFee ?? "";
       }
+
+      await loadStationPrices(targetId || stationDoc?.$id);
     } catch (err) { console.error("Could not load settings:", err); }
+  }
+
+  async function loadStationPrices(stationId, stationDocs) {
+    if (!stationId) return;
+    try {
+      // Update station name/momo when selection changes (owner only)
+      if (stationDocs) {
+        const s = stationDocs.find(d => d.$id === stationId);
+        if (s) {
+          const el = document.getElementById("stationName");
+          if (el) el.value = s.name ?? "";
+          const momoEl = document.getElementById("momoFeeInput");
+          if (momoEl) momoEl.value = s.momoFee ?? "";
+        }
+      }
+      const fuelPrices = await apiFetch(`/fuel-prices?station=${stationId}`).then(r => r.json());
+      const priceDocs  = fuelPrices.fuelPriceHistory ?? fuelPrices.fuelPrices ?? [];
+      const sorted     = [...priceDocs].sort((a, b) => (b.effectiveFrom || "").localeCompare(a.effectiveFrom || ""));
+      const pms = sorted.find(p => p.fuelType === "PMS");
+      const ago = sorted.find(p => p.fuelType === "AGO");
+      const pmsEl = document.getElementById("pmsPriceInput");
+      const agoEl = document.getElementById("agoPriceInput");
+      if (pmsEl) pmsEl.value = pms?.price ?? "";
+      if (agoEl) agoEl.value = ago?.price ?? "";
+    } catch (err) { console.error("Could not load prices:", err); }
   }
 
   async function handleSavePrices(btn) {
@@ -58,8 +84,11 @@
   }
 
   async function saveFuelPrices() {
-    const profile = state.profile;;
-    const stationId = profile.stationId;
+    const profile   = state.profile;
+    const isOwner   = state.role === "owner";
+    const stationId = isOwner
+      ? document.getElementById("settingsStationSelect")?.value
+      : profile.stationId;
     const userId = profile.userId;
     const pmsEl = document.getElementById("pmsPriceInput");
     const agoEl = document.getElementById("agoPriceInput");

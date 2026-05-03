@@ -46,8 +46,9 @@ router.get('/', verifyJWT, requireRole(['owner', 'manager']), async (req, res) =
       return res.json({ stations: [station] });
     }
 
-    // owner — list all non-archived stations for their company
-    const queries = [Query.limit(100), Query.equal('archived', false)];
+    // owner — list stations for their company; ?archived=true shows archived ones
+    const showArchived = req.query.archived === 'true';
+    const queries = [Query.limit(100), Query.equal('archived', showArchived)];
     if (companyId) queries.push(Query.equal('company', companyId));
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_STATIONS_ID, queries);
     res.json({ stations: documents, total });

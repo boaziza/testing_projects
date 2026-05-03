@@ -7,30 +7,38 @@
 
   // ── Load ──────────────────────────────────────────────────────────────────
   window._sections.stations = async function loadStations() {
-    const listEl = document.getElementById("stationsList");
+    const listEl       = document.getElementById("stationsList");
+    const showArchived = document.getElementById("showArchivedToggle")?.checked || false;
     if (listEl) listEl.innerHTML = "<div class='loading-state'>Loading…</div>";
     try {
-      const res  = await apiFetch("/stations");
+      const res  = await apiFetch("/stations" + (showArchived ? "?archived=true" : ""));
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load stations");
 
-      // Filter out archived stations client-side
-      state.stations = (data.stations || []).filter(s => !s.archived);
+      const all = data.stations || [];
+      // Active stations go into state; archived are display-only
+      if (!showArchived) state.stations = all.filter(s => !s.archived);
+      const display = showArchived ? all.filter(s => s.archived) : state.stations;
 
-      if (state.stations.length === 0) {
-        if (listEl) listEl.innerHTML = "<div class='empty-state'>No stations yet. Click + Add Station.</div>";
+      if (display.length === 0) {
+        if (listEl) listEl.innerHTML = showArchived
+          ? "<div class='empty-state'>No archived stations.</div>"
+          : "<div class='empty-state'>No stations yet. Click + Add Station.</div>";
         return;
       }
 
-      if (listEl) listEl.innerHTML = state.stations.map(s => `
-        <div class="station-card" data-id="${s.$id}">
-          <div class="station-card-name">${s.name}</div>
+      if (listEl) listEl.innerHTML = display.map(s => `
+        <div class="station-card" data-id="${s.$id}" ${s.archived ? 'style="opacity:0.6;"' : ""}>
+          <div class="station-card-name">${s.name} ${s.archived ? '<span class="badge" style="font-size:10px;">Archived</span>' : ""}</div>
           <div class="station-card-address">${s.address || "No address"}</div>
           ${s.momoFee != null ? `<div class="station-card-momo">MoMo Fee: ${s.momoFee}%</div>` : ""}
           <div class="station-card-actions">
-            <button class="btn-ghost btn-sm" data-action="view-station"    data-id="${s.$id}">View</button>
-            <button class="btn-ghost btn-sm" data-action="edit-station"    data-id="${s.$id}">Edit</button>
-            <button class="btn-danger btn-sm" data-action="archive-station" data-id="${s.$id}" data-name="${s.name}">Archive</button>
+            ${s.archived
+              ? `<button class="btn-ghost btn-sm" data-action="restore-station" data-id="${s.$id}" data-name="${s.name}">Restore</button>`
+              : `<button class="btn-ghost btn-sm" data-action="view-station" data-id="${s.$id}">View</button>
+                 <button class="btn-ghost btn-sm" data-action="edit-station" data-id="${s.$id}">Edit</button>
+                 <button class="btn-danger btn-sm" data-action="archive-station" data-id="${s.$id}" data-name="${s.name}">Archive</button>`
+            }
           </div>
         </div>
       `).join("");
@@ -66,12 +74,36 @@
         })
       );
 
+      listEl.querySelectorAll("[data-action='restore-station']").forEach(btn =>
+        btn.addEventListener("click", async e => {
+          e.stopPropagation();
+          btn.disabled = true;
+          try {
+            const res = await apiFetch(`/stations/${btn.dataset.id}`, {
+              method: "PATCH",
+              body:   JSON.stringify({ archived: false }),
+            });
+            if (!res.ok) throw new Error((await res.json()).error || "Failed");
+            toast(`"${btn.dataset.name}" restored.`, "success");
+            window._dash.reload("stations");
+          } catch (err) {
+            toast(err.message || "Could not restore station.", "error");
+          } finally {
+            btn.disabled = false;
+          }
+        })
+      );
+
     } catch (err) {
       toast("Could not load stations: " + err.message, "error");
     }
   };
 
   // ── Add ───────────────────────────────────────────────────────────────────
+  document.getElementById("showArchivedToggle")?.addEventListener("change", () => {
+    window._dash.reload("stations");
+  });
+
   document.getElementById("addStationBtn")?.addEventListener("click", () => {
     document.getElementById("addStationName").value    = "";
     document.getElementById("addStationAddress").value = "";
