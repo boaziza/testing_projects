@@ -9,13 +9,20 @@ const USERS_ID = process.env.APPWRITE_USERS_ID;
 /**
  * POST /
  * Create a new Appwrite account + users-collection document.
- * Owner only. Body: { name, email, password, role, stationId }
+ * Owner can create managers or pompistes; manager can only create pompistes for their station.
+ * Body: { name, email, password, role, stationId }
  */
-router.post('/', verifyJWT, requireRole(['owner']), async (req, res) => {
+router.post('/', verifyJWT, requireRole(['owner', 'manager']), async (req, res) => {
   try {
-    const { name, email, password, role = 'pompiste', stationId } = req.body;
+    let { name, email, password, role = 'pompiste', stationId } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'name, email and password are required.' });
+    }
+
+    // Managers can only create pompistes scoped to their own station
+    if (req.user.role === 'manager') {
+      role      = 'pompiste';
+      stationId = req.user.stationId;
     }
 
     const companyId = req.user.companyId;

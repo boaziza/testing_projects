@@ -2021,3 +2021,8 @@ tbody tr:hover td { background: var(--rp-surface-off); }
   .pom-layout { display: block; }
   .pom-main   { overflow: visible; padding: 0; }
 }
+
+.list-pagination {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0 4px; font-size: 13px; color: var(--muted);
+}
