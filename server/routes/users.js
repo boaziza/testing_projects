@@ -72,6 +72,8 @@ router.get('/', verifyJWT, requireRole(['owner','manager']), async (req, res) =>
       if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
     }
 
+    if (req.user.stationId) queries.push(Query.equal('stationId', req.user.stationId));
+    
     const { documents, total } = await db.listDocuments(DATABASE_ID, COLLECTION_USERS_ID, queries);
     res.json({ users: documents, total });
   } catch (error) {
