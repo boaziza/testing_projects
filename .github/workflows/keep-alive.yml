@@ -1,0 +1,10 @@
+name: Keep Render alive
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -s https://testing-projects-4ttw.onrender.com/health
