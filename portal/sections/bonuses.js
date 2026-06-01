@@ -38,10 +38,10 @@
       const form = new FormData();
       form.append('file', _selectedFile);
 
-      const jwt = window._dash.state?.jwt || localStorage.getItem('appwrite_jwt') || '';
-      const res = await fetch(`${window._dash.BASE_URL}/api/bonuses/filter`, {
+      const { jwt } = await window._AW.account.createJWT();
+      const res = await fetch(`${window._AW.SERVER_URL}/bonuses/filter`, {
         method: 'POST',
-        headers: jwt ? { Authorization: `Bearer ${jwt}` } : {},
+        headers: { Authorization: `Bearer ${jwt}` },
         body: form,
       });
 
