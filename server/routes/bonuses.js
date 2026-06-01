@@ -33,7 +33,7 @@ router.post('/filter', verifyJWT, requireRole(['owner', 'manager']), upload.sing
     const totals = {};
     filtered.forEach(r => {
       const customer = String(r['Customer']).trim();
-      const amount   = parseFloat(r['Amount']) || 0;
+      const amount   = parseFloat(String(r['Amount'] || '').replace(/[,\s]/g, '')) || 0;
       totals[customer] = (totals[customer] || 0) + amount;
     });
 
