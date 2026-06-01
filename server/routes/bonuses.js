@@ -21,6 +21,10 @@ router.post('/filter', verifyJWT, requireRole(['owner', 'manager']), upload.sing
     const sheet    = workbook.Sheets[workbook.SheetNames[0]];
     const rows     = XLSX.utils.sheet_to_json(sheet, { defval: '', range: 1 });
 
+    // DEBUG — log first 3 rows and column names so we can see what the file contains
+    console.log('BONUS DEBUG columns:', Object.keys(rows[0] || {}));
+    console.log('BONUS DEBUG first 3 rows:', JSON.stringify(rows.slice(0, 3)));
+
     // 2. Filter rows
     const filtered = rows.filter(r => {
       const payment  = String(r['Payment']  || '').trim();
