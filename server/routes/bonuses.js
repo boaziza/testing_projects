@@ -12,7 +12,7 @@ const MIN_AMOUNT      = 400_000;
 const CUSTOMER_PREFIX = ['1', '7'];
 
 // POST /api/bonuses/filter
-router.post('/filter', verifyJWT, requireRole(['manager']), upload.single('file'), async (req, res) => {
+router.post('/filter', verifyJWT, requireRole(['owner', 'manager']), upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded. Send an xlsx file in the "file" field.' });
 
