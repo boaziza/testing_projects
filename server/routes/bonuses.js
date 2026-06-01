@@ -21,10 +21,6 @@ router.post('/filter', verifyJWT, requireRole(['owner', 'manager']), upload.sing
     const sheet    = workbook.Sheets[workbook.SheetNames[0]];
     const rows     = XLSX.utils.sheet_to_json(sheet, { defval: '', range: 1 });
 
-    // DEBUG — log first 3 rows and column names so we can see what the file contains
-    console.log('BONUS DEBUG columns:', Object.keys(rows[0] || {}));
-    console.log('BONUS DEBUG first 3 rows:', JSON.stringify(rows.slice(0, 3)));
-
     // 2. Filter rows
     const filtered = rows.filter(r => {
       const payment  = String(r['Payment']  || '').trim();
@@ -37,7 +33,8 @@ router.post('/filter', verifyJWT, requireRole(['owner', 'manager']), upload.sing
     const totals = {};
     filtered.forEach(r => {
       const customer = String(r['Customer']).trim();
-      const amount   = parseFloat(String(r['Amount'] || '').replace(/[,\s]/g, '')) || 0;
+      const rawAmt   = r['Amount'] ?? r[' Amount '] ?? r['AMOUNT'] ?? 0;
+      const amount   = parseFloat(String(rawAmt).replace(/[,\s]/g, '')) || 0;
       totals[customer] = (totals[customer] || 0) + amount;
     });
 
